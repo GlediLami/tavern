@@ -36,4 +36,12 @@ describe('characters.json', () => {
       expect(Math.max(...mods)).toBeGreaterThan(0);
     }
   });
+
+  it('every hero has a powerId that exists in the registry', async () => {
+    const { POWERS } = await import('../engine/powers');
+    for (const c of characters) {
+      expect(c.powerId, `${c.id} missing powerId`).toBeTruthy();
+      expect(POWERS[c.powerId!], `${c.id} -> unknown power ${c.powerId}`).toBeDefined();
+    }
+  });
 });

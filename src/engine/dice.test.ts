@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { makeRng } from './rng';
-import { rollDie, rollD20, rollDice } from './dice';
+import { rollDie, rollD20, rollDice, rollD20WithMode } from './dice';
 
 describe('dice', () => {
   it('rollDie returns 1..sides', () => {
@@ -50,5 +50,29 @@ describe('dice', () => {
     const result = rollDice('1d8', max, 3);
     expect(result.total).toBe(8 + 3);
     expect(result.bonus).toBe(3);
+  });
+
+  it('rollD20WithMode: no mode returns one die', () => {
+    const r = makeRng(5);
+    const res = rollD20WithMode(r);
+    expect(res.rolls).toHaveLength(1);
+    expect(res.value).toBe(res.rolls[0]);
+  });
+
+  it('rollD20WithMode: advantage takes the higher of two', () => {
+    const probe = makeRng(99);
+    const a = rollDie(20, probe);
+    const b = rollDie(20, probe);
+    const res = rollD20WithMode(makeRng(99), 'adv');
+    expect(res.rolls).toEqual([a, b]);
+    expect(res.value).toBe(Math.max(a, b));
+  });
+
+  it('rollD20WithMode: disadvantage takes the lower of two', () => {
+    const probe = makeRng(99);
+    const a = rollDie(20, probe);
+    const b = rollDie(20, probe);
+    const res = rollD20WithMode(makeRng(99), 'dis');
+    expect(res.value).toBe(Math.min(a, b));
   });
 });

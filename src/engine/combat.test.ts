@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant } from './combat';
+import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant, applyAttack, applyHeal } from './combat';
 import type { Hero, Enemy } from '../types';
 
 function makeHero(id: string, dex: number, hp = 20): Hero {
@@ -72,5 +72,35 @@ describe('combat', () => {
   it('currentCombatant returns the combatant whose turn it is', () => {
     const st = startCombat([makeHero('h1', 10)], [goblin], hit);
     expect(currentCombatant(st).id).toBe(st.order[st.turnIndex]);
+  });
+
+  it('applyAttack adds bonus damage dice and clears the attacker advantage flag', () => {
+    const st = startCombat([makeHero('h1', 10)], [goblin], hit);
+    const attacker = st.combatants.find((c) => c.id === 'h1')!;
+    attacker.nextAttack = 'adv';
+    const ev = applyAttack(st, 'h1', 'Sword', 'enemy-0', hit, undefined, { bonusDice: '2d6' });
+    // forced-max rng => nat 20 crit: 1d8(8) + crit 1d8(8) + 2d6(12) bonus + 3 flat = 31
+    expect(ev.amount).toBe(31);
+    expect(ev.mode).toBe('adv');
+    expect(attacker.nextAttack).toBeUndefined();
+  });
+
+  it('an attacker with nextAttack="dis" rolls with disadvantage via performHeroAttack', () => {
+    let st = startCombat([makeHero('h1', 10)], [goblin], hit);
+    st = { ...st, turnIndex: st.order.indexOf('h1') };
+    st.combatants.find((c) => c.id === 'h1')!.nextAttack = 'dis';
+    st = performHeroAttack(st, 'h1', 'Sword', 'enemy-0', hit);
+    expect(st.lastAttack?.mode).toBe('dis');
+    expect(st.lastAttack?.d20Rolls).toHaveLength(2);
+  });
+
+  it('applyHeal restores HP capped at max', () => {
+    const st = startCombat([makeHero('h1', 10, 6)], [goblin], hit);
+    const h = st.combatants.find((c) => c.id === 'h1')!;
+    h.hp = 2;
+    const ev = applyHeal(st, 'h1', 'h1', '1d8', 3, 'Cure Wounds', hit);
+    expect(ev.kind).toBe('heal');
+    expect(h.hp).toBeLessThanOrEqual(h.maxHp);
+    expect(h.hp).toBeGreaterThan(2);
   });
 });

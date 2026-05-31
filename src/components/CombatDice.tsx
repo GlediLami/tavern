@@ -18,6 +18,9 @@ export function CombatDice({ event }: { event: AttackEvent }) {
         <div className="cd-roll">
           <span className={`cd-d20${event.crit ? ' crit' : ''}${event.d20 === 1 ? ' fumble' : ''}`}>{event.d20}</span>
           <span className="cd-math">
+            {event.mode && event.d20Rolls
+              ? <span className="cd-adv">{event.mode === 'adv' ? 'advantage' : 'disadvantage'} ({event.d20Rolls.join(', ')}) → </span>
+              : null}
             d20 {event.d20} {fmt(event.toHit ?? 0)} = <strong>{event.d20 + (event.toHit ?? 0)}</strong> vs AC {event.ac}
           </span>
           <span className={`cd-result ${event.hit ? 'hit' : 'miss'}`}>

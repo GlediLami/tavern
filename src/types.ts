@@ -27,6 +27,7 @@ export interface Character {
   skillProficiencies: Skill[];
   attacks: Attack[];
   backstory: string;
+  powerId?: string;     // references a Power in the powers registry
 }
 
 export interface CheckSpec { skill: Skill; dc: number; }
@@ -87,7 +88,9 @@ export interface Combatant {
   ac: number;
   initiative: number;
   heroId?: string;       // present if isHero
+  primaryAttack?: string; // hero's main weapon attack name (for powers)
   attack?: EnemyAttack;  // present if enemy
+  nextAttack?: 'adv' | 'dis';  // one-shot advantage/disadvantage on this combatant's next attack
 }
 
 // A resolved attack/heal, surfaced so the UI can show the actual dice.
@@ -102,6 +105,8 @@ export interface AttackEvent {
   ac?: number;           // target AC
   hit: boolean;
   crit: boolean;
+  mode?: 'adv' | 'dis';  // advantage/disadvantage applied to the attack roll, if any
+  d20Rolls?: number[];   // both raw d20s when rolled with advantage/disadvantage
   damageDice: string;    // e.g. "1d8"
   damageRolls: number[]; // individual die faces rolled (incl. crit dice / heal dice)
   damageBonus: number;
@@ -119,3 +124,34 @@ export interface CombatState {
 }
 
 export type Difficulty = 'normal' | 'hard';
+
+export type AdvMode = 'adv' | 'dis';
+
+export type PowerTargeting = 'self' | 'ally' | 'enemy' | 'all-enemies';
+
+export type PowerKind =
+  | 'bonus-attack'         // a weapon attack with extra damage dice / flat / advantage
+  | 'multi-attack'         // N weapon attacks against the chosen target this turn
+  | 'aoe-attack'           // a weapon attack roll against every living enemy
+  | 'aoe-damage'           // fixed rolled damage to every living enemy (auto-hit)
+  | 'single-damage'        // fixed rolled damage to one enemy (auto-hit)
+  | 'heal'                 // restore HP to one ally/self
+  | 'grant-advantage'      // set nextAttack='adv' on self or an ally
+  | 'impose-disadvantage'; // set nextAttack='dis' on a target or all enemies
+
+export interface Power {
+  id: string;
+  name: string;
+  description: string;
+  kind: PowerKind;
+  targeting: PowerTargeting;
+  uses: number;
+  bonusDice?: string;        // bonus-attack extra damage dice, e.g. "2d6"
+  bonusDamageFlat?: number;  // bonus-attack flat extra damage
+  withAdvantage?: boolean;   // bonus-attack rolls with advantage
+  attacks?: number;          // multi-attack count (default 2)
+  damageDice?: string;       // aoe-damage / single-damage dice, e.g. "2d6"
+  alsoDisadvantage?: boolean;// aoe-damage also imposes disadvantage on all enemies
+  healDice?: string;         // heal dice, e.g. "1d8"
+  healBonus?: number;        // heal flat bonus
+}

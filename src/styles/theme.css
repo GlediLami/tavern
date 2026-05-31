@@ -321,6 +321,7 @@ h1, h2, h3, .display { font-family: var(--font-display); font-weight: 400; lette
   animation: pop-in 0.25s ease-out both;
 }
 .cd-bonus { color: var(--ink-dim); font-weight: 600; }
+.cd-adv { color: var(--gold); font-weight: 600; }
 .cd-total { font-weight: 800; }
 .cd-total.dmg { color: var(--accent-bright); }
 .cd-total.heal { color: var(--green); }
@@ -347,6 +348,12 @@ h1, h2, h3, .display { font-family: var(--font-display); font-weight: 400; lette
   0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-34px); opacity: 0; }
 }
 .active-turn { border-color: var(--accent) !important; box-shadow: 0 0 0 1px var(--accent) inset, 0 0 20px rgba(200, 16, 46, 0.18) !important; }
+
+.btn-power { border-color: var(--gold); color: var(--gold); }
+.btn-power:hover:not(:disabled) { background: rgba(217, 164, 65, 0.12); border-color: #f4d27a; }
+.adv-badge { font-size: 0.85rem; vertical-align: middle; }
+.adv-badge.adv { color: var(--green); }
+.adv-badge.dis { color: var(--accent-bright); }
 
 /* mute toggle */
 .mute-toggle {

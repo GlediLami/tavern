@@ -28,4 +28,10 @@ describe('CombatView', () => {
     renderCombat();
     expect(screen.getAllByText(/Gronk Skullsplitter/).length).toBeGreaterThanOrEqual(1);
   });
+
+  it("shows the active hero's power button", () => {
+    renderCombat();
+    // Single-hero party (Gronk) -> always his turn first -> Reckless Strike button.
+    expect(screen.getByText(/left\)/i)).toBeInTheDocument();
+  });
 });

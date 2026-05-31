@@ -6,16 +6,37 @@
     "class": "Fighter",
     "level": 1,
     "portrait": "🛡️",
-    "abilities": { "str": 16, "dex": 13, "con": 16, "int": 8, "wis": 12, "cha": 10 },
+    "abilities": {
+      "str": 16,
+      "dex": 13,
+      "con": 16,
+      "int": 8,
+      "wis": 12,
+      "cha": 10
+    },
     "maxHp": 13,
     "ac": 18,
     "proficiencyBonus": 2,
-    "skillProficiencies": ["athletics", "intimidation"],
-    "attacks": [
-      { "name": "Longsword", "ability": "str", "damageDice": "1d8", "damageBonus": 3 },
-      { "name": "Light Crossbow", "ability": "dex", "damageDice": "1d8", "damageBonus": 1 }
+    "skillProficiencies": [
+      "athletics",
+      "intimidation"
     ],
-    "backstory": "Bjorn served as a hold-guard in the deep mountain halls until a collapse buried his garrison. Now he wanders the surface roads, selling his blade to honest folk and searching for the gold to rebuild his clan's broken gate."
+    "attacks": [
+      {
+        "name": "Longsword",
+        "ability": "str",
+        "damageDice": "1d8",
+        "damageBonus": 3
+      },
+      {
+        "name": "Light Crossbow",
+        "ability": "dex",
+        "damageDice": "1d8",
+        "damageBonus": 1
+      }
+    ],
+    "backstory": "Bjorn served as a hold-guard in the deep mountain halls until a collapse buried his garrison. Now he wanders the surface roads, selling his blade to honest folk and searching for the gold to rebuild his clan's broken gate.",
+    "powerId": "action-surge"
   },
   {
     "id": "sable-quickfinger",
@@ -24,16 +45,39 @@
     "class": "Rogue",
     "level": 1,
     "portrait": "🗡️",
-    "abilities": { "str": 8, "dex": 17, "con": 13, "int": 12, "wis": 10, "cha": 15 },
+    "abilities": {
+      "str": 8,
+      "dex": 17,
+      "con": 13,
+      "int": 12,
+      "wis": 10,
+      "cha": 15
+    },
     "maxHp": 9,
     "ac": 14,
     "proficiencyBonus": 2,
-    "skillProficiencies": ["stealth", "sleightOfHand", "acrobatics", "deception"],
-    "attacks": [
-      { "name": "Shortsword", "ability": "dex", "damageDice": "1d6", "damageBonus": 3 },
-      { "name": "Shortbow", "ability": "dex", "damageDice": "1d6", "damageBonus": 3 }
+    "skillProficiencies": [
+      "stealth",
+      "sleightOfHand",
+      "acrobatics",
+      "deception"
     ],
-    "backstory": "Sable grew up lifting purses in the crowded river-markets of a trade city, never staying anywhere long enough to be caught. A botched job left her owing a dangerous fence, so she took up with adventurers hoping the treasure would clear her debt."
+    "attacks": [
+      {
+        "name": "Shortsword",
+        "ability": "dex",
+        "damageDice": "1d6",
+        "damageBonus": 3
+      },
+      {
+        "name": "Shortbow",
+        "ability": "dex",
+        "damageDice": "1d6",
+        "damageBonus": 3
+      }
+    ],
+    "backstory": "Sable grew up lifting purses in the crowded river-markets of a trade city, never staying anywhere long enough to be caught. A botched job left her owing a dangerous fence, so she took up with adventurers hoping the treasure would clear her debt.",
+    "powerId": "sneak-attack"
   },
   {
     "id": "mara-dawnwarden",
@@ -42,16 +86,38 @@
     "class": "Cleric",
     "level": 1,
     "portrait": "✨",
-    "abilities": { "str": 14, "dex": 8, "con": 15, "int": 10, "wis": 17, "cha": 12 },
+    "abilities": {
+      "str": 14,
+      "dex": 8,
+      "con": 15,
+      "int": 10,
+      "wis": 17,
+      "cha": 12
+    },
     "maxHp": 11,
     "ac": 18,
     "proficiencyBonus": 2,
-    "skillProficiencies": ["medicine", "insight", "religion"],
-    "attacks": [
-      { "name": "Mace", "ability": "str", "damageDice": "1d6", "damageBonus": 2 },
-      { "name": "Sacred Flame", "ability": "wis", "damageDice": "1d8", "damageBonus": 0 }
+    "skillProficiencies": [
+      "medicine",
+      "insight",
+      "religion"
     ],
-    "backstory": "Mara tended a roadside shrine to a god of dawn and healing, mending travelers wounded by the wilds beyond the walls. When raiders burned her chapel, she swore to carry her god's light into the dark places that bred such cruelty."
+    "attacks": [
+      {
+        "name": "Mace",
+        "ability": "str",
+        "damageDice": "1d6",
+        "damageBonus": 2
+      },
+      {
+        "name": "Sacred Flame",
+        "ability": "wis",
+        "damageDice": "1d8",
+        "damageBonus": 0
+      }
+    ],
+    "backstory": "Mara tended a roadside shrine to a god of dawn and healing, mending travelers wounded by the wilds beyond the walls. When raiders burned her chapel, she swore to carry her god's light into the dark places that bred such cruelty.",
+    "powerId": "cure-wounds"
   },
   {
     "id": "alaric-vance",
@@ -60,16 +126,38 @@
     "class": "Wizard",
     "level": 1,
     "portrait": "🔮",
-    "abilities": { "str": 8, "dex": 15, "con": 13, "int": 17, "wis": 12, "cha": 10 },
+    "abilities": {
+      "str": 8,
+      "dex": 15,
+      "con": 13,
+      "int": 17,
+      "wis": 12,
+      "cha": 10
+    },
     "maxHp": 7,
     "ac": 12,
     "proficiencyBonus": 2,
-    "skillProficiencies": ["arcana", "history", "investigation"],
-    "attacks": [
-      { "name": "Fire Bolt", "ability": "int", "damageDice": "1d10", "damageBonus": 0 },
-      { "name": "Dagger", "ability": "dex", "damageDice": "1d4", "damageBonus": 2 }
+    "skillProficiencies": [
+      "arcana",
+      "history",
+      "investigation"
     ],
-    "backstory": "Alaric spent decades as an apprentice copying spellbooks in a quiet arcane college, restless behind its high walls. When a forbidden tome whispered of magic the masters had hidden away, he stole into the world to seek the knowledge they denied him."
+    "attacks": [
+      {
+        "name": "Fire Bolt",
+        "ability": "int",
+        "damageDice": "1d10",
+        "damageBonus": 0
+      },
+      {
+        "name": "Dagger",
+        "ability": "dex",
+        "damageDice": "1d4",
+        "damageBonus": 2
+      }
+    ],
+    "backstory": "Alaric spent decades as an apprentice copying spellbooks in a quiet arcane college, restless behind its high walls. When a forbidden tome whispered of magic the masters had hidden away, he stole into the world to seek the knowledge they denied him.",
+    "powerId": "burning-hands"
   },
   {
     "id": "thornwick-greenstride",
@@ -78,16 +166,39 @@
     "class": "Ranger",
     "level": 1,
     "portrait": "🏹",
-    "abilities": { "str": 12, "dex": 17, "con": 14, "int": 8, "wis": 15, "cha": 10 },
+    "abilities": {
+      "str": 12,
+      "dex": 17,
+      "con": 14,
+      "int": 8,
+      "wis": 15,
+      "cha": 10
+    },
     "maxHp": 12,
     "ac": 15,
     "proficiencyBonus": 2,
-    "skillProficiencies": ["survival", "perception", "stealth", "nature"],
-    "attacks": [
-      { "name": "Longbow", "ability": "dex", "damageDice": "1d8", "damageBonus": 3 },
-      { "name": "Shortsword", "ability": "dex", "damageDice": "1d6", "damageBonus": 3 }
+    "skillProficiencies": [
+      "survival",
+      "perception",
+      "stealth",
+      "nature"
     ],
-    "backstory": "Thornwick was raised among the border woods, learning to track beasts and read the land before he could read words. After a logging company drove a monstrous predator from the deep forest into settled lands, he took up the hunt to protect both the wild and the folk at its edge."
+    "attacks": [
+      {
+        "name": "Longbow",
+        "ability": "dex",
+        "damageDice": "1d8",
+        "damageBonus": 3
+      },
+      {
+        "name": "Shortsword",
+        "ability": "dex",
+        "damageDice": "1d6",
+        "damageBonus": 3
+      }
+    ],
+    "backstory": "Thornwick was raised among the border woods, learning to track beasts and read the land before he could read words. After a logging company drove a monstrous predator from the deep forest into settled lands, he took up the hunt to protect both the wild and the folk at its edge.",
+    "powerId": "volley"
   },
   {
     "id": "gronk-skullsplitter",
@@ -96,16 +207,37 @@
     "class": "Barbarian",
     "level": 1,
     "portrait": "🪓",
-    "abilities": { "str": 17, "dex": 14, "con": 15, "int": 8, "wis": 12, "cha": 10 },
+    "abilities": {
+      "str": 17,
+      "dex": 14,
+      "con": 15,
+      "int": 8,
+      "wis": 12,
+      "cha": 10
+    },
     "maxHp": 14,
     "ac": 14,
     "proficiencyBonus": 2,
-    "skillProficiencies": ["athletics", "survival"],
-    "attacks": [
-      { "name": "Greataxe", "ability": "str", "damageDice": "1d12", "damageBonus": 3 },
-      { "name": "Handaxe (thrown)", "ability": "str", "damageDice": "1d6", "damageBonus": 3 }
+    "skillProficiencies": [
+      "athletics",
+      "survival"
     ],
-    "backstory": "Gronk was cast out of his war-band for refusing to raid a defenseless village, branded a coward by the only family he knew. He now channels his fury against the marauders and monsters that prey on the weak, proving strength can serve more than conquest."
+    "attacks": [
+      {
+        "name": "Greataxe",
+        "ability": "str",
+        "damageDice": "1d12",
+        "damageBonus": 3
+      },
+      {
+        "name": "Handaxe (thrown)",
+        "ability": "str",
+        "damageDice": "1d6",
+        "damageBonus": 3
+      }
+    ],
+    "backstory": "Gronk was cast out of his war-band for refusing to raid a defenseless village, branded a coward by the only family he knew. He now channels his fury against the marauders and monsters that prey on the weak, proving strength can serve more than conquest.",
+    "powerId": "reckless-strike"
   },
   {
     "id": "lyra-brightshield",
@@ -114,16 +246,38 @@
     "class": "Paladin",
     "level": 1,
     "portrait": "⚜️",
-    "abilities": { "str": 16, "dex": 9, "con": 14, "int": 11, "wis": 13, "cha": 15 },
+    "abilities": {
+      "str": 16,
+      "dex": 9,
+      "con": 14,
+      "int": 11,
+      "wis": 13,
+      "cha": 15
+    },
     "maxHp": 12,
     "ac": 18,
     "proficiencyBonus": 2,
-    "skillProficiencies": ["persuasion", "religion", "athletics"],
-    "attacks": [
-      { "name": "Longsword", "ability": "str", "damageDice": "1d8", "damageBonus": 3 },
-      { "name": "Javelin (thrown)", "ability": "str", "damageDice": "1d6", "damageBonus": 3 }
+    "skillProficiencies": [
+      "persuasion",
+      "religion",
+      "athletics"
     ],
-    "backstory": "Lyra knelt before the altar of a war-shrine as a squire and rose having sworn an oath to shield the helpless from those who prey on them. She rides the roads in dented plate, answering cries for help that the powerful would rather ignore."
+    "attacks": [
+      {
+        "name": "Longsword",
+        "ability": "str",
+        "damageDice": "1d8",
+        "damageBonus": 3
+      },
+      {
+        "name": "Javelin (thrown)",
+        "ability": "str",
+        "damageDice": "1d6",
+        "damageBonus": 3
+      }
+    ],
+    "backstory": "Lyra knelt before the altar of a war-shrine as a squire and rose having sworn an oath to shield the helpless from those who prey on them. She rides the roads in dented plate, answering cries for help that the powerful would rather ignore.",
+    "powerId": "divine-smite"
   },
   {
     "id": "kaito-stillwater",
@@ -132,16 +286,38 @@
     "class": "Monk",
     "level": 1,
     "portrait": "👊",
-    "abilities": { "str": 12, "dex": 17, "con": 13, "int": 8, "wis": 16, "cha": 10 },
+    "abilities": {
+      "str": 12,
+      "dex": 17,
+      "con": 13,
+      "int": 8,
+      "wis": 16,
+      "cha": 10
+    },
     "maxHp": 9,
     "ac": 16,
     "proficiencyBonus": 2,
-    "skillProficiencies": ["acrobatics", "insight", "stealth"],
-    "attacks": [
-      { "name": "Unarmed Strike", "ability": "dex", "damageDice": "1d4", "damageBonus": 3 },
-      { "name": "Shortsword", "ability": "dex", "damageDice": "1d6", "damageBonus": 3 }
+    "skillProficiencies": [
+      "acrobatics",
+      "insight",
+      "stealth"
     ],
-    "backstory": "Kaito trained from childhood in a cliffside monastery, learning to make his body a weapon and his mind a still pond. When raiders shattered the monastery's peace, he set out to test his discipline against the chaos of the wider world."
+    "attacks": [
+      {
+        "name": "Unarmed Strike",
+        "ability": "dex",
+        "damageDice": "1d4",
+        "damageBonus": 3
+      },
+      {
+        "name": "Shortsword",
+        "ability": "dex",
+        "damageDice": "1d6",
+        "damageBonus": 3
+      }
+    ],
+    "backstory": "Kaito trained from childhood in a cliffside monastery, learning to make his body a weapon and his mind a still pond. When raiders shattered the monastery's peace, he set out to test his discipline against the chaos of the wider world.",
+    "powerId": "flurry-of-blows"
   },
   {
     "id": "fennel-quill",
@@ -150,16 +326,39 @@
     "class": "Bard",
     "level": 1,
     "portrait": "🎵",
-    "abilities": { "str": 8, "dex": 14, "con": 13, "int": 10, "wis": 12, "cha": 17 },
+    "abilities": {
+      "str": 8,
+      "dex": 14,
+      "con": 13,
+      "int": 10,
+      "wis": 12,
+      "cha": 17
+    },
     "maxHp": 9,
     "ac": 13,
     "proficiencyBonus": 2,
-    "skillProficiencies": ["performance", "persuasion", "deception", "insight"],
-    "attacks": [
-      { "name": "Vicious Mockery", "ability": "cha", "damageDice": "1d4", "damageBonus": 0 },
-      { "name": "Rapier", "ability": "dex", "damageDice": "1d8", "damageBonus": 2 }
+    "skillProficiencies": [
+      "performance",
+      "persuasion",
+      "deception",
+      "insight"
     ],
-    "backstory": "Fennel drifted from tavern to tavern, trading songs and barbed wit for a warm meal and a place by the fire. A noble's insult turned into a duel of words, then steel, and now Fennel travels with adventurers collecting tales worth singing about."
+    "attacks": [
+      {
+        "name": "Vicious Mockery",
+        "ability": "cha",
+        "damageDice": "1d4",
+        "damageBonus": 0
+      },
+      {
+        "name": "Rapier",
+        "ability": "dex",
+        "damageDice": "1d8",
+        "damageBonus": 2
+      }
+    ],
+    "backstory": "Fennel drifted from tavern to tavern, trading songs and barbed wit for a warm meal and a place by the fire. A noble's insult turned into a duel of words, then steel, and now Fennel travels with adventurers collecting tales worth singing about.",
+    "powerId": "bardic-inspiration"
   },
   {
     "id": "rowan-mossheart",
@@ -168,16 +367,39 @@
     "class": "Druid",
     "level": 1,
     "portrait": "🍃",
-    "abilities": { "str": 10, "dex": 12, "con": 15, "int": 8, "wis": 16, "cha": 13 },
+    "abilities": {
+      "str": 10,
+      "dex": 12,
+      "con": 15,
+      "int": 8,
+      "wis": 16,
+      "cha": 13
+    },
     "maxHp": 10,
     "ac": 12,
     "proficiencyBonus": 2,
-    "skillProficiencies": ["nature", "animalHandling", "perception", "medicine"],
-    "attacks": [
-      { "name": "Produce Flame", "ability": "wis", "damageDice": "1d8", "damageBonus": 0 },
-      { "name": "Scimitar", "ability": "dex", "damageDice": "1d6", "damageBonus": 1 }
+    "skillProficiencies": [
+      "nature",
+      "animalHandling",
+      "perception",
+      "medicine"
     ],
-    "backstory": "Rowan tended a sacred grove on the slopes above a dwarven hold, speaking with the beasts and warding the old trees from rot. When miners began carving into the grove's roots, Rowan left to find the balance that greed had broken."
+    "attacks": [
+      {
+        "name": "Produce Flame",
+        "ability": "wis",
+        "damageDice": "1d8",
+        "damageBonus": 0
+      },
+      {
+        "name": "Scimitar",
+        "ability": "dex",
+        "damageDice": "1d6",
+        "damageBonus": 1
+      }
+    ],
+    "backstory": "Rowan tended a sacred grove on the slopes above a dwarven hold, speaking with the beasts and warding the old trees from rot. When miners began carving into the grove's roots, Rowan left to find the balance that greed had broken.",
+    "powerId": "entangle"
   },
   {
     "id": "ignis-emberfell",
@@ -186,16 +408,38 @@
     "class": "Sorcerer",
     "level": 1,
     "portrait": "🔥",
-    "abilities": { "str": 15, "dex": 14, "con": 12, "int": 10, "wis": 8, "cha": 16 },
+    "abilities": {
+      "str": 15,
+      "dex": 14,
+      "con": 12,
+      "int": 10,
+      "wis": 8,
+      "cha": 16
+    },
     "maxHp": 7,
     "ac": 15,
     "proficiencyBonus": 2,
-    "skillProficiencies": ["arcana", "intimidation", "persuasion"],
-    "attacks": [
-      { "name": "Fire Bolt", "ability": "cha", "damageDice": "1d10", "damageBonus": 0 },
-      { "name": "Dagger", "ability": "dex", "damageDice": "1d4", "damageBonus": 2 }
+    "skillProficiencies": [
+      "arcana",
+      "intimidation",
+      "persuasion"
     ],
-    "backstory": "Ignis was born with scales that glowed like banked coals, a sign of the draconic fire smoldering in the blood. Cast out by a fearful village, Ignis embraced the power, learning to call flame at will and to make the world reckon with it."
+    "attacks": [
+      {
+        "name": "Fire Bolt",
+        "ability": "cha",
+        "damageDice": "1d10",
+        "damageBonus": 0
+      },
+      {
+        "name": "Dagger",
+        "ability": "dex",
+        "damageDice": "1d4",
+        "damageBonus": 2
+      }
+    ],
+    "backstory": "Ignis was born with scales that glowed like banked coals, a sign of the draconic fire smoldering in the blood. Cast out by a fearful village, Ignis embraced the power, learning to call flame at will and to make the world reckon with it.",
+    "powerId": "chaos-bolt"
   },
   {
     "id": "vesper-nightvow",
@@ -204,15 +448,37 @@
     "class": "Warlock",
     "level": 1,
     "portrait": "👁️",
-    "abilities": { "str": 8, "dex": 14, "con": 13, "int": 13, "wis": 10, "cha": 17 },
+    "abilities": {
+      "str": 8,
+      "dex": 14,
+      "con": 13,
+      "int": 13,
+      "wis": 10,
+      "cha": 17
+    },
     "maxHp": 9,
     "ac": 13,
     "proficiencyBonus": 2,
-    "skillProficiencies": ["deception", "arcana", "intimidation"],
-    "attacks": [
-      { "name": "Eldritch Blast", "ability": "cha", "damageDice": "1d10", "damageBonus": 0 },
-      { "name": "Dagger", "ability": "dex", "damageDice": "1d4", "damageBonus": 2 }
+    "skillProficiencies": [
+      "deception",
+      "arcana",
+      "intimidation"
     ],
-    "backstory": "Vesper struck a bargain with a being from beyond the stars on a night of desperation, trading a measure of self for power enough to survive. Now the patron's whispers guide every step, and Vesper hunts the secrets that will pay the contract's price."
+    "attacks": [
+      {
+        "name": "Eldritch Blast",
+        "ability": "cha",
+        "damageDice": "1d10",
+        "damageBonus": 0
+      },
+      {
+        "name": "Dagger",
+        "ability": "dex",
+        "damageDice": "1d4",
+        "damageBonus": 2
+      }
+    ],
+    "backstory": "Vesper struck a bargain with a being from beyond the stars on a night of desperation, trading a measure of self for power enough to survive. Now the patron's whispers guide every step, and Vesper hunts the secrets that will pay the contract's price.",
+    "powerId": "arms-of-hadar"
   }
 ]
