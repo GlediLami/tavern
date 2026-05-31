@@ -78,12 +78,16 @@ h1, h2, h3, .display { font-family: var(--font-display); font-weight: 400; lette
 /* ---- Panels: cool stone ---- */
 .panel {
   position: relative;
+  color: var(--ink);              /* buttons don't inherit body color — set it here */
   background: linear-gradient(180deg, var(--surface-2), var(--surface-1));
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), var(--shadow);
   padding: 22px;
 }
+
+/* Names/titles inside cards read crisp white for legibility */
+.combatant strong, .hero-card h3, .choose-card h3, .choose-card strong { color: #fff; }
 .panel--framed::before {
   content: '';
   position: absolute; inset: 7px;

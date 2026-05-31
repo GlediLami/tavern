@@ -20,13 +20,13 @@ function renderAt(state: Partial<GameState>) {
 
 describe('GameScreen', () => {
   it('renders the current scene narration and choices', () => {
-    renderAt({ sceneId: 'tavern_talk' });
-    expect(screen.getByText(/Otha lowers her voice/)).toBeInTheDocument();
+    renderAt({ sceneId: 'route_choice' });
+    expect(screen.getByText(/the road splits/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /marsh path/i })).toBeInTheDocument();
   });
 
   it('a no-check choice advances the scene immediately', async () => {
-    renderAt({ sceneId: 'tavern_talk' });
+    renderAt({ sceneId: 'route_choice' });
     await userEvent.click(screen.getByRole('button', { name: /marsh path/i }));
     expect(await screen.findByText(/marsh path is a ribbon of mud/i)).toBeInTheDocument();
   });
