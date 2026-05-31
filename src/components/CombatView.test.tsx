@@ -2,13 +2,13 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { GameProvider } from '../state/GameContext';
 import { CombatView } from './CombatView';
-import type { GameState } from '../state/gameReducer';
+import { emptyStats, type GameState } from '../state/gameReducer';
 
 function renderCombat() {
   const full: GameState = {
     phase: 'combat', mode: 'single', adventureId: 'brackenmoor', difficulty: 'normal',
     partyIds: ['gronk-skullsplitter'], hp: { 'gronk-skullsplitter': 14 },
-    sceneId: 'ridge_wolves', log: [],
+    sceneId: 'ridge_wolves', log: [], stats: emptyStats,
   };
   return render(
     <GameProvider initial={full}>

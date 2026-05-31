@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { loadValidatedGame } from './persistence';
 import { saveGame, loadGame } from '../engine/save';
-import type { GameState } from './gameReducer';
+import { emptyStats, type GameState } from './gameReducer';
 
 const valid: GameState = {
   phase: 'scene', mode: 'single', adventureId: 'brackenmoor', difficulty: 'normal',
   partyIds: ['bjorn-ironhelm'], hp: { 'bjorn-ironhelm': 13 },
-  sceneId: 'tavern_start', log: [],
+  sceneId: 'tavern_start', log: [], stats: emptyStats,
 };
 
 describe('loadValidatedGame', () => {

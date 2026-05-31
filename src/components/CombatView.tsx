@@ -65,6 +65,13 @@ export function CombatView() {
       setFlash({ id: ev.targetId, amount: ev.amount, heal: ev.kind === 'heal', nonce: Date.now() });
       setTimeout(() => { if (mounted.current) setFlash(null); }, 850);
     }
+
+    // Count heroes that dropped this action (were up in `combat`, down in `next`).
+    const downed = next.combatants.filter(
+      (c) => c.isHero && c.hp <= 0 && (combat.combatants.find((p) => p.id === c.id)?.hp ?? 0) > 0,
+    ).length;
+    if (downed > 0) dispatch({ type: 'RECORD', delta: { heroesDowned: downed } });
+
     setCombat(next);
 
     const hp: Record<string, number> = {};
@@ -74,6 +81,7 @@ export function CombatView() {
     if (next.status !== 'active' && scene.type === 'combat') {
       next.log.forEach((entry) => dispatch({ type: 'LOG', entry }));
       if (next.status === 'victory') {
+        dispatch({ type: 'RECORD', delta: { encountersWon: 1 } });
         const healed: Record<string, number> = {};
         next.combatants.filter((c) => c.isHero).forEach((c) => {
           healed[c.heroId!] = restHp(c.hp, c.maxHp, state.difficulty);
@@ -88,10 +96,19 @@ export function CombatView() {
     }
   }
 
+  function recordHeroDamage(heroId: string, next: CombatState) {
+    const ev = next.lastAttack;
+    if (ev && ev.kind === 'attack' && ev.amount > 0) {
+      dispatch({ type: 'RECORD', delta: { damageByHero: { [heroId]: ev.amount }, biggestHit: ev.amount, crits: ev.crit ? 1 : 0 } });
+    }
+  }
+
   function heroAttack(attackName: string) {
     if (!target) return;
     sfx.click();
-    applyResult(performHeroAttack(combat, actor.id, attackName, target, defaultRng, lookup));
+    const next = performHeroAttack(combat, actor.id, attackName, target, defaultRng, lookup);
+    recordHeroDamage(actor.heroId!, next);
+    applyResult(next);
     setTarget(null);
   }
 
@@ -101,7 +118,9 @@ export function CombatView() {
     setPowerUses((u) => ({ ...u, [actor.id]: (u[actor.id] ?? 0) - 1 }));
     setPendingPower(null);
     setTarget(null);
-    applyResult(applyPower(combat, actor.id, power.id, targetIds, defaultRng, lookup));
+    const next = applyPower(combat, actor.id, power.id, targetIds, defaultRng, lookup);
+    recordHeroDamage(actor.heroId!, next);
+    applyResult(next);
   }
 
   function choosePower() {

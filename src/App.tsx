@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { GameProvider, useGame } from './state/GameContext';
-import { initialState, type GameState } from './state/gameReducer';
+import { initialState, emptyStats, type GameState } from './state/gameReducer';
 import { clearSave } from './engine/save';
 import { loadValidatedGame } from './state/persistence';
 import { isMuted, setMuted } from './ui/sfx';
 import { TavernHome } from './components/TavernHome';
+import { HallOfTales } from './components/HallOfTales';
 import { AdventureSelect } from './components/AdventureSelect';
 import { PartySelect } from './components/PartySelect';
 import { GameScreen } from './components/GameScreen';
@@ -27,9 +28,11 @@ function MuteToggle() {
 
 function Screens() {
   const { state, dispatch } = useGame();
+  const [showHall, setShowHall] = useState(false);
 
   switch (state.phase) {
     case 'home':
+      if (showHall) return <HallOfTales onBack={() => setShowHall(false)} />;
       return (
         <TavernHome
           hasSave={loadValidatedGame() !== null}
@@ -38,6 +41,7 @@ function Screens() {
             const saved = loadValidatedGame();
             if (saved) dispatch({ type: 'LOAD', state: saved });
           }}
+          onHall={() => setShowHall(true)}
         />
       );
     case 'adventure-select':
@@ -59,6 +63,9 @@ function Screens() {
           mode={state.mode}
           adventureId={state.adventureId}
           sceneId={state.sceneId}
+          difficulty={state.difficulty}
+          level={state.campaign?.level ?? 1}
+          stats={state.stats ?? emptyStats}
           campaign={state.campaign}
           onAdvance={() => dispatch({ type: 'ADVANCE_CAMPAIGN' })}
           onReturn={() => { clearSave(); dispatch({ type: 'RESET' }); }}

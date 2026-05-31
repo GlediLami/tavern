@@ -3,13 +3,13 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GameProvider } from '../state/GameContext';
 import { GameScreen } from './GameScreen';
-import type { GameState } from '../state/gameReducer';
+import { emptyStats, type GameState } from '../state/gameReducer';
 
 function renderAt(state: Partial<GameState>) {
   const full: GameState = {
     phase: 'scene', mode: 'single', adventureId: 'brackenmoor', difficulty: 'normal',
     partyIds: ['bjorn-ironhelm'], hp: { 'bjorn-ironhelm': 13 },
-    sceneId: 'tavern_start', log: [], ...state,
+    sceneId: 'tavern_start', log: [], stats: emptyStats, ...state,
   } as GameState;
   return render(
     <GameProvider initial={full}>

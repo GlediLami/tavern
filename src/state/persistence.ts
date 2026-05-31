@@ -30,6 +30,7 @@ function isValid(s: unknown): s is GameState {
     if (typeof c.index !== 'number' || c.index < 0 || c.index >= c.order.length) return false;
     if (typeof c.level !== 'number' || c.level < 1) return false;
   }
+  if (g.stats !== undefined && (typeof g.stats !== 'object' || g.stats === null)) return false;
 
   // Every saved hero must still exist.
   if (!(g.partyIds as unknown[]).every((id) => typeof id === 'string' && HERO_IDS.has(id))) return false;

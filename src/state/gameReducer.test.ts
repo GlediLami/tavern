@@ -94,6 +94,28 @@ describe('gameReducer', () => {
     expect(s.campaign).toBeUndefined();
   });
 
+  it('RECORD merges deltas: numbers add, biggestHit maxes, damageByHero merges', () => {
+    let s = gameReducer(initialState, { type: 'RECORD', delta: { crits: 1, biggestHit: 8, damageByHero: { a: 5 } } });
+    s = gameReducer(s, { type: 'RECORD', delta: { crits: 2, biggestHit: 5, damageByHero: { a: 3, b: 7 } } });
+    expect(s.stats.crits).toBe(3);
+    expect(s.stats.biggestHit).toBe(8);
+    expect(s.stats.damageByHero).toEqual({ a: 8, b: 7 });
+  });
+
+  it('CONFIRM_PARTY resets run stats', () => {
+    let s = gameReducer(initialState, { type: 'RECORD', delta: { crits: 5 } });
+    s = gameReducer(s, { type: 'CONFIRM_PARTY', partyIds: ['bjorn-ironhelm'] });
+    expect(s.stats.crits).toBe(0);
+  });
+
+  it('ADVANCE_CAMPAIGN keeps run stats accumulating', () => {
+    let s = gameReducer(initialState, { type: 'START_CAMPAIGN', difficulty: 'normal' });
+    s = gameReducer(s, { type: 'CONFIRM_PARTY', partyIds: ['bjorn-ironhelm'] });
+    s = gameReducer(s, { type: 'RECORD', delta: { encountersWon: 2 } });
+    s = gameReducer(s, { type: 'ADVANCE_CAMPAIGN' });
+    expect(s.stats.encountersWon).toBe(2);
+  });
+
   it('RESET returns to the initial state', () => {
     let s = gameReducer(initialState, { type: 'START_GAME' });
     s = gameReducer(s, { type: 'RESET' });

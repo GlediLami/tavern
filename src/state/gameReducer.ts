@@ -16,6 +16,35 @@ export interface CampaignState {
   level: number;
 }
 
+export interface RunStats {
+  encountersWon: number;
+  checksPassed: number;
+  checksFailed: number;
+  heroesDowned: number;
+  crits: number;
+  biggestHit: number;
+  damageByHero: Record<string, number>;
+}
+
+export const emptyStats: RunStats = {
+  encountersWon: 0, checksPassed: 0, checksFailed: 0,
+  heroesDowned: 0, crits: 0, biggestHit: 0, damageByHero: {},
+};
+
+function mergeStats(a: RunStats, d: Partial<RunStats>): RunStats {
+  const damageByHero = { ...a.damageByHero };
+  if (d.damageByHero) for (const [id, n] of Object.entries(d.damageByHero)) damageByHero[id] = (damageByHero[id] ?? 0) + n;
+  return {
+    encountersWon: a.encountersWon + (d.encountersWon ?? 0),
+    checksPassed: a.checksPassed + (d.checksPassed ?? 0),
+    checksFailed: a.checksFailed + (d.checksFailed ?? 0),
+    heroesDowned: a.heroesDowned + (d.heroesDowned ?? 0),
+    crits: a.crits + (d.crits ?? 0),
+    biggestHit: Math.max(a.biggestHit, d.biggestHit ?? 0),
+    damageByHero,
+  };
+}
+
 export interface GameState {
   phase: Phase;
   mode: 'single' | 'campaign';
@@ -26,6 +55,7 @@ export interface GameState {
   hp: Record<string, number>;   // heroId -> current hp
   sceneId: string;
   log: string[];                // narration / roll history
+  stats: RunStats;              // accumulated stats for the current run
 }
 
 export const initialState: GameState = {
@@ -38,6 +68,7 @@ export const initialState: GameState = {
   hp: {},
   sceneId: getAdventureData(DEFAULT_ADVENTURE_ID).startSceneId,
   log: [],
+  stats: emptyStats,
 };
 
 export type GameAction =
@@ -46,6 +77,7 @@ export type GameAction =
   | { type: 'START_CAMPAIGN'; difficulty: Difficulty }
   | { type: 'CONFIRM_PARTY'; partyIds: string[] }
   | { type: 'ADVANCE_CAMPAIGN' }
+  | { type: 'RECORD'; delta: Partial<RunStats> }
   | { type: 'GOTO_SCENE'; sceneId: string }
   | { type: 'SET_HP'; hp: Record<string, number> }
   | { type: 'LOG'; entry: string }
@@ -104,6 +136,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         hp: fullPartyHp(action.partyIds, state.difficulty, level),
         sceneId: getAdventureData(state.adventureId).startSceneId,
         log: [],
+        stats: emptyStats,
       };
     }
 
@@ -139,6 +172,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
       return base;
     }
+
+    case 'RECORD':
+      return { ...state, stats: mergeStats(state.stats, action.delta) };
 
     case 'SET_HP':
       return { ...state, hp: { ...state.hp, ...action.hp } };

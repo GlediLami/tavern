@@ -4,11 +4,12 @@ interface Props {
   hasSave: boolean;
   onNewGame: () => void;
   onContinue: () => void;
+  onHall: () => void;
 }
 
 const SPARKS = Array.from({ length: 14 }, (_, i) => i);
 
-export function TavernHome({ hasSave, onNewGame, onContinue }: Props) {
+export function TavernHome({ hasSave, onNewGame, onContinue, onHall }: Props) {
   return (
     <div
       className="app-shell screen center"
@@ -52,6 +53,9 @@ export function TavernHome({ hasSave, onNewGame, onContinue }: Props) {
               Continue
             </button>
           )}
+          <button className="btn" style={{ padding: '14px 24px' }} onClick={() => { sfx.click(); onHall(); }}>
+            Hall of Tales
+          </button>
         </div>
       </div>
     </div>

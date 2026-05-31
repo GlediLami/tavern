@@ -43,6 +43,7 @@ export function GameScreen() {
       type: 'LOG',
       entry: `${hero.name} rolled ${result.roll}${result.modifier >= 0 ? '+' : ''}${result.modifier} = ${result.total} vs DC ${dc} — ${result.success ? 'success' : 'failure'}.`,
     });
+    dispatch({ type: 'RECORD', delta: result.success ? { checksPassed: 1 } : { checksFailed: 1 } });
     setPending({ stage: 'reveal', choice: pending.choice, heroName: hero.name, result });
   }
 
