@@ -6,7 +6,7 @@ import type { GameState } from '../state/gameReducer';
 
 function renderCombat() {
   const full: GameState = {
-    phase: 'combat', adventureId: 'brackenmoor', difficulty: 'normal',
+    phase: 'combat', mode: 'single', adventureId: 'brackenmoor', difficulty: 'normal',
     partyIds: ['gronk-skullsplitter'], hp: { 'gronk-skullsplitter': 14 },
     sceneId: 'ridge_wolves', log: [],
   };

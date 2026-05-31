@@ -4,7 +4,7 @@ import { saveGame, loadGame } from '../engine/save';
 import type { GameState } from './gameReducer';
 
 const valid: GameState = {
-  phase: 'scene', adventureId: 'brackenmoor', difficulty: 'normal',
+  phase: 'scene', mode: 'single', adventureId: 'brackenmoor', difficulty: 'normal',
   partyIds: ['bjorn-ironhelm'], hp: { 'bjorn-ironhelm': 13 },
   sceneId: 'tavern_start', log: [],
 };
@@ -34,6 +34,21 @@ describe('loadValidatedGame', () => {
   });
 
   it('returns null when there is no save', () => {
+    expect(loadValidatedGame()).toBeNull();
+  });
+
+  it('round-trips a valid campaign save', () => {
+    const campaignSave = {
+      ...valid, mode: 'campaign',
+      campaign: { order: ['snakewater', 'chaoticcaves', 'brackenmoor', 'arena'], index: 1, level: 2 },
+      adventureId: 'chaoticcaves', sceneId: 'town_briefing',
+    };
+    saveGame(campaignSave);
+    expect(loadValidatedGame()).toEqual(campaignSave);
+  });
+
+  it('rejects a campaign save with a non-array order', () => {
+    saveGame({ ...valid, mode: 'campaign', campaign: { order: 'nope', index: 0, level: 1 } });
     expect(loadValidatedGame()).toBeNull();
   });
 });

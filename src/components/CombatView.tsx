@@ -4,7 +4,7 @@ import { getScene } from '../engine/story';
 import { getAdventure, getCharacter, toHero, makeHeroAttackLookup } from '../engine/party';
 import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant } from '../engine/combat';
 import { applyPower, getPower } from '../engine/powers';
-import { scaleEnemies, restHp, effectiveMaxHp } from '../engine/difficulty';
+import { scaleEnemies, restHp, effectiveMaxHp, levelPowerBonus } from '../engine/difficulty';
 import { defaultRng } from '../engine/rng';
 import { hpColor } from '../ui/visuals';
 import { sfx } from '../ui/sfx';
@@ -17,6 +17,7 @@ export function CombatView() {
   const { state, dispatch } = useGame();
   const adventure = getAdventure(state.adventureId);
   const scene = getScene(adventure, state.sceneId);
+  const level = state.campaign?.level ?? 1;
 
   const lookup = useMemo(() => makeHeroAttackLookup(state.partyIds), [state.partyIds]);
 
@@ -24,9 +25,9 @@ export function CombatView() {
     if (scene.type !== 'combat') throw new Error('CombatView requires a combat scene');
     const heroes = state.partyIds.map((id) => {
       const c = getCharacter(id);
-      return toHero(id, state.hp[id] ?? effectiveMaxHp(c, state.difficulty));
+      return toHero(id, state.hp[id] ?? effectiveMaxHp(c, state.difficulty, level));
     });
-    heroes.forEach((h) => { h.maxHp = effectiveMaxHp(getCharacter(h.id), state.difficulty); });
+    heroes.forEach((h) => { h.maxHp = effectiveMaxHp(getCharacter(h.id), state.difficulty, level); });
     const enemies = scaleEnemies(scene.enemies, state.difficulty, state.partyIds.length);
     return startCombat(heroes, enemies, defaultRng);
   });
@@ -42,7 +43,7 @@ export function CombatView() {
     const u: Record<string, number> = {};
     state.partyIds.forEach((id) => {
       const pid = getCharacter(id).powerId;
-      if (pid) u[id] = getPower(pid).uses;
+      if (pid) u[id] = getPower(pid).uses + levelPowerBonus(level);
     });
     return u;
   });

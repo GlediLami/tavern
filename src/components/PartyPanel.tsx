@@ -7,14 +7,15 @@ interface Props {
   partyIds: string[];
   hp: Record<string, number>;
   difficulty: Difficulty;
+  level?: number;
 }
 
-export function PartyPanel({ partyIds, hp, difficulty }: Props) {
+export function PartyPanel({ partyIds, hp, difficulty, level = 1 }: Props) {
   return (
     <div className="stack">
       {partyIds.map((id) => {
         const c = getCharacter(id);
-        const max = Math.max(1, effectiveMaxHp(c, difficulty));
+        const max = Math.max(1, effectiveMaxHp(c, difficulty, level));
         const current = hp[id] ?? max;
         const ratio = current / max;
         const pct = Math.max(0, Math.min(100, ratio * 100));

@@ -103,7 +103,7 @@ export function GameScreen() {
       </div>
       <div>
         <h3 style={{ margin: '0 0 10px', fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>The Party</h3>
-        <PartyPanel partyIds={state.partyIds} hp={state.hp} difficulty={state.difficulty} />
+        <PartyPanel partyIds={state.partyIds} hp={state.hp} difficulty={state.difficulty} level={state.campaign?.level ?? 1} />
       </div>
     </div>
   );

@@ -41,7 +41,12 @@ function Screens() {
         />
       );
     case 'adventure-select':
-      return <AdventureSelect onConfirm={(adventureId, difficulty) => dispatch({ type: 'SELECT_ADVENTURE', adventureId, difficulty })} />;
+      return (
+        <AdventureSelect
+          onSingle={(adventureId, difficulty) => dispatch({ type: 'SELECT_ADVENTURE', adventureId, difficulty })}
+          onCampaign={(difficulty) => dispatch({ type: 'START_CAMPAIGN', difficulty })}
+        />
+      );
     case 'party-select':
       return <PartySelect onConfirm={(ids) => dispatch({ type: 'CONFIRM_PARTY', partyIds: ids })} />;
     case 'scene':
@@ -51,8 +56,11 @@ function Screens() {
     case 'ending':
       return (
         <EndingScreen
+          mode={state.mode}
           adventureId={state.adventureId}
           sceneId={state.sceneId}
+          campaign={state.campaign}
+          onAdvance={() => dispatch({ type: 'ADVANCE_CAMPAIGN' })}
           onReturn={() => { clearSave(); dispatch({ type: 'RESET' }); }}
         />
       );

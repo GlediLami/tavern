@@ -7,8 +7,19 @@ const characters = charactersData as unknown as Character[];
 
 export type Phase = 'home' | 'adventure-select' | 'party-select' | 'scene' | 'combat' | 'ending';
 
+// Curated campaign sequence, easy -> hard, ending on the arena gauntlet.
+export const CAMPAIGN_ORDER = ['snakewater', 'chaoticcaves', 'brackenmoor', 'arena'];
+
+export interface CampaignState {
+  order: string[];
+  index: number;
+  level: number;
+}
+
 export interface GameState {
   phase: Phase;
+  mode: 'single' | 'campaign';
+  campaign?: CampaignState;
   adventureId: string;
   difficulty: Difficulty;
   partyIds: string[];
@@ -19,6 +30,8 @@ export interface GameState {
 
 export const initialState: GameState = {
   phase: 'home',
+  mode: 'single',
+  campaign: undefined,
   adventureId: DEFAULT_ADVENTURE_ID,
   difficulty: 'normal',
   partyIds: [],
@@ -30,7 +43,9 @@ export const initialState: GameState = {
 export type GameAction =
   | { type: 'START_GAME' }
   | { type: 'SELECT_ADVENTURE'; adventureId: string; difficulty: Difficulty }
+  | { type: 'START_CAMPAIGN'; difficulty: Difficulty }
   | { type: 'CONFIRM_PARTY'; partyIds: string[] }
+  | { type: 'ADVANCE_CAMPAIGN' }
   | { type: 'GOTO_SCENE'; sceneId: string }
   | { type: 'SET_HP'; hp: Record<string, number> }
   | { type: 'LOG'; entry: string }
@@ -45,6 +60,16 @@ function phaseForScene(adventureId: string, sceneId: string): Phase {
   return 'scene';
 }
 
+// Full HP for every party member at the given campaign level.
+function fullPartyHp(partyIds: string[], difficulty: Difficulty, level: number): Record<string, number> {
+  const hp: Record<string, number> = {};
+  for (const id of partyIds) {
+    const c = characters.find((ch) => ch.id === id);
+    if (c) hp[id] = effectiveMaxHp(c, difficulty, level);
+  }
+  return hp;
+}
+
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'START_GAME':
@@ -53,36 +78,62 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'SELECT_ADVENTURE':
       return {
         ...state,
+        mode: 'single',
+        campaign: undefined,
         phase: 'party-select',
         adventureId: action.adventureId,
         difficulty: action.difficulty,
       };
 
+    case 'START_CAMPAIGN':
+      return {
+        ...state,
+        mode: 'campaign',
+        campaign: { order: [...CAMPAIGN_ORDER], index: 0, level: 1 },
+        adventureId: CAMPAIGN_ORDER[0],
+        difficulty: action.difficulty,
+        phase: 'party-select',
+      };
+
     case 'CONFIRM_PARTY': {
-      const hp: Record<string, number> = {};
-      for (const id of action.partyIds) {
-        const c = characters.find((ch) => ch.id === id);
-        if (c) hp[id] = effectiveMaxHp(c, state.difficulty);
-      }
+      const level = state.campaign?.level ?? 1;
       return {
         ...state,
         phase: 'scene',
         partyIds: action.partyIds,
-        hp,
+        hp: fullPartyHp(action.partyIds, state.difficulty, level),
         sceneId: getAdventureData(state.adventureId).startSceneId,
         log: [],
+      };
+    }
+
+    case 'ADVANCE_CAMPAIGN': {
+      if (!state.campaign) return state;
+      const index = state.campaign.index + 1;
+      if (index >= state.campaign.order.length) return state; // no next adventure
+      const level = state.campaign.level + 1;
+      const adventureId = state.campaign.order[index];
+      return {
+        ...state,
+        campaign: { ...state.campaign, index, level },
+        adventureId,
+        hp: fullPartyHp(state.partyIds, state.difficulty, level),
+        sceneId: getAdventureData(adventureId).startSceneId,
+        log: [],
+        phase: 'scene',
       };
     }
 
     case 'GOTO_SCENE': {
       const scene = getAdventureData(state.adventureId).scenes[action.sceneId];
       const base = { ...state, sceneId: action.sceneId, phase: phaseForScene(state.adventureId, action.sceneId) };
-      // A safe-room rest scene restores the party on arrival.
+      // A safe-room rest scene restores the party on arrival (capped at leveled max).
       if (scene && scene.type === 'story' && scene.rest) {
+        const level = state.campaign?.level ?? 1;
         const hp = { ...state.hp };
         for (const id of state.partyIds) {
           const c = characters.find((ch) => ch.id === id);
-          if (c) hp[id] = campRestHp(state.hp[id] ?? 0, effectiveMaxHp(c, state.difficulty), state.difficulty);
+          if (c) hp[id] = campRestHp(state.hp[id] ?? 0, effectiveMaxHp(c, state.difficulty, level), state.difficulty);
         }
         return { ...base, hp, log: [...state.log, 'You make camp in safety and recover your strength.'] };
       }

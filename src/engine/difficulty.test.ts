@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveMaxHp, restHp, scaleEnemies, config, campRestHp } from './difficulty';
+import { effectiveMaxHp, restHp, scaleEnemies, config, campRestHp, levelPowerBonus } from './difficulty';
 import type { Character, Enemy } from '../types';
 
 const wizard: Character = {
@@ -61,6 +61,18 @@ describe('difficulty', () => {
   it('camp rest is partial on hard', () => {
     expect(campRestHp(4, 12, 'hard')).toBe(4 + Math.ceil(12 * 0.5)); // 4+6=10
     expect(campRestHp(0, 12, 'hard')).toBe(3);                        // downed -> quarter
+  });
+
+  it('effectiveMaxHp adds +4 max HP per level above 1', () => {
+    expect(effectiveMaxHp(wizard, 'normal', 1)).toBe(10);
+    expect(effectiveMaxHp(wizard, 'normal', 3)).toBe(18); // 10 + 2*4
+    expect(effectiveMaxHp(wizard, 'hard', 3)).toBe(7 + 8); // no floor on hard
+  });
+
+  it('levelPowerBonus is level-1, never negative', () => {
+    expect(levelPowerBonus(1)).toBe(0);
+    expect(levelPowerBonus(4)).toBe(3);
+    expect(levelPowerBonus(0)).toBe(0);
   });
 
   it('exposes labels for the UI', () => {

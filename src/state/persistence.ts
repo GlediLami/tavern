@@ -21,6 +21,16 @@ function isValid(s: unknown): s is GameState {
   if (!g.hp || typeof g.hp !== 'object') return false;
   if (!Array.isArray(g.log)) return false;
 
+  // Optional campaign fields (backward compatible: missing mode ⇒ single).
+  if (g.mode !== undefined && g.mode !== 'single' && g.mode !== 'campaign') return false;
+  if (g.campaign !== undefined) {
+    const c = g.campaign as Record<string, unknown>;
+    if (!c || typeof c !== 'object') return false;
+    if (!Array.isArray(c.order) || !c.order.every((x) => typeof x === 'string')) return false;
+    if (typeof c.index !== 'number' || c.index < 0 || c.index >= c.order.length) return false;
+    if (typeof c.level !== 'number' || c.level < 1) return false;
+  }
+
   // Every saved hero must still exist.
   if (!(g.partyIds as unknown[]).every((id) => typeof id === 'string' && HERO_IDS.has(id))) return false;
 

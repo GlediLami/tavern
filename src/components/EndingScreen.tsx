@@ -1,15 +1,20 @@
 import { useEffect } from 'react';
 import { getAdventure } from '../engine/party';
+import { getAdventureEntry } from '../content/adventures';
 import { getScene } from '../engine/story';
 import { sfx } from '../ui/sfx';
+import type { CampaignState } from '../state/gameReducer';
 
 interface Props {
+  mode: 'single' | 'campaign';
   adventureId: string;
   sceneId: string;
+  campaign?: CampaignState;
   onReturn: () => void;
+  onAdvance: () => void;
 }
 
-export function EndingScreen({ adventureId, sceneId, onReturn }: Props) {
+export function EndingScreen({ mode, adventureId, sceneId, campaign, onReturn, onAdvance }: Props) {
   const scene = getScene(getAdventure(adventureId), sceneId);
   const victory = scene.type === 'ending' && scene.endingType === 'victory';
 
@@ -19,6 +24,11 @@ export function EndingScreen({ adventureId, sceneId, onReturn }: Props) {
   }, [scene.type, victory]);
 
   if (scene.type !== 'ending') return null;
+
+  const inCampaign = mode === 'campaign' && !!campaign;
+  const hasNext = inCampaign && campaign!.index < campaign!.order.length - 1;
+  const advancing = inCampaign && victory && hasNext;
+  const nextTitle = hasNext ? getAdventureEntry(campaign!.order[campaign!.index + 1]).title : '';
 
   return (
     <div className="app-shell screen center" style={{ paddingTop: '9vh' }}>
@@ -32,12 +42,34 @@ export function EndingScreen({ adventureId, sceneId, onReturn }: Props) {
         {scene.endingType}
       </p>
       <div className="rule-accent" style={{ maxWidth: 240, margin: '16px auto', background: victory ? 'linear-gradient(90deg, transparent, var(--gold), transparent)' : 'linear-gradient(90deg, transparent, var(--accent-bright), transparent)' }} />
-      <p className="subtitle" style={{ maxWidth: 600, margin: '0 auto 34px', lineHeight: 1.8, fontSize: '1.12rem' }}>
+      <p className="subtitle" style={{ maxWidth: 600, margin: '0 auto 28px', lineHeight: 1.8, fontSize: '1.12rem' }}>
         {scene.narration}
       </p>
-      <button className="btn btn-primary" style={{ fontSize: '1.02rem', padding: '13px 28px' }} onClick={() => { sfx.click(); onReturn(); }}>
-        Return to the Tavern
-      </button>
+
+      {advancing && (
+        <div className="panel panel--framed" style={{ maxWidth: 460, margin: '0 auto 26px' }}>
+          <p className="accent-text" style={{ fontWeight: 700, fontSize: '1.15rem', margin: 0 }}>Your party reaches Level {campaign!.level + 1}!</p>
+          <p className="muted" style={{ margin: '6px 0 0' }}>+4 max HP, +1 power use, and all wounds are mended.</p>
+        </div>
+      )}
+
+      {inCampaign && !advancing && (
+        <p className="muted" style={{ marginBottom: 22 }}>
+          {victory
+            ? `The campaign is won — your party stands undefeated at Level ${campaign!.level}.`
+            : `You fell in ${getAdventureEntry(adventureId).title}. Tales completed: ${campaign!.index}. Party level: ${campaign!.level}.`}
+        </p>
+      )}
+
+      {advancing ? (
+        <button className="btn btn-primary" style={{ fontSize: '1.02rem', padding: '13px 28px' }} onClick={() => { sfx.click(); onAdvance(); }}>
+          Onward to {nextTitle} →
+        </button>
+      ) : (
+        <button className="btn btn-primary" style={{ fontSize: '1.02rem', padding: '13px 28px' }} onClick={() => { sfx.click(); onReturn(); }}>
+          Return to the Tavern
+        </button>
+      )}
     </div>
   );
 }

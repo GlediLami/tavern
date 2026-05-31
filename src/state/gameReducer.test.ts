@@ -60,6 +60,40 @@ describe('gameReducer', () => {
     expect(s.hp['bjorn-ironhelm']).toBe(4);
   });
 
+  it('START_CAMPAIGN sets campaign mode, order, level 1, and the first adventure', () => {
+    let s = gameReducer(initialState, { type: 'START_GAME' });
+    s = gameReducer(s, { type: 'START_CAMPAIGN', difficulty: 'normal' });
+    expect(s.mode).toBe('campaign');
+    expect(s.campaign).toEqual({ order: ['snakewater', 'chaoticcaves', 'brackenmoor', 'arena'], index: 0, level: 1 });
+    expect(s.adventureId).toBe('snakewater');
+    expect(s.phase).toBe('party-select');
+  });
+
+  it('CONFIRM_PARTY in a campaign seeds HP at the party level', () => {
+    let s = gameReducer(initialState, { type: 'START_CAMPAIGN', difficulty: 'normal' });
+    s = { ...s, campaign: { ...s.campaign!, level: 3 } };
+    s = gameReducer(s, { type: 'CONFIRM_PARTY', partyIds: ['bjorn-ironhelm'] });
+    expect(s.hp['bjorn-ironhelm']).toBe(13 + 8);
+  });
+
+  it('ADVANCE_CAMPAIGN levels up, moves to the next adventure, and full-heals', () => {
+    let s = gameReducer(initialState, { type: 'START_CAMPAIGN', difficulty: 'normal' });
+    s = gameReducer(s, { type: 'CONFIRM_PARTY', partyIds: ['bjorn-ironhelm'] });
+    s = gameReducer(s, { type: 'ADVANCE_CAMPAIGN' });
+    expect(s.campaign).toEqual({ order: ['snakewater', 'chaoticcaves', 'brackenmoor', 'arena'], index: 1, level: 2 });
+    expect(s.adventureId).toBe('chaoticcaves');
+    expect(s.sceneId).toBe('town_briefing');
+    expect(s.phase).toBe('scene');
+    expect(s.hp['bjorn-ironhelm']).toBe(13 + 4);
+  });
+
+  it('SELECT_ADVENTURE keeps single mode and clears campaign', () => {
+    let s = gameReducer(initialState, { type: 'START_CAMPAIGN', difficulty: 'hard' });
+    s = gameReducer(s, { type: 'SELECT_ADVENTURE', adventureId: 'brackenmoor', difficulty: 'normal' });
+    expect(s.mode).toBe('single');
+    expect(s.campaign).toBeUndefined();
+  });
+
   it('RESET returns to the initial state', () => {
     let s = gameReducer(initialState, { type: 'START_GAME' });
     s = gameReducer(s, { type: 'RESET' });

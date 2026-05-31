@@ -41,9 +41,16 @@ export function config(difficulty: Difficulty): DifficultyConfig {
   return DIFFICULTIES[difficulty];
 }
 
-// Effective max HP after applying the difficulty's HP floor.
-export function effectiveMaxHp(character: Character, difficulty: Difficulty): number {
-  return Math.max(character.maxHp, config(difficulty).hpFloor);
+export const HP_PER_LEVEL = 4;
+
+// Effective max HP after the difficulty's HP floor, plus the campaign level bonus.
+export function effectiveMaxHp(character: Character, difficulty: Difficulty, level = 1): number {
+  return Math.max(character.maxHp, config(difficulty).hpFloor) + (level - 1) * HP_PER_LEVEL;
+}
+
+// Extra per-encounter power uses granted by campaign level.
+export function levelPowerBonus(level: number): number {
+  return Math.max(0, level - 1);
 }
 
 // HP restored to a hero after a won encounter (survivors heal, the downed may revive).
