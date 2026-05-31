@@ -2,11 +2,26 @@ import { useState } from 'react';
 import { GameProvider, useGame } from './state/GameContext';
 import { initialState, type GameState } from './state/gameReducer';
 import { loadGame, clearSave } from './engine/save';
+import { isMuted, setMuted } from './ui/sfx';
 import { TavernHome } from './components/TavernHome';
 import { PartySelect } from './components/PartySelect';
 import { GameScreen } from './components/GameScreen';
 import { CombatView } from './components/CombatView';
 import { EndingScreen } from './components/EndingScreen';
+
+function MuteToggle() {
+  const [muted, setMutedState] = useState<boolean>(isMuted());
+  return (
+    <button
+      className="mute-toggle"
+      title={muted ? 'Unmute sound' : 'Mute sound'}
+      aria-label={muted ? 'Unmute sound' : 'Mute sound'}
+      onClick={() => { const next = !muted; setMuted(next); setMutedState(next); }}
+    >
+      {muted ? '🔇' : '🔊'}
+    </button>
+  );
+}
 
 function Screens() {
   const { state, dispatch } = useGame();
@@ -46,6 +61,7 @@ export default function App() {
   const [initial] = useState<GameState>(() => loadGame<GameState>() ?? initialState);
   return (
     <GameProvider initial={initial}>
+      <MuteToggle />
       <Screens />
     </GameProvider>
   );

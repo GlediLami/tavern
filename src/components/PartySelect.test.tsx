@@ -26,7 +26,7 @@ describe('PartySelect', () => {
     for (const name of ['Bjorn Ironhelm', 'Sable Quickfinger', 'Mara Dawnwarden', 'Alaric Vance', 'Thornwick Greenstride']) {
       await userEvent.click(screen.getByText(name));
     }
-    const selectedCount = screen.getAllByText(/✓ in party/i).length;
+    const selectedCount = screen.getAllByText(/✓ in the party/i).length;
     expect(selectedCount).toBe(4);
   });
 });

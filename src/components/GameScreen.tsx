@@ -5,6 +5,7 @@ import { getAdventure, getCharacter } from '../engine/party';
 import { resolveCheck } from '../engine/checks';
 import { skillLabel } from '../engine/skills';
 import { defaultRng } from '../engine/rng';
+import { sfx } from '../ui/sfx';
 import type { Choice, CheckResult } from '../types';
 import { PartyPanel } from './PartyPanel';
 import { NarrationLog } from './NarrationLog';
@@ -25,6 +26,7 @@ export function GameScreen() {
   const consciousHeroes = state.partyIds.filter((id) => (state.hp[id] ?? 0) > 0);
 
   function pickChoice(choice: Choice) {
+    sfx.click();
     if (!choice.check) {
       dispatch({ type: 'GOTO_SCENE', sceneId: resolveChoice(choice, null) });
       return;
@@ -52,12 +54,14 @@ export function GameScreen() {
   }
 
   return (
-    <div className="app-shell" style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 20 }}>
+    <div className="app-shell screen game-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 290px', gap: 22, alignItems: 'start' }}>
       <div>
         <NarrationLog entries={state.log} />
-        <div className="panel">
-          <h2 style={{ color: 'var(--gold-bright)', marginTop: 0 }}>{scene.title}</h2>
-          <p style={{ lineHeight: 1.6 }}>{scene.narration}</p>
+        <div className="panel panel--framed corner-frame">
+          <span className="corner tl" /><span className="corner tr" /><span className="corner bl" /><span className="corner br" />
+          <h2 className="scene-title">{scene.title}</h2>
+          <div className="scene-rule" />
+          <p style={{ lineHeight: 1.72, fontSize: '1.12rem' }}>{scene.narration}</p>
 
           {pending?.stage === 'reveal' ? (
             <DiceRoller
@@ -67,30 +71,40 @@ export function GameScreen() {
               onContinue={finishReveal}
             />
           ) : pending?.stage === 'choose-hero' ? (
-            <div className="stack">
-              <p className="muted">Who attempts the {skillLabel(pending.choice.check!.skill)} check (DC {pending.choice.check!.dc})?</p>
+            <div className="stack" style={{ marginTop: 8 }}>
+              <p className="muted">
+                Who attempts the <span className="engraved">{skillLabel(pending.choice.check!.skill)}</span> check
+                {' '}(DC {pending.choice.check!.dc})?
+              </p>
               <div className="row">
                 {consciousHeroes.map((id) => (
-                  <button key={id} className="btn" onClick={() => attemptWith(id)}>
-                    {getCharacter(id).name}
+                  <button key={id} className="btn" onClick={() => { sfx.click(); attemptWith(id); }}>
+                    {getCharacter(id).portrait} {getCharacter(id).name}
                   </button>
                 ))}
               </div>
-              <button className="btn" onClick={() => setPending(null)}>Back</button>
+              <button className="btn" style={{ alignSelf: 'flex-start' }} onClick={() => { sfx.click(); setPending(null); }}>← Back</button>
             </div>
           ) : (
-            <div className="stack" style={{ marginTop: 12 }}>
+            <div className="stack" style={{ marginTop: 16 }}>
               {scene.choices.map((c) => (
-                <button key={c.id} className="btn" onClick={() => pickChoice(c)}>
+                <button key={c.id} className="btn btn-choice" onClick={() => pickChoice(c)}>
                   {c.text}
-                  {c.check && <span className="muted"> · {skillLabel(c.check.skill)} DC {c.check.dc}</span>}
+                  {c.check && (
+                    <span className="stat-pill" style={{ marginLeft: 8 }}>
+                      {skillLabel(c.check.skill)} · DC {c.check.dc}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
           )}
         </div>
       </div>
-      <PartyPanel partyIds={state.partyIds} hp={state.hp} />
+      <div>
+        <h3 className="engraved" style={{ margin: '0 0 10px', fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>The Party</h3>
+        <PartyPanel partyIds={state.partyIds} hp={state.hp} />
+      </div>
     </div>
   );
 }

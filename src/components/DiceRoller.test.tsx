@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DiceRoller } from './DiceRoller';
 import type { CheckResult } from '../types';
@@ -19,5 +19,26 @@ describe('DiceRoller', () => {
     render(<DiceRoller heroName="Bjorn Ironhelm" skillLabel="Athletics" result={success} onContinue={onContinue} />);
     await userEvent.click(screen.getByRole('button', { name: /continue/i }));
     expect(onContinue).toHaveBeenCalled();
+  });
+
+  describe('animated roll (motion enabled)', () => {
+    afterEach(() => {
+      vi.useRealTimers();
+      // restore the reduced-motion default from setupTests
+      window.matchMedia = (q: string) => ({ matches: /prefers-reduced-motion/.test(q), media: q, onchange: null, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {}, dispatchEvent: () => false }) as unknown as MediaQueryList;
+    });
+
+    it('settles on the true roll after the cycling animation (no flicker past settle)', () => {
+      // Force motion ON so the animation path runs.
+      window.matchMedia = (q: string) => ({ matches: false, media: q, onchange: null, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {}, dispatchEvent: () => false }) as unknown as MediaQueryList;
+      vi.useFakeTimers();
+
+      render(<DiceRoller heroName="Bjorn" skillLabel="Athletics" result={success} onContinue={() => {}} />);
+      // advance well past the settle (820ms) plus any trailing cycle ticks
+      act(() => { vi.advanceTimersByTime(3000); });
+
+      // die must show the real roll (14), not a random cycled value
+      expect(screen.getByLabelText(/d20 rolled 14/)).toBeInTheDocument();
+    });
   });
 });

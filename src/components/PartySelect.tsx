@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getAllCharacters } from '../engine/party';
 import { abilityMod } from '../engine/skills';
+import { sfx } from '../ui/sfx';
 import type { Ability } from '../types';
 
 const MAX_PARTY = 4;
@@ -15,6 +16,7 @@ export function PartySelect({ onConfirm }: Props) {
   const characters = getAllCharacters();
 
   function toggle(id: string) {
+    sfx.click();
     setSelected((prev) => {
       if (prev.includes(id)) return prev.filter((x) => x !== id);
       if (prev.length >= MAX_PARTY) return prev;
@@ -23,45 +25,53 @@ export function PartySelect({ onConfirm }: Props) {
   }
 
   return (
-    <div className="app-shell">
-      <h2 style={{ color: 'var(--gold-bright)' }}>Who gathers at the table?</h2>
-      <p className="muted">Choose up to {MAX_PARTY} heroes. Each player will control one.</p>
-      <div className="grid-cards">
+    <div className="app-shell screen">
+      <h2 className="engraved" style={{ fontSize: '1.9rem', marginBottom: 2 }}>Who Gathers at the Table?</h2>
+      <div className="scene-rule" style={{ maxWidth: 360 }} />
+      <p className="muted">Choose up to {MAX_PARTY} heroes — each player takes one to command.</p>
+
+      <div className="grid-cards stagger">
         {characters.map((c) => {
           const isSel = selected.includes(c.id);
           return (
             <button
               key={c.id}
-              className="panel"
+              className={`panel panel--framed hero-card${isSel ? ' selected' : ''}`}
               onClick={() => toggle(c.id)}
-              style={{
-                textAlign: 'left', cursor: 'pointer',
-                borderColor: isSel ? 'var(--gold)' : 'var(--border)',
-                boxShadow: isSel ? '0 0 0 2px var(--gold) inset' : 'var(--shadow)',
-              }}
             >
-              <div style={{ fontSize: '2rem' }}>{c.portrait}</div>
-              <h3 style={{ margin: '4px 0' }}>{c.name}</h3>
-              <div className="muted">{c.race} {c.class}</div>
-              <div className="row" style={{ gap: 8, margin: '8px 0', fontSize: '0.8rem' }}>
+              <div className="row" style={{ alignItems: 'center', gap: 12 }}>
+                <span className="portrait">{c.portrait}</span>
+                <div>
+                  <h3 className="engraved" style={{ margin: 0, fontSize: '1.15rem' }}>{c.name}</h3>
+                  <div className="faint" style={{ fontSize: '0.9rem' }}>{c.race} · {c.class}</div>
+                </div>
+              </div>
+
+              <div className="row" style={{ gap: 6, margin: '12px 0 8px' }}>
                 {ABILS.map((a) => (
-                  <span key={a} title={a}>
-                    {a.toUpperCase()} {c.abilities[a]} ({abilityMod(c.abilities[a]) >= 0 ? '+' : ''}{abilityMod(c.abilities[a])})
+                  <span key={a} className="stat-pill">
+                    {a.toUpperCase()} {abilityMod(c.abilities[a]) >= 0 ? '+' : ''}{abilityMod(c.abilities[a])}
                   </span>
                 ))}
               </div>
-              <div style={{ fontSize: '0.85rem' }}>HP {c.maxHp} · AC {c.ac}</div>
-              <p className="muted" style={{ fontSize: '0.82rem' }}>{c.backstory}</p>
-              {isSel && <div style={{ color: 'var(--gold-bright)', fontWeight: 700 }}>✓ In Party</div>}
+              <div className="row" style={{ gap: 8, fontSize: '0.9rem' }}>
+                <span className="stat-pill" style={{ color: 'var(--nature)' }}>♥ {c.maxHp} HP</span>
+                <span className="stat-pill" style={{ color: 'var(--arcane)' }}>⛊ AC {c.ac}</span>
+              </div>
+
+              <p className="muted" style={{ fontSize: '0.92rem', marginBottom: isSel ? 6 : 0 }}>{c.backstory}</p>
+              {isSel && <div className="engraved" style={{ fontWeight: 700, letterSpacing: '0.05em' }}>✓ In the Party</div>}
             </button>
           );
         })}
       </div>
-      <div className="row" style={{ marginTop: 18, justifyContent: 'flex-end' }}>
+
+      <div className="row" style={{ marginTop: 22, justifyContent: 'flex-end' }}>
         <button
           className="btn btn-primary"
+          style={{ fontSize: '1.02rem', padding: '13px 26px' }}
           disabled={selected.length === 0}
-          onClick={() => onConfirm(selected)}
+          onClick={() => { sfx.click(); onConfirm(selected); }}
         >
           Enter the Tavern ({selected.length}/{MAX_PARTY})
         </button>
