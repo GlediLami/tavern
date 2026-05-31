@@ -11,15 +11,18 @@ describe('App', () => {
     expect(screen.getByText('Tavern')).toBeInTheDocument();
   });
 
-  it('New Game leads to party select', async () => {
+  it('New Game leads to adventure select', async () => {
     render(<App />);
     await userEvent.click(screen.getByRole('button', { name: /new game/i }));
-    expect(screen.getByText(/who gathers at the table/i)).toBeInTheDocument();
+    expect(screen.getByText(/choose your tale/i)).toBeInTheDocument();
   });
 
-  it('confirming a party reaches the opening scene', async () => {
+  it('full setup flow reaches the chosen adventure opening scene', async () => {
     render(<App />);
     await userEvent.click(screen.getByRole('button', { name: /new game/i }));
+    // adventure select (brackenmoor is selected by default) -> gather party
+    await userEvent.click(screen.getByRole('button', { name: /gather the party/i }));
+    expect(screen.getByText(/who gathers at the table/i)).toBeInTheDocument();
     await userEvent.click(screen.getByText('Bjorn Ironhelm'));
     await userEvent.click(screen.getByRole('button', { name: /enter the tavern/i }));
     expect(screen.getByText(/Sign of the Drowned Lantern/i)).toBeInTheDocument();

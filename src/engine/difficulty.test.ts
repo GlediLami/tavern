@@ -1,0 +1,60 @@
+import { describe, it, expect } from 'vitest';
+import { effectiveMaxHp, restHp, scaleEnemies, config } from './difficulty';
+import type { Character, Enemy } from '../types';
+
+const wizard: Character = {
+  id: 'w', name: 'W', race: 'Elf', class: 'Wizard', level: 1, portrait: '🔮',
+  abilities: { str: 8, dex: 15, con: 13, int: 17, wis: 12, cha: 10 },
+  maxHp: 7, ac: 12, proficiencyBonus: 2, skillProficiencies: [], attacks: [], backstory: '',
+};
+
+const enemies: Enemy[] = [
+  { name: 'Big', maxHp: 14, ac: 14, attack: { name: 'Bite', toHit: 5, damageDice: '1d8', damageBonus: 3 } },
+  { name: 'Small', maxHp: 8, ac: 13, attack: { name: 'Bite', toHit: 4, damageDice: '1d6', damageBonus: 2 } },
+];
+
+describe('difficulty', () => {
+  it('normal applies a HP floor; hard does not', () => {
+    expect(effectiveMaxHp(wizard, 'normal')).toBe(10); // floored up from 7
+    expect(effectiveMaxHp(wizard, 'hard')).toBe(7);
+  });
+
+  it('rest heals survivors and revives the downed on normal', () => {
+    // survivor at 4/10 heals ceil(10*0.6)=6 -> 10 (capped)
+    expect(restHp(4, 10, 'normal')).toBe(10);
+    // downed revives to ceil(10*0.25)=3
+    expect(restHp(0, 10, 'normal')).toBe(3);
+  });
+
+  it('hard heals little and never revives the downed', () => {
+    expect(restHp(8, 12, 'hard')).toBe(8 + Math.ceil(12 * 0.25)); // 8+3=11
+    expect(restHp(0, 12, 'hard')).toBe(0);
+  });
+
+  it('normal softens enemy damage and to-hit', () => {
+    const scaled = scaleEnemies([enemies[0]], 'normal', 4);
+    expect(scaled[0].attack.toHit).toBe(4);           // 5 - 1
+    expect(scaled[0].attack.damageBonus).toBe(Math.round(3 * 0.85)); // 3 -> 3
+  });
+
+  it('hard leaves enemy stats intact', () => {
+    const scaled = scaleEnemies(enemies, 'hard', 1);
+    expect(scaled).toHaveLength(2);
+    expect(scaled[0].attack.toHit).toBe(5);
+  });
+
+  it('solo scaling drops the weakest extra for parties <= 2 on normal', () => {
+    const scaled = scaleEnemies(enemies, 'normal', 2);
+    expect(scaled).toHaveLength(1);
+    expect(scaled[0].name).toBe('Big'); // weakest "Small" dropped
+  });
+
+  it('does not drop enemies for full parties', () => {
+    expect(scaleEnemies(enemies, 'normal', 3)).toHaveLength(2);
+  });
+
+  it('exposes labels for the UI', () => {
+    expect(config('normal').label).toBe('Normal');
+    expect(config('hard').label).toBe('Hard');
+  });
+});

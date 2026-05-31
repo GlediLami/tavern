@@ -1,14 +1,16 @@
 import charactersData from '../content/characters.json';
-import adventureData from '../content/adventure.json';
-import type { Character, Adventure } from '../types';
+import { getAdventureData, DEFAULT_ADVENTURE_ID } from '../content/adventures';
+import { effectiveMaxHp } from '../engine/difficulty';
+import type { Character, Difficulty } from '../types';
 
 const characters = charactersData as unknown as Character[];
-const adventure = adventureData as unknown as Adventure;
 
-export type Phase = 'home' | 'party-select' | 'scene' | 'combat' | 'ending';
+export type Phase = 'home' | 'adventure-select' | 'party-select' | 'scene' | 'combat' | 'ending';
 
 export interface GameState {
   phase: Phase;
+  adventureId: string;
+  difficulty: Difficulty;
   partyIds: string[];
   hp: Record<string, number>;   // heroId -> current hp
   sceneId: string;
@@ -17,14 +19,17 @@ export interface GameState {
 
 export const initialState: GameState = {
   phase: 'home',
+  adventureId: DEFAULT_ADVENTURE_ID,
+  difficulty: 'normal',
   partyIds: [],
   hp: {},
-  sceneId: adventure.startSceneId,
+  sceneId: getAdventureData(DEFAULT_ADVENTURE_ID).startSceneId,
   log: [],
 };
 
 export type GameAction =
   | { type: 'START_GAME' }
+  | { type: 'SELECT_ADVENTURE'; adventureId: string; difficulty: Difficulty }
   | { type: 'CONFIRM_PARTY'; partyIds: string[] }
   | { type: 'GOTO_SCENE'; sceneId: string }
   | { type: 'SET_HP'; hp: Record<string, number> }
@@ -32,8 +37,8 @@ export type GameAction =
   | { type: 'LOAD'; state: GameState }
   | { type: 'RESET' };
 
-function phaseForScene(sceneId: string): Phase {
-  const scene = adventure.scenes[sceneId];
+function phaseForScene(adventureId: string, sceneId: string): Phase {
+  const scene = getAdventureData(adventureId).scenes[sceneId];
   if (!scene) return 'scene';
   if (scene.type === 'combat') return 'combat';
   if (scene.type === 'ending') return 'ending';
@@ -43,26 +48,34 @@ function phaseForScene(sceneId: string): Phase {
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'START_GAME':
-      return { ...initialState, phase: 'party-select' };
+      return { ...initialState, phase: 'adventure-select' };
+
+    case 'SELECT_ADVENTURE':
+      return {
+        ...state,
+        phase: 'party-select',
+        adventureId: action.adventureId,
+        difficulty: action.difficulty,
+      };
 
     case 'CONFIRM_PARTY': {
       const hp: Record<string, number> = {};
       for (const id of action.partyIds) {
         const c = characters.find((ch) => ch.id === id);
-        if (c) hp[id] = c.maxHp;
+        if (c) hp[id] = effectiveMaxHp(c, state.difficulty);
       }
       return {
         ...state,
         phase: 'scene',
         partyIds: action.partyIds,
         hp,
-        sceneId: adventure.startSceneId,
+        sceneId: getAdventureData(state.adventureId).startSceneId,
         log: [],
       };
     }
 
     case 'GOTO_SCENE':
-      return { ...state, sceneId: action.sceneId, phase: phaseForScene(action.sceneId) };
+      return { ...state, sceneId: action.sceneId, phase: phaseForScene(state.adventureId, action.sceneId) };
 
     case 'SET_HP':
       return { ...state, hp: { ...state.hp, ...action.hp } };

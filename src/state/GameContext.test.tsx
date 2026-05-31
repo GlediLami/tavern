@@ -26,9 +26,9 @@ describe('GameContext', () => {
     act(() => {
       screen.getByText('start').click();
     });
-    expect(screen.getByTestId('phase').textContent).toBe('party-select');
+    expect(screen.getByTestId('phase').textContent).toBe('adventure-select');
     const saved = loadGame<{ phase: string }>();
-    expect(saved?.phase).toBe('party-select');
+    expect(saved?.phase).toBe('adventure-select');
     expect(localStorage.getItem(SAVE_KEY)).not.toBeNull();
   });
 });

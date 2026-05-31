@@ -1,10 +1,9 @@
 import charactersData from '../content/characters.json';
-import adventureData from '../content/adventure.json';
+import { getAdventureData } from '../content/adventures';
 import type { Character, Adventure, Hero } from '../types';
 import type { ResolvedAttack, HeroAttackLookup } from './combat';
 
 const characters = charactersData as unknown as Character[];
-const adventure = adventureData as unknown as Adventure;
 
 export function getAllCharacters(): Character[] {
   return characters;
@@ -16,8 +15,8 @@ export function getCharacter(id: string): Character {
   return c;
 }
 
-export function getAdventure(): Adventure {
-  return adventure;
+export function getAdventure(adventureId: string): Adventure {
+  return getAdventureData(adventureId);
 }
 
 export function toHero(id: string, hp: number): Hero {

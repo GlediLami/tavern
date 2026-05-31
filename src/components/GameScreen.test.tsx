@@ -7,7 +7,8 @@ import type { GameState } from '../state/gameReducer';
 
 function renderAt(state: Partial<GameState>) {
   const full: GameState = {
-    phase: 'scene', partyIds: ['bjorn-ironhelm'], hp: { 'bjorn-ironhelm': 13 },
+    phase: 'scene', adventureId: 'brackenmoor', difficulty: 'normal',
+    partyIds: ['bjorn-ironhelm'], hp: { 'bjorn-ironhelm': 13 },
     sceneId: 'tavern_start', log: [], ...state,
   } as GameState;
   return render(

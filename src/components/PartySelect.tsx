@@ -42,7 +42,7 @@ export function PartySelect({ onConfirm }: Props) {
               <div className="row" style={{ alignItems: 'center', gap: 12 }}>
                 <span className="portrait">{c.portrait}</span>
                 <div>
-                  <h3 className="engraved" style={{ margin: 0, fontSize: '1.15rem' }}>{c.name}</h3>
+                  <h3 className="display" style={{ margin: 0, fontSize: '1.18rem' }}>{c.name}</h3>
                   <div className="faint" style={{ fontSize: '0.9rem' }}>{c.race} · {c.class}</div>
                 </div>
               </div>
@@ -55,12 +55,12 @@ export function PartySelect({ onConfirm }: Props) {
                 ))}
               </div>
               <div className="row" style={{ gap: 8, fontSize: '0.9rem' }}>
-                <span className="stat-pill" style={{ color: 'var(--nature)' }}>♥ {c.maxHp} HP</span>
-                <span className="stat-pill" style={{ color: 'var(--arcane)' }}>⛊ AC {c.ac}</span>
+                <span className="stat-pill" style={{ color: 'var(--green)' }}>♥ {c.maxHp} HP</span>
+                <span className="stat-pill" style={{ color: 'var(--blue)' }}>⛊ AC {c.ac}</span>
               </div>
 
               <p className="muted" style={{ fontSize: '0.92rem', marginBottom: isSel ? 6 : 0 }}>{c.backstory}</p>
-              {isSel && <div className="engraved" style={{ fontWeight: 700, letterSpacing: '0.05em' }}>✓ In the Party</div>}
+              {isSel && <div className="accent-text" style={{ fontWeight: 700, letterSpacing: '0.05em' }}>✓ In the Party</div>}
             </button>
           );
         })}

@@ -90,6 +90,24 @@ export interface Combatant {
   attack?: EnemyAttack;  // present if enemy
 }
 
+// A resolved attack/heal, surfaced so the UI can show the actual dice.
+export interface AttackEvent {
+  kind: 'attack' | 'heal';
+  attackerName: string;
+  targetName: string;
+  actionName: string;    // weapon/spell name
+  targetId: string;
+  d20?: number;          // attack roll (omitted for heals)
+  toHit?: number;        // attacker's to-hit modifier
+  ac?: number;           // target AC
+  hit: boolean;
+  crit: boolean;
+  damageDice: string;    // e.g. "1d8"
+  damageRolls: number[]; // individual die faces rolled (incl. crit dice / heal dice)
+  damageBonus: number;
+  amount: number;        // total damage dealt or HP healed
+}
+
 export interface CombatState {
   combatants: Combatant[];
   order: string[];       // combatant ids in initiative order
@@ -97,4 +115,7 @@ export interface CombatState {
   round: number;
   log: string[];
   status: 'active' | 'victory' | 'defeat';
+  lastAttack?: AttackEvent;
 }
+
+export type Difficulty = 'normal' | 'hard';

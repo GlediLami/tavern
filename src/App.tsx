@@ -4,6 +4,7 @@ import { initialState, type GameState } from './state/gameReducer';
 import { loadGame, clearSave } from './engine/save';
 import { isMuted, setMuted } from './ui/sfx';
 import { TavernHome } from './components/TavernHome';
+import { AdventureSelect } from './components/AdventureSelect';
 import { PartySelect } from './components/PartySelect';
 import { GameScreen } from './components/GameScreen';
 import { CombatView } from './components/CombatView';
@@ -38,6 +39,8 @@ function Screens() {
           }}
         />
       );
+    case 'adventure-select':
+      return <AdventureSelect onConfirm={(adventureId, difficulty) => dispatch({ type: 'SELECT_ADVENTURE', adventureId, difficulty })} />;
     case 'party-select':
       return <PartySelect onConfirm={(ids) => dispatch({ type: 'CONFIRM_PARTY', partyIds: ids })} />;
     case 'scene':
@@ -47,6 +50,7 @@ function Screens() {
     case 'ending':
       return (
         <EndingScreen
+          adventureId={state.adventureId}
           sceneId={state.sceneId}
           onReturn={() => { clearSave(); dispatch({ type: 'RESET' }); }}
         />

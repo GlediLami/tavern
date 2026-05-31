@@ -9,9 +9,10 @@ server, no accounts, runs in any modern browser.
 
 - **Pass-and-play multiplayer** — multiple players share one screen, each controlling a hero.
 - **6 premade heroes** — Fighter, Rogue, Cleric, Wizard, Ranger, Barbarian, built on D&D 5e SRD rules (ability scores, AC, HP, skills, attacks).
-- **Branching adventure** — *The Hollow Bell of Brackenmoor*: 23 scenes, meaningful choices, multiple paths, and 5 endings (2 victory, 3 defeat).
-- **Authentic d20 checks** — roll `d20 + ability modifier` vs a Difficulty Class, with natural-20 critical successes and natural-1 critical failures.
-- **Light turn-based combat** — initiative, attack rolls vs AC, damage dice, HP tracking, and simple enemy AI.
+- **Two branching adventures** — *The Hollow Bell of Brackenmoor* (a haunted bell-tower) and *The Snakewater Raid* (a daylight kobold-cave rescue), each with meaningful choices, multiple paths, and several endings.
+- **Two difficulty modes** — **Normal** (HP floor, between-fight recovery, in-combat Cleric heal, thinned foes for small parties) and **Hard** (real stat blocks, little recovery). Tuned to be tense-but-fair, not a one-hit-kill slog.
+- **Authentic d20 checks** — roll `d20 + ability modifier` vs a Difficulty Class, with natural-20 critical successes and natural-1 critical failures, shown with an animated die.
+- **Light turn-based combat** — initiative, attack rolls vs AC, damage dice, HP tracking, simple enemy AI, and a **visible dice readout** (every attack shows the d20, the math vs AC, and the damage dice rolled).
 - **Save & resume** — progress persists to `localStorage`.
 
 ## Tech

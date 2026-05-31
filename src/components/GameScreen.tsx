@@ -17,7 +17,7 @@ type Pending =
 
 export function GameScreen() {
   const { state, dispatch } = useGame();
-  const adventure = getAdventure();
+  const adventure = getAdventure(state.adventureId);
   const scene = getScene(adventure, state.sceneId);
   const [pending, setPending] = useState<Pending | null>(null);
 
@@ -102,8 +102,8 @@ export function GameScreen() {
         </div>
       </div>
       <div>
-        <h3 className="engraved" style={{ margin: '0 0 10px', fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>The Party</h3>
-        <PartyPanel partyIds={state.partyIds} hp={state.hp} />
+        <h3 style={{ margin: '0 0 10px', fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>The Party</h3>
+        <PartyPanel partyIds={state.partyIds} hp={state.hp} difficulty={state.difficulty} />
       </div>
     </div>
   );

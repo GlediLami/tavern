@@ -77,7 +77,7 @@ export function DiceRoller({ heroName, skillLabel, result, onContinue }: Props) 
   const outcomeText = crit === 'success' ? 'CRITICAL SUCCESS!'
     : crit === 'fail' ? 'CRITICAL FAILURE!'
     : success ? 'Success' : 'Failure';
-  const outcomeColor = success ? 'var(--nature)' : 'var(--blood-bright)';
+  const outcomeColor = success ? 'var(--green)' : 'var(--accent-bright)';
 
   return (
     <div className="panel panel--framed center" style={{ maxWidth: 440, margin: '20px auto' }}>

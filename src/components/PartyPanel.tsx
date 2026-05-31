@@ -1,18 +1,22 @@
 import { getCharacter } from '../engine/party';
+import { effectiveMaxHp } from '../engine/difficulty';
 import { hpColor } from '../ui/visuals';
+import type { Difficulty } from '../types';
 
 interface Props {
   partyIds: string[];
   hp: Record<string, number>;
+  difficulty: Difficulty;
 }
 
-export function PartyPanel({ partyIds, hp }: Props) {
+export function PartyPanel({ partyIds, hp, difficulty }: Props) {
   return (
     <div className="stack">
       {partyIds.map((id) => {
         const c = getCharacter(id);
-        const current = hp[id] ?? c.maxHp;
-        const ratio = current / c.maxHp;
+        const max = effectiveMaxHp(c, difficulty);
+        const current = hp[id] ?? max;
+        const ratio = current / max;
         const pct = Math.max(0, Math.min(100, ratio * 100));
         const down = current <= 0;
         return (
@@ -20,7 +24,7 @@ export function PartyPanel({ partyIds, hp }: Props) {
             <div className="row" style={{ alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
               <span className="row" style={{ alignItems: 'center', gap: 8 }}>
                 <span className="portrait" style={{ width: 34, height: 34, fontSize: '1.2rem' }}>{c.portrait}</span>
-                <strong className="engraved" style={{ fontWeight: 600 }}>{c.name}</strong>
+                <strong style={{ fontWeight: 600 }}>{c.name}</strong>
               </span>
               <span className="faint" style={{ fontSize: '0.78rem' }}>{c.class}</span>
             </div>
@@ -29,8 +33,8 @@ export function PartyPanel({ partyIds, hp }: Props) {
             </div>
             <div style={{ fontSize: '0.85rem', marginTop: 4 }}>
               {down
-                ? <span style={{ color: 'var(--blood-bright)', fontWeight: 700, letterSpacing: '0.08em' }}>✟ DOWN</span>
-                : <span className="muted">{current} / {c.maxHp}</span>}
+                ? <span style={{ color: 'var(--accent-bright)', fontWeight: 700, letterSpacing: '0.08em' }}>✟ DOWN</span>
+                : <span className="muted">{current} / {max}</span>}
             </div>
           </div>
         );

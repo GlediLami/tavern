@@ -1,8 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import adventureData from './adventure.json';
-import type { Adventure, Scene } from '../types';
-
-const adventure = adventureData as unknown as Adventure;
+import { ADVENTURES } from './adventures';
+import type { Scene } from '../types';
 
 function targets(scene: Scene): string[] {
   if (scene.type === 'story') {
@@ -14,7 +12,7 @@ function targets(scene: Scene): string[] {
   return [];
 }
 
-describe('adventure.json', () => {
+describe.each(ADVENTURES.map((a) => [a.id, a.data] as const))('adventure %s', (_id, adventure) => {
   const ids = new Set(Object.keys(adventure.scenes));
 
   it('has a valid start scene', () => {
@@ -30,7 +28,7 @@ describe('adventure.json', () => {
   it('every transition target references an existing scene', () => {
     for (const scene of Object.values(adventure.scenes)) {
       for (const t of targets(scene)) {
-        expect(t, `dangling target from ${scene.id}`).toBeDefined();
+        expect(t).toBeDefined();
         expect(ids.has(t), `missing scene "${t}" referenced by "${scene.id}"`).toBe(true);
       }
     }
@@ -58,7 +56,7 @@ describe('adventure.json', () => {
     expect(endings.some((e) => e.endingType === 'defeat')).toBe(true);
   });
 
-  it('every check choice has both onSuccess and onFailure; every non-check choice has next', () => {
+  it('every check choice has both branches; every plain choice has next', () => {
     for (const scene of Object.values(adventure.scenes)) {
       if (scene.type !== 'story') continue;
       for (const c of scene.choices) {

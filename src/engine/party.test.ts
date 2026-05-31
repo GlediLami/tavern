@@ -11,8 +11,9 @@ describe('party helpers', () => {
     expect(() => getCharacter('nope')).toThrow();
   });
 
-  it('getAdventure returns the adventure with a start scene', () => {
-    expect(getAdventure().startSceneId).toBe('tavern_start');
+  it('getAdventure returns the requested adventure with a start scene', () => {
+    expect(getAdventure('brackenmoor').startSceneId).toBe('tavern_start');
+    expect(getAdventure('snakewater').startSceneId).toBe('road_start');
   });
 
   it('toHero attaches current hp', () => {

@@ -106,10 +106,16 @@ export function performHeroAttack(
   const isCrit = d20 === 20;
   const hit = isCrit || (d20 !== 1 && d20 + toHitMod >= target.ac);
 
+  let rolls: number[] = [];
+  let total = 0;
   if (hit) {
     const dmg = rollDice(stats.damageDice, rng, stats.damageBonus);
-    const critDmg = isCrit ? rollDice(stats.damageDice, rng).rolls.reduce((a, b) => a + b, 0) : 0;
-    const total = dmg.total + critDmg;
+    rolls = [...dmg.rolls];
+    if (isCrit) {
+      const critDmg = rollDice(stats.damageDice, rng);
+      rolls = [...rolls, ...critDmg.rolls];
+    }
+    total = rolls.reduce((a, b) => a + b, 0) + stats.damageBonus;
     target.hp = Math.max(0, target.hp - total);
     next.log.push(`${attacker.name} hits ${target.name} with ${attackName} for ${total} damage${isCrit ? ' (CRITICAL!)' : ''}.`);
     if (target.hp === 0) next.log.push(`${target.name} falls!`);
@@ -117,7 +123,39 @@ export function performHeroAttack(
     next.log.push(`${attacker.name} attacks ${target.name} with ${attackName} but misses.`);
   }
 
+  next.lastAttack = {
+    kind: 'attack', attackerName: attacker.name, targetName: target.name, actionName: attackName,
+    targetId, d20, toHit: toHitMod, ac: target.ac, hit, crit: isCrit,
+    damageDice: stats.damageDice, damageRolls: rolls, damageBonus: stats.damageBonus, amount: total,
+  };
+
   checkStatus(next);
+  if (next.status === 'active') advanceTurn(next);
+  return next;
+}
+
+// A supporting hero (e.g. Cleric) heals an ally for `dice` + `bonus`.
+export function performHeroHeal(
+  state: CombatState,
+  healerId: string,
+  targetId: string,
+  dice: string,
+  bonus: number,
+  actionName: string,
+  rng: Rng = defaultRng,
+): CombatState {
+  const next = clone(state);
+  const healer = next.combatants.find((c) => c.id === healerId)!;
+  const target = next.combatants.find((c) => c.id === targetId)!;
+  const roll = rollDice(dice, rng, bonus);
+  const amount = roll.total;
+  target.hp = Math.min(target.maxHp, target.hp + amount);
+  next.log.push(`${healer.name} heals ${target.name} for ${amount} HP with ${actionName}.`);
+  next.lastAttack = {
+    kind: 'heal', attackerName: healer.name, targetName: target.name, actionName,
+    targetId, hit: true, crit: false,
+    damageDice: dice, damageRolls: roll.rolls, damageBonus: bonus, amount,
+  };
   if (next.status === 'active') advanceTurn(next);
   return next;
 }
@@ -132,16 +170,24 @@ export function performEnemyTurn(state: CombatState, rng: Rng = defaultRng): Com
     const d20 = rollD20(rng);
     const isCrit = d20 === 20;
     const hit = isCrit || (d20 !== 1 && d20 + enemy.attack.toHit >= target.ac);
+    let rolls: number[] = [];
+    let total = 0;
     if (hit) {
       const dmg = rollDice(enemy.attack.damageDice, rng, enemy.attack.damageBonus);
-      const critDmg = isCrit ? rollDice(enemy.attack.damageDice, rng).rolls.reduce((a, b) => a + b, 0) : 0;
-      const total = dmg.total + critDmg;
+      rolls = [...dmg.rolls];
+      if (isCrit) rolls = [...rolls, ...rollDice(enemy.attack.damageDice, rng).rolls];
+      total = rolls.reduce((a, b) => a + b, 0) + enemy.attack.damageBonus;
       target.hp = Math.max(0, target.hp - total);
       next.log.push(`${enemy.name} hits ${target.name} with ${enemy.attack.name} for ${total} damage${isCrit ? ' (CRITICAL!)' : ''}.`);
       if (target.hp === 0) next.log.push(`${target.name} is down!`);
     } else {
       next.log.push(`${enemy.name} attacks ${target.name} but misses.`);
     }
+    next.lastAttack = {
+      kind: 'attack', attackerName: enemy.name, targetName: target.name, actionName: enemy.attack.name,
+      targetId: target.id, d20, toHit: enemy.attack.toHit, ac: target.ac, hit, crit: isCrit,
+      damageDice: enemy.attack.damageDice, damageRolls: rolls, damageBonus: enemy.attack.damageBonus, amount: total,
+    };
   }
 
   checkStatus(next);
