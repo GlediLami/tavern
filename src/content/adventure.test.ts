@@ -56,6 +56,17 @@ describe.each(ADVENTURES.map((a) => [a.id, a.data] as const))('adventure %s', (_
     expect(endings.some((e) => e.endingType === 'defeat')).toBe(true);
   });
 
+  it('every enemy ability has a valid kind and at least one use', () => {
+    for (const scene of Object.values(adventure.scenes)) {
+      if (scene.type !== 'combat') continue;
+      for (const e of scene.enemies) {
+        if (!e.ability) continue;
+        expect(['debuff', 'buff']).toContain(e.ability.kind);
+        expect(e.ability.uses).toBeGreaterThanOrEqual(1);
+      }
+    }
+  });
+
   it('every check choice has both branches; every plain choice has next', () => {
     for (const scene of Object.values(adventure.scenes)) {
       if (scene.type !== 'story') continue;

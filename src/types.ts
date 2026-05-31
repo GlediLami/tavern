@@ -49,11 +49,19 @@ export interface EnemyAttack {
   damageBonus: number;
 }
 
+export interface EnemyAbility {
+  name: string;
+  kind: 'debuff' | 'buff';   // debuff: 'dis' on a hero; buff: 'adv' on an ally enemy
+  uses: number;              // per encounter
+  description?: string;      // shown on the enemy card
+}
+
 export interface Enemy {
   name: string;
   maxHp: number;
   ac: number;
   attack: EnemyAttack;
+  ability?: EnemyAbility;
 }
 
 export type Scene =
@@ -90,6 +98,8 @@ export interface Combatant {
   heroId?: string;       // present if isHero
   primaryAttack?: string; // hero's main weapon attack name (for powers)
   attack?: EnemyAttack;  // present if enemy
+  ability?: EnemyAbility; // present if enemy has a special ability
+  abilityUses?: number;   // remaining uses of `ability` this encounter
   nextAttack?: 'adv' | 'dis';  // one-shot advantage/disadvantage on this combatant's next attack
 }
 

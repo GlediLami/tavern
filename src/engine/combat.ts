@@ -45,6 +45,8 @@ export function startCombat(heroes: Hero[], enemies: Enemy[], rng: Rng = default
       maxHp: e.maxHp, hp: e.maxHp, ac: e.ac,
       initiative: rollD20(rng) + 1,
       attack: e.attack,
+      ability: e.ability,
+      abilityUses: e.ability?.uses,
     });
   });
 
@@ -197,6 +199,36 @@ export function performHeroHeal(
 export function performEnemyTurn(state: CombatState, rng: Rng = defaultRng): CombatState {
   const next = clone(state);
   const enemy = next.combatants.find((c) => c.id === next.order[next.turnIndex])!;
+
+  // Special ability: use it when available and a valid target exists; else attack.
+  if (enemy.ability && (enemy.abilityUses ?? 0) > 0) {
+    if (enemy.ability.kind === 'buff') {
+      const allies = next.combatants.filter((c) => !c.isHero && c.hp > 0 && c.id !== enemy.id && c.nextAttack !== 'adv');
+      if (allies.length > 0) {
+        const ally = allies[Math.floor(rng() * allies.length)];
+        ally.nextAttack = 'adv';
+        enemy.abilityUses = (enemy.abilityUses ?? 0) - 1;
+        next.log.push(`${enemy.name} uses ${enemy.ability.name} — ${ally.name} attacks with advantage.`);
+        next.lastAttack = undefined;
+        checkStatus(next);
+        if (next.status === 'active') advanceTurn(next);
+        return next;
+      }
+    } else {
+      const heroes = next.combatants.filter((c) => c.isHero && c.hp > 0 && c.nextAttack !== 'dis');
+      if (heroes.length > 0) {
+        const hero = heroes[Math.floor(rng() * heroes.length)];
+        hero.nextAttack = 'dis';
+        enemy.abilityUses = (enemy.abilityUses ?? 0) - 1;
+        next.log.push(`${enemy.name} uses ${enemy.ability.name} — ${hero.name} attacks with disadvantage.`);
+        next.lastAttack = undefined;
+        checkStatus(next);
+        if (next.status === 'active') advanceTurn(next);
+        return next;
+      }
+    }
+  }
+
   const targets = livingHeroes(next);
 
   if (enemy.attack && targets.length > 0) {

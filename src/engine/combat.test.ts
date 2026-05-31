@@ -103,4 +103,47 @@ describe('combat', () => {
     expect(h.hp).toBeLessThanOrEqual(h.maxHp);
     expect(h.hp).toBeGreaterThan(2);
   });
+
+  const buffer: Enemy = { name: 'Warchanter', maxHp: 8, ac: 12, attack: { name: 'Spear', toHit: 4, damageDice: '1d6', damageBonus: 1 }, ability: { name: 'War Chant', kind: 'buff', uses: 1 } };
+  const hexer: Enemy = { name: 'Hexweaver', maxHp: 10, ac: 12, attack: { name: 'Hex Bolt', toHit: 4, damageDice: '1d6', damageBonus: 2 }, ability: { name: 'Hex', kind: 'debuff', uses: 1 } };
+
+  it('startCombat copies ability and seeds uses onto enemy combatants', () => {
+    const st = startCombat([makeHero('h1', 10)], [buffer], hit);
+    const e = st.combatants.find((c) => c.id === 'enemy-0')!;
+    expect(e.ability?.name).toBe('War Chant');
+    expect(e.abilityUses).toBe(1);
+  });
+
+  it('a buff enemy grants advantage to a living ally and spends a use', () => {
+    let st = startCombat([makeHero('h1', 10)], [buffer, goblin], hit);
+    st = { ...st, turnIndex: st.order.indexOf('enemy-0') };
+    st = performEnemyTurn(st, hit);
+    expect(st.combatants.find((c) => c.id === 'enemy-1')!.nextAttack).toBe('adv');
+    expect(st.combatants.find((c) => c.id === 'enemy-0')!.abilityUses).toBe(0);
+  });
+
+  it('a buff enemy with no other living ally just attacks', () => {
+    let st = startCombat([makeHero('h1', 10)], [buffer], hit);
+    st = { ...st, turnIndex: st.order.indexOf('enemy-0') };
+    st = performEnemyTurn(st, hit);
+    expect(st.lastAttack?.kind).toBe('attack');
+    expect(st.combatants.find((c) => c.id === 'enemy-0')!.abilityUses).toBe(1);
+  });
+
+  it('a debuff enemy imposes disadvantage on a living hero and spends a use', () => {
+    let st = startCombat([makeHero('h1', 10)], [hexer], hit);
+    st = { ...st, turnIndex: st.order.indexOf('enemy-0') };
+    st = performEnemyTurn(st, hit);
+    expect(st.combatants.find((c) => c.id === 'h1')!.nextAttack).toBe('dis');
+    expect(st.combatants.find((c) => c.id === 'enemy-0')!.abilityUses).toBe(0);
+  });
+
+  it('an enemy with no ability uses left makes a normal attack', () => {
+    let st = startCombat([makeHero('h1', 10)], [hexer], hit);
+    st = { ...st, turnIndex: st.order.indexOf('enemy-0') };
+    st.combatants.find((c) => c.id === 'enemy-0')!.abilityUses = 0;
+    st = performEnemyTurn(st, hit);
+    expect(st.lastAttack?.kind).toBe('attack');
+    expect(st.combatants.find((c) => c.id === 'h1')!.nextAttack).toBeUndefined();
+  });
 });

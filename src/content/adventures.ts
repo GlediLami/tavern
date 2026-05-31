@@ -1,6 +1,7 @@
 import brackenmoorData from './adventure.json';
 import snakewaterData from './snakewater.json';
 import chaoticCavesData from './chaoticcaves.json';
+import arenaData from './arena.json';
 import type { Adventure } from '../types';
 
 export interface AdventureEntry {
@@ -38,6 +39,14 @@ export const ADVENTURES: AdventureEntry[] = [
     emoji: '🗝️',
     attribution: 'Adapted from “The Chaotic Caves” (Basic Fantasy RPG) · CC BY-SA 4.0',
     data: chaoticCavesData as unknown as Adventure,
+  },
+  {
+    id: 'arena',
+    title: (arenaData as unknown as Adventure).title,
+    tagline: 'A gauntlet of three bouts against the champions of Karth’s fighting pit. Survive all three for the purse.',
+    mood: 'Gauntlet · Arena · Boss',
+    emoji: '🏟️',
+    data: arenaData as unknown as Adventure,
   },
 ];
 

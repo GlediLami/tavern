@@ -3,262 +3,684 @@
   "startSceneId": "tavern_start",
   "scenes": {
     "tavern_start": {
-      "id": "tavern_start", "type": "story", "title": "The Sign of the Drowned Lantern",
+      "id": "tavern_start",
+      "type": "story",
+      "title": "The Sign of the Drowned Lantern",
       "narration": "Rain drums the shutters of the Drowned Lantern as your band shares the only dry table. The innkeep, a wiry woman named Otha, sets down her rag: the village bell of Brackenmoor has begun tolling on its own at midnight, and three folk who went to investigate never came back. She slides a purse of silver across the warped wood.",
       "choices": [
-        { "id": "c_accept", "text": "Take the coin and agree.", "next": "tavern_talk" },
-        { "id": "c_eavesdrop", "text": "Listen to the muttering locals first.", "check": { "skill": "perception", "dc": 12 }, "attemptedBy": "any", "onSuccess": "tavern_rumor_good", "onFailure": "tavern_rumor_bad" }
+        {
+          "id": "c_accept",
+          "text": "Take the coin and agree.",
+          "next": "tavern_talk"
+        },
+        {
+          "id": "c_eavesdrop",
+          "text": "Listen to the muttering locals first.",
+          "check": {
+            "skill": "perception",
+            "dc": 12
+          },
+          "attemptedBy": "any",
+          "onSuccess": "tavern_rumor_good",
+          "onFailure": "tavern_rumor_bad"
+        }
       ]
     },
     "tavern_talk": {
-      "id": "tavern_talk", "type": "story", "title": "Otha's Warning",
+      "id": "tavern_talk",
+      "type": "story",
+      "title": "Otha's Warning",
       "narration": "Otha lowers her voice. The old tower sits past the marsh road, and lately the marsh has crept closer, swallowing the old shrine. \"Two roads lead up — the marsh path, quick but wet, and the ridge trail, dry but watched.\" She presses a cold iron key into your palm. \"Ask around the square first, if you've the stomach for it.\"",
       "choices": [
-        { "id": "c_to_village", "text": "Step out into the rain-washed village.", "next": "village_square" }
+        {
+          "id": "c_to_village",
+          "text": "Step out into the rain-washed village.",
+          "next": "village_square"
+        }
       ]
     },
     "tavern_rumor_good": {
-      "id": "tavern_rumor_good", "type": "story", "title": "Whispers Worth Hearing",
+      "id": "tavern_rumor_good",
+      "type": "story",
+      "title": "Whispers Worth Hearing",
       "narration": "You catch a drunk fisher muttering that the tolling started the night the old gravedigger's son went missing, and that cold iron \"quiets the dead things.\" Otha nods approvingly and hands you a cold iron key and a flask of oil.",
       "choices": [
-        { "id": "c_to_village2", "text": "Head out into the village square.", "next": "village_square" }
+        {
+          "id": "c_to_village2",
+          "text": "Head out into the village square.",
+          "next": "village_square"
+        }
       ]
     },
     "tavern_rumor_bad": {
-      "id": "tavern_rumor_bad", "type": "story", "title": "Drunken Nonsense",
+      "id": "tavern_rumor_bad",
+      "type": "story",
+      "title": "Drunken Nonsense",
       "narration": "You lean in, but the locals only trade ghost stories and spilled ale, and one takes offense at your prying. Otha waves you back before it turns ugly and hands you a cold iron key. \"Go on then, before you start a brawl in my common room.\"",
       "choices": [
-        { "id": "c_to_village3", "text": "Head out into the village square.", "next": "village_square" }
+        {
+          "id": "c_to_village3",
+          "text": "Head out into the village square.",
+          "next": "village_square"
+        }
       ]
     },
     "village_square": {
-      "id": "village_square", "type": "story", "title": "The Drowning Square",
+      "id": "village_square",
+      "type": "story",
+      "title": "The Drowning Square",
       "narration": "Brackenmoor huddles in the rain, shutters latched against the dark, the crooked bell-tower black against the clouds above the rooftops. A few windows glow with frightened candlelight. The gravedigger's cottage stands empty at the edge of the churchyard, its door ajar — and the tower road waits past the last houses.",
       "choices": [
-        { "id": "c_cottage", "text": "Search the gravedigger's abandoned cottage.", "next": "gravedigger_cottage" },
-        { "id": "c_setout", "text": "Head straight for the tower road.", "next": "route_choice" }
+        {
+          "id": "c_cottage",
+          "text": "Search the gravedigger's abandoned cottage.",
+          "next": "gravedigger_cottage"
+        },
+        {
+          "id": "c_setout",
+          "text": "Head straight for the tower road.",
+          "next": "route_choice"
+        }
       ]
     },
     "gravedigger_cottage": {
-      "id": "gravedigger_cottage", "type": "story", "title": "The Gravedigger's Cottage",
+      "id": "gravedigger_cottage",
+      "type": "story",
+      "title": "The Gravedigger's Cottage",
       "narration": "Inside, the cottage has been ransacked — by the owner, it seems, in a hurry. A cold hearth, a half-packed bag, and a fresh patch of dug earth in the dirt floor where something was buried, then taken back up. Papers lie scattered in the damp.",
       "choices": [
-        { "id": "c_search_cottage", "text": "Sift the scattered papers for anything useful.", "check": { "skill": "investigation", "dc": 12 }, "attemptedBy": "any", "onSuccess": "cottage_clue", "onFailure": "route_choice" },
-        { "id": "c_leave_cottage", "text": "Leave it and make for the tower road.", "next": "route_choice" }
+        {
+          "id": "c_search_cottage",
+          "text": "Sift the scattered papers for anything useful.",
+          "check": {
+            "skill": "investigation",
+            "dc": 12
+          },
+          "attemptedBy": "any",
+          "onSuccess": "cottage_clue",
+          "onFailure": "route_choice"
+        },
+        {
+          "id": "c_leave_cottage",
+          "text": "Leave it and make for the tower road.",
+          "next": "route_choice"
+        }
       ]
     },
     "cottage_clue": {
-      "id": "cottage_clue", "type": "story", "title": "A Torn Confession",
+      "id": "cottage_clue",
+      "type": "story",
+      "title": "A Torn Confession",
       "narration": "Among the litter you find a torn page in a shaking hand: the gravedigger took the bell's silver clapper to sell, and since that night the dead will not lie still. The last legible line reads — \"only the clapper, set back in cold iron, will quiet the tolling.\" You pocket it; now you know what the tower wants.",
       "choices": [
-        { "id": "c_clue_go", "text": "Set out for the tower, the truth in hand.", "next": "route_choice" }
+        {
+          "id": "c_clue_go",
+          "text": "Set out for the tower, the truth in hand.",
+          "next": "route_choice"
+        }
       ]
     },
     "route_choice": {
-      "id": "route_choice", "type": "story", "title": "The Forking Road",
+      "id": "route_choice",
+      "type": "story",
+      "title": "The Forking Road",
       "narration": "Past the last cottage the road splits beneath a leaning signpost. To the left, the marsh path glistens, quick but treacherous, the old shrine half-sunk in its fog. To the right, the ridge trail climbs dry and stony — but lately something hunts the gorse along it.",
       "choices": [
-        { "id": "c_marsh", "text": "Take the marsh path.", "next": "marsh_approach" },
-        { "id": "c_ridge", "text": "Take the ridge trail.", "next": "ridge_approach" }
+        {
+          "id": "c_marsh",
+          "text": "Take the marsh path.",
+          "next": "marsh_approach"
+        },
+        {
+          "id": "c_ridge",
+          "text": "Take the ridge trail.",
+          "next": "ridge_approach"
+        }
       ]
     },
     "marsh_approach": {
-      "id": "marsh_approach", "type": "story", "title": "The Sunken Road",
+      "id": "marsh_approach",
+      "type": "story",
+      "title": "The Sunken Road",
       "narration": "The marsh path is a ribbon of mud between black pools, fog clinging to your knees. Halfway across you spot the half-sunk shrine, and a glint of something metallic among its toppled stones. Webbing stretches thick across the shrine's doorway.",
       "choices": [
-        { "id": "c_search_shrine", "text": "Search the shrine ruins.", "check": { "skill": "investigation", "dc": 13 }, "attemptedBy": "any", "onSuccess": "marsh_relic", "onFailure": "marsh_spider" },
-        { "id": "c_avoid_shrine", "text": "Skirt the webbing and press on.", "next": "marsh_crossing" }
+        {
+          "id": "c_search_shrine",
+          "text": "Search the shrine ruins.",
+          "check": {
+            "skill": "investigation",
+            "dc": 13
+          },
+          "attemptedBy": "any",
+          "onSuccess": "marsh_relic",
+          "onFailure": "marsh_spider"
+        },
+        {
+          "id": "c_avoid_shrine",
+          "text": "Skirt the webbing and press on.",
+          "next": "marsh_crossing"
+        }
       ]
     },
     "marsh_relic": {
-      "id": "marsh_relic", "type": "story", "title": "The Silver Clapper",
+      "id": "marsh_relic",
+      "type": "story",
+      "title": "The Silver Clapper",
       "narration": "Among the stones you pry loose a silver bell-clapper etched with old wards — the very piece torn from the tower bell. It hums faintly when the wind shifts north. As you stand, dry webbing crackles overhead.",
       "choices": [
-        { "id": "c_relic_fight", "text": "Ready yourselves — something's in the web.", "next": "marsh_spider" },
-        { "id": "c_relic_flee", "text": "Take the clapper and slip away quickly.", "next": "marsh_crossing" }
+        {
+          "id": "c_relic_fight",
+          "text": "Ready yourselves — something's in the web.",
+          "next": "marsh_spider"
+        },
+        {
+          "id": "c_relic_flee",
+          "text": "Take the clapper and slip away quickly.",
+          "next": "marsh_crossing"
+        }
       ]
     },
     "marsh_spider": {
-      "id": "marsh_spider", "type": "combat", "title": "Thing in the Web",
+      "id": "marsh_spider",
+      "type": "combat",
+      "title": "Thing in the Web",
       "narration": "A giant spider drops from the shrine's rafters on a line of silk, fangs glistening, and a second skitters from a flooded alcove.",
       "enemies": [
-        { "name": "Giant Spider", "maxHp": 14, "ac": 14, "attack": { "name": "Bite", "toHit": 5, "damageDice": "1d6", "damageBonus": 3 } },
-        { "name": "Lesser Spider", "maxHp": 10, "ac": 13, "attack": { "name": "Bite", "toHit": 4, "damageDice": "1d6", "damageBonus": 2 } }
+        {
+          "name": "Giant Spider",
+          "maxHp": 14,
+          "ac": 14,
+          "attack": {
+            "name": "Bite",
+            "toHit": 5,
+            "damageDice": "1d6",
+            "damageBonus": 3
+          },
+          "ability": {
+            "name": "Web",
+            "kind": "debuff",
+            "uses": 1,
+            "description": "Snares a hero — disadvantage on their next attack."
+          }
+        },
+        {
+          "name": "Lesser Spider",
+          "maxHp": 10,
+          "ac": 13,
+          "attack": {
+            "name": "Bite",
+            "toHit": 4,
+            "damageDice": "1d6",
+            "damageBonus": 2
+          }
+        }
       ],
-      "onVictory": "marsh_crossing", "onDefeat": "ending_cocoon"
+      "onVictory": "marsh_crossing",
+      "onDefeat": "ending_cocoon"
     },
     "marsh_crossing": {
-      "id": "marsh_crossing", "type": "story", "title": "The Sinking Mire",
+      "id": "marsh_crossing",
+      "type": "story",
+      "title": "The Sinking Mire",
       "narration": "Beyond the shrine the path dissolves into a quaking bog, the tower hill rising just across it. Reeds hiss in the wind, and the mud sucks hungrily at every step. One wrong footing and the mire will swallow you whole.",
       "choices": [
-        { "id": "c_cross_leap", "text": "Pick a fast line and leap the firm tussocks.", "check": { "skill": "athletics", "dc": 12 }, "attemptedBy": "any", "onSuccess": "tower_base", "onFailure": "marsh_sink" },
-        { "id": "c_cross_careful", "text": "Read the ground and pick a careful path.", "check": { "skill": "survival", "dc": 12 }, "attemptedBy": "any", "onSuccess": "tower_base", "onFailure": "marsh_sink" }
+        {
+          "id": "c_cross_leap",
+          "text": "Pick a fast line and leap the firm tussocks.",
+          "check": {
+            "skill": "athletics",
+            "dc": 12
+          },
+          "attemptedBy": "any",
+          "onSuccess": "tower_base",
+          "onFailure": "marsh_sink"
+        },
+        {
+          "id": "c_cross_careful",
+          "text": "Read the ground and pick a careful path.",
+          "check": {
+            "skill": "survival",
+            "dc": 12
+          },
+          "attemptedBy": "any",
+          "onSuccess": "tower_base",
+          "onFailure": "marsh_sink"
+        }
       ]
     },
     "marsh_sink": {
-      "id": "marsh_sink", "type": "story", "title": "Dragged from the Mud",
+      "id": "marsh_sink",
+      "type": "story",
+      "title": "Dragged from the Mud",
       "narration": "The bog opens and one of you plunges to the chest in cold black water, the marsh pulling like a living thing. Hands grab, a belt is thrown, and with a wet roar you haul your companion free — soaked, shaken, but whole. The tower hill is close now.",
       "choices": [
-        { "id": "c_sink_on", "text": "Drag yourselves onto firm ground and climb.", "next": "tower_base" }
+        {
+          "id": "c_sink_on",
+          "text": "Drag yourselves onto firm ground and climb.",
+          "next": "tower_base"
+        }
       ]
     },
     "ridge_approach": {
-      "id": "ridge_approach", "type": "story", "title": "The Watched Trail",
+      "id": "ridge_approach",
+      "type": "story",
+      "title": "The Watched Trail",
       "narration": "The ridge trail climbs dry and stony, but you feel eyes in the gorse. Below, the bell tower's broken silhouette leans against a bruised sky. A low growl rolls out of the brush ahead, and yellow eyes catch the last light.",
       "choices": [
-        { "id": "c_sneak_ridge", "text": "Move quietly past the pack.", "check": { "skill": "stealth", "dc": 12 }, "attemptedBy": "any", "onSuccess": "ridge_shrine", "onFailure": "ridge_wolves" },
-        { "id": "c_scare_ridge", "text": "Stand tall and drive them off.", "check": { "skill": "intimidation", "dc": 14 }, "attemptedBy": "any", "onSuccess": "ridge_clear", "onFailure": "ridge_wolves" }
+        {
+          "id": "c_sneak_ridge",
+          "text": "Move quietly past the pack.",
+          "check": {
+            "skill": "stealth",
+            "dc": 12
+          },
+          "attemptedBy": "any",
+          "onSuccess": "ridge_shrine",
+          "onFailure": "ridge_wolves"
+        },
+        {
+          "id": "c_scare_ridge",
+          "text": "Stand tall and drive them off.",
+          "check": {
+            "skill": "intimidation",
+            "dc": 14
+          },
+          "attemptedBy": "any",
+          "onSuccess": "ridge_clear",
+          "onFailure": "ridge_wolves"
+        }
       ]
     },
     "ridge_clear": {
-      "id": "ridge_clear", "type": "story", "title": "Backing Down the Pack",
+      "id": "ridge_clear",
+      "type": "story",
+      "title": "Backing Down the Pack",
       "narration": "You roar and brandish your weapons; the wolves flatten their ears and slink back into the gorse. The way up the ridge lies open, and you've lost no blood doing it.",
       "choices": [
-        { "id": "c_to_shrine", "text": "Climb on toward the tower.", "next": "ridge_shrine" }
+        {
+          "id": "c_to_shrine",
+          "text": "Climb on toward the tower.",
+          "next": "ridge_shrine"
+        }
       ]
     },
     "ridge_wolves": {
-      "id": "ridge_wolves", "type": "combat", "title": "The Pack Strikes",
+      "id": "ridge_wolves",
+      "type": "combat",
+      "title": "The Pack Strikes",
       "narration": "Two lean wolves burst from the brush, snapping at your heels, driving you back against the rocks.",
       "enemies": [
-        { "name": "Wolf", "maxHp": 11, "ac": 13, "attack": { "name": "Bite", "toHit": 4, "damageDice": "2d4", "damageBonus": 2 } },
-        { "name": "Wolf", "maxHp": 11, "ac": 13, "attack": { "name": "Bite", "toHit": 4, "damageDice": "2d4", "damageBonus": 2 } }
+        {
+          "name": "Wolf",
+          "maxHp": 11,
+          "ac": 13,
+          "attack": {
+            "name": "Bite",
+            "toHit": 4,
+            "damageDice": "2d4",
+            "damageBonus": 2
+          }
+        },
+        {
+          "name": "Wolf",
+          "maxHp": 11,
+          "ac": 13,
+          "attack": {
+            "name": "Bite",
+            "toHit": 4,
+            "damageDice": "2d4",
+            "damageBonus": 2
+          }
+        }
       ],
-      "onVictory": "ridge_shrine", "onDefeat": "ending_pack"
+      "onVictory": "ridge_shrine",
+      "onDefeat": "ending_pack"
     },
     "ridge_shrine": {
-      "id": "ridge_shrine", "type": "story", "title": "The Wayshrine", "rest": true,
+      "id": "ridge_shrine",
+      "type": "story",
+      "title": "The Wayshrine",
+      "rest": true,
       "narration": "Near the crest stands a weathered wayshrine to a forgotten god of safe passage, its little roof keeping a circle of dry stone. A traveler's mark is scratched fresh on its base. The tower waits just beyond, but here, for a moment, the cold eases.",
       "choices": [
-        { "id": "c_pray", "text": "Speak the old rite of safe passage.", "check": { "skill": "religion", "dc": 12 }, "attemptedBy": "any", "onSuccess": "ridge_boon", "onFailure": "tower_base" },
-        { "id": "c_rest_shrine", "text": "Catch your breath and move on.", "next": "tower_base" }
+        {
+          "id": "c_pray",
+          "text": "Speak the old rite of safe passage.",
+          "check": {
+            "skill": "religion",
+            "dc": 12
+          },
+          "attemptedBy": "any",
+          "onSuccess": "ridge_boon",
+          "onFailure": "tower_base"
+        },
+        {
+          "id": "c_rest_shrine",
+          "text": "Catch your breath and move on.",
+          "next": "tower_base"
+        }
       ]
     },
     "ridge_boon": {
-      "id": "ridge_boon", "type": "story", "title": "A Small Grace",
+      "id": "ridge_boon",
+      "type": "story",
+      "title": "A Small Grace",
       "narration": "The words come right, and for a heartbeat the shrine's worn carving seems to warm. A quiet steadiness settles over the party — the kind that keeps a hand from shaking when the dark closes in. You climb the last of the ridge with your courage gathered.",
       "choices": [
-        { "id": "c_boon_go", "text": "Continue to the tower.", "next": "tower_base" }
+        {
+          "id": "c_boon_go",
+          "text": "Continue to the tower.",
+          "next": "tower_base"
+        }
       ]
     },
     "tower_base": {
-      "id": "tower_base", "type": "story", "title": "The Leaning Tower",
+      "id": "tower_base",
+      "type": "story",
+      "title": "The Leaning Tower",
       "narration": "The bell tower of Brackenmoor rises crooked from the hilltop, its door barred from within by a rusted iron lock. Above, the great bronze bell hangs silent — but its clapper is missing, gouged free. Scratch marks claw the stone around the threshold.",
       "choices": [
-        { "id": "c_unlock", "text": "Use Otha's iron key on the lock.", "next": "tower_interior" },
-        { "id": "c_force", "text": "Force the door instead.", "check": { "skill": "athletics", "dc": 13 }, "attemptedBy": "any", "onSuccess": "tower_interior", "onFailure": "tower_noise" }
+        {
+          "id": "c_unlock",
+          "text": "Use Otha's iron key on the lock.",
+          "next": "tower_interior"
+        },
+        {
+          "id": "c_force",
+          "text": "Force the door instead.",
+          "check": {
+            "skill": "athletics",
+            "dc": 13
+          },
+          "attemptedBy": "any",
+          "onSuccess": "tower_interior",
+          "onFailure": "tower_noise"
+        }
       ]
     },
     "tower_noise": {
-      "id": "tower_noise", "type": "story", "title": "A Bad Entrance",
+      "id": "tower_noise",
+      "type": "story",
+      "title": "A Bad Entrance",
       "narration": "The door splinters loudly, and the racket wakes whatever waits inside. Bone scrapes on stone in the dark above, and the cold smell of grave-dirt rolls down the stair. There's no quiet way in now.",
       "choices": [
-        { "id": "c_brace_noise", "text": "Climb up into the dark.", "next": "crypt_landing" }
+        {
+          "id": "c_brace_noise",
+          "text": "Climb up into the dark.",
+          "next": "crypt_landing"
+        }
       ]
     },
     "tower_interior": {
-      "id": "tower_interior", "type": "story", "title": "Up the Winding Stair",
+      "id": "tower_interior",
+      "type": "story",
+      "title": "Up the Winding Stair",
       "narration": "Inside, a spiral stair winds up past rotted ropes and a scatter of old bones. Cold air breathes down from the belfry, and somewhere above, knuckles of bone tap a slow rhythm against bronze. On the lowest step lies a journal, its last page fresh.",
       "choices": [
-        { "id": "c_read_journal", "text": "Read the journal.", "check": { "skill": "investigation", "dc": 11 }, "attemptedBy": "any", "onSuccess": "tower_lore", "onFailure": "crypt_landing" },
-        { "id": "c_climb_now", "text": "Climb straight on into the dark.", "next": "crypt_landing" }
+        {
+          "id": "c_read_journal",
+          "text": "Read the journal.",
+          "check": {
+            "skill": "investigation",
+            "dc": 11
+          },
+          "attemptedBy": "any",
+          "onSuccess": "tower_lore",
+          "onFailure": "crypt_landing"
+        },
+        {
+          "id": "c_climb_now",
+          "text": "Climb straight on into the dark.",
+          "next": "crypt_landing"
+        }
       ]
     },
     "tower_lore": {
-      "id": "tower_lore", "type": "story", "title": "The Gravedigger's Confession",
+      "id": "tower_lore",
+      "type": "story",
+      "title": "The Gravedigger's Confession",
       "narration": "The journal is the gravedigger's: he stole the bell's silver clapper to sell, and the wards broke — now the restless dead climb the tower each midnight, drawn to ring it whole again. The final line reads: \"Only the clapper, set back in iron, will silence them.\"",
       "choices": [
-        { "id": "c_lore_go", "text": "Climb toward the cold and the tapping.", "next": "tower_archive" }
+        {
+          "id": "c_lore_go",
+          "text": "Climb toward the cold and the tapping.",
+          "next": "tower_archive"
+        }
       ]
     },
     "tower_archive": {
-      "id": "tower_archive", "type": "story", "title": "The Bellringer's Archive",
+      "id": "tower_archive",
+      "type": "story",
+      "title": "The Bellringer's Archive",
       "narration": "Halfway up, the stair opens into a cramped archive of mildewed ledgers and a cracked stained-glass window. The whispering is louder here, words in no living tongue. Among the rotting books, one shelf holds the bell-wardens' rites, their spines stamped with cold iron.",
       "choices": [
-        { "id": "c_archive_search", "text": "Search the shelves for the warding rite.", "check": { "skill": "arcana", "dc": 12 }, "attemptedBy": "any", "onSuccess": "archive_rite", "onFailure": "crypt_landing" },
-        { "id": "c_archive_press", "text": "Leave the books and press on up the stair.", "next": "crypt_landing" }
+        {
+          "id": "c_archive_search",
+          "text": "Search the shelves for the warding rite.",
+          "check": {
+            "skill": "arcana",
+            "dc": 12
+          },
+          "attemptedBy": "any",
+          "onSuccess": "archive_rite",
+          "onFailure": "crypt_landing"
+        },
+        {
+          "id": "c_archive_press",
+          "text": "Leave the books and press on up the stair.",
+          "next": "crypt_landing"
+        }
       ]
     },
     "archive_rite": {
-      "id": "archive_rite", "type": "story", "title": "The Warding Rite",
+      "id": "archive_rite",
+      "type": "story",
+      "title": "The Warding Rite",
       "narration": "You find it: a brittle leaf of vellum bearing the rite to seal the bell, the words to speak as the clapper is set home. You commit the cadence to memory. Whatever guards the belfry, you now know how to end its vigil — if you can survive the climb.",
       "choices": [
-        { "id": "c_rite_go", "text": "Climb on, the rite held fast in mind.", "next": "crypt_landing" }
+        {
+          "id": "c_rite_go",
+          "text": "Climb on, the rite held fast in mind.",
+          "next": "crypt_landing"
+        }
       ]
     },
     "crypt_landing": {
-      "id": "crypt_landing", "type": "story", "title": "The Reliquary Landing",
+      "id": "crypt_landing",
+      "type": "story",
+      "title": "The Reliquary Landing",
       "narration": "The stair widens onto a landing lined with old burial niches — the resting place of Brackenmoor's bell-wardens, now broken open from the inside. Grave-dust hangs in the cold air, and in the dark the niches are emptying: grasping hands and a shambling shape drag themselves free to bar your way up.",
       "choices": [
-        { "id": "c_face_crawlers", "text": "Set yourselves and meet the dead.", "next": "fight_crawlers" }
+        {
+          "id": "c_face_crawlers",
+          "text": "Set yourselves and meet the dead.",
+          "next": "fight_crawlers"
+        }
       ]
     },
     "fight_crawlers": {
-      "id": "fight_crawlers", "type": "combat", "title": "The Restless Niches",
+      "id": "fight_crawlers",
+      "type": "combat",
+      "title": "The Restless Niches",
       "narration": "A bloated grave-corpse lurches off its slab while severed hands skitter across the stone like pale spiders, clutching for your ankles.",
       "enemies": [
-        { "name": "Shambling Corpse", "maxHp": 12, "ac": 11, "attack": { "name": "Slam", "toHit": 3, "damageDice": "1d6", "damageBonus": 1 } },
-        { "name": "Grasping Hand", "maxHp": 5, "ac": 12, "attack": { "name": "Clutch", "toHit": 3, "damageDice": "1d4", "damageBonus": 1 } }
+        {
+          "name": "Shambling Corpse",
+          "maxHp": 12,
+          "ac": 11,
+          "attack": {
+            "name": "Slam",
+            "toHit": 3,
+            "damageDice": "1d6",
+            "damageBonus": 1
+          }
+        },
+        {
+          "name": "Grasping Hand",
+          "maxHp": 5,
+          "ac": 12,
+          "attack": {
+            "name": "Clutch",
+            "toHit": 3,
+            "damageDice": "1d4",
+            "damageBonus": 1
+          }
+        }
       ],
-      "onVictory": "belfry_approach", "onDefeat": "ending_tolled"
+      "onVictory": "belfry_approach",
+      "onDefeat": "ending_tolled"
     },
     "belfry_approach": {
-      "id": "belfry_approach", "type": "story", "title": "The Last Stair",
+      "id": "belfry_approach",
+      "type": "story",
+      "title": "The Last Stair",
       "narration": "Past the broken niches the final stair narrows and climbs steeply toward a square of grey night sky — the belfry. The cold here bites like winter, and the slow bone-on-bronze tapping has quickened, as though something above knows you are coming. Midnight is close.",
       "choices": [
-        { "id": "c_final_climb", "text": "Climb the last stair to the belfry.", "next": "tower_guardians" }
+        {
+          "id": "c_final_climb",
+          "text": "Climb the last stair to the belfry.",
+          "next": "tower_guardians"
+        }
       ]
     },
     "tower_guardians": {
-      "id": "tower_guardians", "type": "combat", "title": "The Midnight Wardens",
+      "id": "tower_guardians",
+      "type": "combat",
+      "title": "The Midnight Wardens",
       "narration": "In the belfry, three skeletons turn from the great bell, eye-sockets glowing cold. Bony fingers close on rusted blades as they lurch to defend the tower.",
       "enemies": [
-        { "name": "Skeleton", "maxHp": 13, "ac": 13, "attack": { "name": "Shortsword", "toHit": 4, "damageDice": "1d6", "damageBonus": 2 } },
-        { "name": "Skeleton", "maxHp": 13, "ac": 13, "attack": { "name": "Shortsword", "toHit": 4, "damageDice": "1d6", "damageBonus": 2 } },
-        { "name": "Bell-Warden", "maxHp": 9, "ac": 12, "attack": { "name": "Rusted Claw", "toHit": 3, "damageDice": "1d4", "damageBonus": 1 } }
+        {
+          "name": "Skeleton",
+          "maxHp": 13,
+          "ac": 13,
+          "attack": {
+            "name": "Shortsword",
+            "toHit": 4,
+            "damageDice": "1d6",
+            "damageBonus": 2
+          }
+        },
+        {
+          "name": "Skeleton",
+          "maxHp": 13,
+          "ac": 13,
+          "attack": {
+            "name": "Shortsword",
+            "toHit": 4,
+            "damageDice": "1d6",
+            "damageBonus": 2
+          }
+        },
+        {
+          "name": "Bell-Warden",
+          "maxHp": 9,
+          "ac": 12,
+          "attack": {
+            "name": "Rusted Claw",
+            "toHit": 3,
+            "damageDice": "1d4",
+            "damageBonus": 1
+          },
+          "ability": {
+            "name": "Dirge",
+            "kind": "debuff",
+            "uses": 1,
+            "description": "A chilling dirge — a hero attacks with disadvantage."
+          }
+        }
       ],
-      "onVictory": "belfry_choice", "onDefeat": "ending_tolled"
+      "onVictory": "belfry_choice",
+      "onDefeat": "ending_tolled"
     },
     "belfry_choice": {
-      "id": "belfry_choice", "type": "story", "title": "The Silent Bell",
+      "id": "belfry_choice",
+      "type": "story",
+      "title": "The Silent Bell",
       "narration": "The bones clatter to stillness, but the belfry air still hums with wrongness — the bell wants to ring. Midnight is moments away. Something must be set right, not merely fought.",
       "choices": [
-        { "id": "c_use_clapper", "text": "Set the silver clapper back into the iron mount.", "next": "belfry_restore" },
-        { "id": "c_search_belfry", "text": "Speak the warding rite over the bell.", "check": { "skill": "religion", "dc": 12 }, "attemptedBy": "any", "onSuccess": "belfry_restore", "onFailure": "belfry_ring" }
+        {
+          "id": "c_use_clapper",
+          "text": "Set the silver clapper back into the iron mount.",
+          "next": "belfry_restore"
+        },
+        {
+          "id": "c_search_belfry",
+          "text": "Speak the warding rite over the bell.",
+          "check": {
+            "skill": "religion",
+            "dc": 12
+          },
+          "attemptedBy": "any",
+          "onSuccess": "belfry_restore",
+          "onFailure": "belfry_ring"
+        }
       ]
     },
     "belfry_restore": {
-      "id": "belfry_restore", "type": "story", "title": "Setting It Right",
+      "id": "belfry_restore",
+      "type": "story",
+      "title": "Setting It Right",
       "narration": "You fit the silver clapper into its iron cradle and speak the ward etched along its length. As the final stroke of midnight nears, the bell tolls once — clear, true, and clean — and the cold weight lifts from the tower like fog burning off at dawn.",
       "choices": [
-        { "id": "c_finish", "text": "Descend into the quiet morning.", "next": "ending_victory" }
+        {
+          "id": "c_finish",
+          "text": "Descend into the quiet morning.",
+          "next": "ending_victory"
+        }
       ]
     },
     "belfry_ring": {
-      "id": "belfry_ring", "type": "story", "title": "The Wrong Stroke",
+      "id": "belfry_ring",
+      "type": "story",
+      "title": "The Wrong Stroke",
       "narration": "You find nothing in time. At the stroke of midnight the empty bell shudders, and a thin clapper of knitted finger-bones rises to strike it. The toll that rings out is wrong, hungry, and it answers — something vast stirs beneath the marsh.",
       "choices": [
-        { "id": "c_flee_ring", "text": "Flee the tower before it answers fully.", "check": { "skill": "athletics", "dc": 12 }, "attemptedBy": "any", "onSuccess": "ending_escape", "onFailure": "ending_tolled" }
+        {
+          "id": "c_flee_ring",
+          "text": "Flee the tower before it answers fully.",
+          "check": {
+            "skill": "athletics",
+            "dc": 12
+          },
+          "attemptedBy": "any",
+          "onSuccess": "ending_escape",
+          "onFailure": "ending_tolled"
+        }
       ]
     },
     "ending_victory": {
-      "id": "ending_victory", "type": "ending", "endingType": "victory", "title": "The Bell That Sleeps",
+      "id": "ending_victory",
+      "type": "ending",
+      "endingType": "victory",
+      "title": "The Bell That Sleeps",
       "narration": "Brackenmoor wakes to a bell that tolls only at dawn, as it should. Otha pays your silver twice over, and the lost folk's families light candles in your name. The marsh recedes, and the Drowned Lantern's hearth has never felt warmer. You are heroes of a quiet, saved village."
     },
     "ending_escape": {
-      "id": "ending_escape", "type": "ending", "endingType": "victory", "title": "Alive, If Not Triumphant",
+      "id": "ending_escape",
+      "type": "ending",
+      "endingType": "victory",
+      "title": "Alive, If Not Triumphant",
       "narration": "You hurl yourselves down the stair as the wrong bell screams behind you, and burst into the rain with your lives. The tolling stops by dawn on its own, exhausted — but Brackenmoor knows the tower is not truly clean. Otha pays you half, and warns you'll be needed again."
     },
     "ending_cocoon": {
-      "id": "ending_cocoon", "type": "ending", "endingType": "defeat", "title": "Wrapped in Silk",
+      "id": "ending_cocoon",
+      "type": "ending",
+      "endingType": "defeat",
+      "title": "Wrapped in Silk",
       "narration": "The spiders drag your stilled bodies into the flooded shrine, to be unwrapped at leisure. The bell of Brackenmoor tolls on, and Otha's silver goes uncollected. No one comes looking this time."
     },
     "ending_pack": {
-      "id": "ending_pack", "type": "ending", "endingType": "defeat", "title": "The Ridge Wolves Feast",
+      "id": "ending_pack",
+      "type": "ending",
+      "endingType": "defeat",
+      "title": "The Ridge Wolves Feast",
       "narration": "The pack pulls you down among the cold stones of the ridge trail, and the gorse swallows your cries. The tower still leans crooked against the sky, its clapper still missing, its midnight bell still tolling for the next fools brave enough to climb."
     },
     "ending_tolled": {
-      "id": "ending_tolled", "type": "ending", "endingType": "defeat", "title": "Bound to the Bell",
+      "id": "ending_tolled",
+      "type": "ending",
+      "endingType": "defeat",
+      "title": "Bound to the Bell",
       "narration": "You fall in the tower, and the cold seeps into your bones before they cool. Come the next midnight, new wardens turn to guard the bell — yours among them — tapping out the slow rhythm that will lure others to their doom."
     }
   }

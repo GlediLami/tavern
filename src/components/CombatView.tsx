@@ -151,6 +151,7 @@ export function CombatView() {
                   <div className="row" style={{ gap: 8, marginTop: 5, fontSize: '0.82rem' }}>
                     <span className="muted">{e.hp}/{e.maxHp} HP</span>
                     <span className="tag">AC {e.ac}</span>
+                    {e.ability && <span className="tag" title={e.ability.description}>✦ {e.ability.name}</span>}
                   </div>
                 </button>
               );

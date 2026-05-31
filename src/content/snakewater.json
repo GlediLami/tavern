@@ -3,226 +3,605 @@
   "startSceneId": "road_start",
   "scenes": {
     "road_start": {
-      "id": "road_start", "type": "story", "title": "Smoke Over the Mill",
+      "id": "road_start",
+      "type": "story",
+      "title": "Smoke Over the Mill",
       "narration": "Morning sun cuts gold across the Snakewater valley, but a thread of black smoke ruins it — the river mill is burning. A breathless boy stumbles up the road and grabs your stirrup: raiders struck at dawn, torched the wheelhouse, and dragged off the miller's daughter, Wren, toward the old smuggler caves. 'Please,' he gasps, 'you're the only swords for a day's ride.'",
       "choices": [
-        { "id": "c_ride", "text": "Ride straight for the ford.", "next": "ford_approach" },
-        { "id": "c_question", "text": "Calm the boy and learn what he saw.", "check": { "skill": "persuasion", "dc": 11 }, "attemptedBy": "any", "onSuccess": "boy_intel", "onFailure": "ford_approach" }
+        {
+          "id": "c_ride",
+          "text": "Ride straight for the ford.",
+          "next": "ford_approach"
+        },
+        {
+          "id": "c_question",
+          "text": "Calm the boy and learn what he saw.",
+          "check": {
+            "skill": "persuasion",
+            "dc": 11
+          },
+          "attemptedBy": "any",
+          "onSuccess": "boy_intel",
+          "onFailure": "ford_approach"
+        }
       ]
     },
     "boy_intel": {
-      "id": "boy_intel", "type": "story", "title": "What the Boy Saw",
+      "id": "boy_intel",
+      "type": "story",
+      "title": "What the Boy Saw",
       "narration": "The boy steadies. 'Little scaly ones — dog-sized, with slings — maybe a dozen. But they listened to a big man in a red sash, scar across his jaw. He's the one who took Wren.' He points past the willows: two ways up to the caves. 'The ford's fast but open. The goat-track round the back is quiet, if you can climb.'",
       "choices": [
-        { "id": "c_ford2", "text": "Take the open ford.", "next": "ford_approach" },
-        { "id": "c_track", "text": "Take the quiet goat-track.", "next": "goat_track" }
+        {
+          "id": "c_ford2",
+          "text": "Take the open ford.",
+          "next": "ford_approach"
+        },
+        {
+          "id": "c_track",
+          "text": "Take the quiet goat-track.",
+          "next": "goat_track"
+        }
       ]
     },
     "ford_approach": {
-      "id": "ford_approach", "type": "story", "title": "The Snakewater Ford",
+      "id": "ford_approach",
+      "type": "story",
+      "title": "The Snakewater Ford",
       "narration": "The ford froths white over flat stones, and on the far bank two kobolds crouch behind a driftwood barricade, slings loaded, sunlight glinting off their pebble-shot. They haven't spotted you yet — but the crossing is loud and exposed. Upstream, a fallen log offers a quieter span.",
       "choices": [
-        { "id": "c_charge_ford", "text": "Splash across and rush the barricade.", "next": "fight_ford" },
-        { "id": "c_sneak_log", "text": "Cross by the upstream log unseen.", "check": { "skill": "stealth", "dc": 12 }, "attemptedBy": "any", "onSuccess": "barricade_flank", "onFailure": "fight_ford" },
-        { "id": "c_track_instead", "text": "Backtrack to the quiet goat-track.", "next": "goat_track" }
+        {
+          "id": "c_charge_ford",
+          "text": "Splash across and rush the barricade.",
+          "next": "fight_ford"
+        },
+        {
+          "id": "c_sneak_log",
+          "text": "Cross by the upstream log unseen.",
+          "check": {
+            "skill": "stealth",
+            "dc": 12
+          },
+          "attemptedBy": "any",
+          "onSuccess": "barricade_flank",
+          "onFailure": "fight_ford"
+        },
+        {
+          "id": "c_track_instead",
+          "text": "Backtrack to the quiet goat-track.",
+          "next": "goat_track"
+        }
       ]
     },
     "barricade_flank": {
-      "id": "barricade_flank", "type": "story", "title": "Behind the Barricade",
+      "id": "barricade_flank",
+      "type": "story",
+      "title": "Behind the Barricade",
       "narration": "You slip across the log and come up behind the driftwood barricade. The two kobolds are still squinting at the ford, oblivious, their backs to you. You could drop them before they squeak — or simply leave them and slip up to the caves.",
       "choices": [
-        { "id": "c_ambush", "text": "Strike from behind.", "next": "fight_ford" },
-        { "id": "c_slip_past", "text": "Leave them and climb to the cave mouth.", "next": "cave_mouth" }
+        {
+          "id": "c_ambush",
+          "text": "Strike from behind.",
+          "next": "fight_ford"
+        },
+        {
+          "id": "c_slip_past",
+          "text": "Leave them and climb to the cave mouth.",
+          "next": "cave_mouth"
+        }
       ]
     },
     "fight_ford": {
-      "id": "fight_ford", "type": "combat", "title": "Skirmish at the Ford",
+      "id": "fight_ford",
+      "type": "combat",
+      "title": "Skirmish at the Ford",
       "narration": "Pebbles whistle from kobold slings as the little raiders shriek the alarm. Cold river water swirls at your shins — drop them fast before more come down from the caves.",
       "enemies": [
-        { "name": "Kobold Slinger", "maxHp": 6, "ac": 12, "attack": { "name": "Sling", "toHit": 4, "damageDice": "1d4", "damageBonus": 2 } },
-        { "name": "Kobold Slinger", "maxHp": 6, "ac": 12, "attack": { "name": "Sling", "toHit": 4, "damageDice": "1d4", "damageBonus": 2 } }
+        {
+          "name": "Kobold Slinger",
+          "maxHp": 6,
+          "ac": 12,
+          "attack": {
+            "name": "Sling",
+            "toHit": 4,
+            "damageDice": "1d4",
+            "damageBonus": 2
+          }
+        },
+        {
+          "name": "Kobold Slinger",
+          "maxHp": 6,
+          "ac": 12,
+          "attack": {
+            "name": "Sling",
+            "toHit": 4,
+            "damageDice": "1d4",
+            "damageBonus": 2
+          }
+        }
       ],
-      "onVictory": "cave_mouth", "onDefeat": "ending_ford_fall"
+      "onVictory": "cave_mouth",
+      "onDefeat": "ending_ford_fall"
     },
     "goat_track": {
-      "id": "goat_track", "type": "story", "title": "The Goat-Track",
+      "id": "goat_track",
+      "type": "story",
+      "title": "The Goat-Track",
       "narration": "The goat-track switchbacks up the bluff behind the caves, screened by gorse and loose scree. It's quiet — but a stretch of crumbling ledge crosses a thirty-foot drop to the rocks below. Beyond it you can see a side fissure that breathes cool cave-air.",
       "choices": [
-        { "id": "c_climb_ledge", "text": "Edge across the crumbling ledge.", "check": { "skill": "acrobatics", "dc": 12 }, "attemptedBy": "any", "onSuccess": "back_fissure", "onFailure": "track_slip" },
-        { "id": "c_brace_ledge", "text": "Take it slow, brace each hold.", "check": { "skill": "athletics", "dc": 13 }, "attemptedBy": "any", "onSuccess": "back_fissure", "onFailure": "track_slip" }
+        {
+          "id": "c_climb_ledge",
+          "text": "Edge across the crumbling ledge.",
+          "check": {
+            "skill": "acrobatics",
+            "dc": 12
+          },
+          "attemptedBy": "any",
+          "onSuccess": "back_fissure",
+          "onFailure": "track_slip"
+        },
+        {
+          "id": "c_brace_ledge",
+          "text": "Take it slow, brace each hold.",
+          "check": {
+            "skill": "athletics",
+            "dc": 13
+          },
+          "attemptedBy": "any",
+          "onSuccess": "back_fissure",
+          "onFailure": "track_slip"
+        }
       ]
     },
     "track_slip": {
-      "id": "track_slip", "type": "story", "title": "A Slip and a Scramble",
+      "id": "track_slip",
+      "type": "story",
+      "title": "A Slip and a Scramble",
       "narration": "Scree gives way and someone skids toward the drop in a clatter of stones — caught at the last breath, scraped and shaken but alive. The noise, though, carries: down at the fissure a kobold sentry yips and bolts inside to warn the rest.",
       "choices": [
-        { "id": "c_press_fissure", "text": "Push on through the fissure before they ready.", "next": "back_fissure_alert" }
+        {
+          "id": "c_press_fissure",
+          "text": "Push on through the fissure before they ready.",
+          "next": "back_fissure_alert"
+        }
       ]
     },
     "back_fissure": {
-      "id": "back_fissure", "type": "story", "title": "The Back Fissure",
+      "id": "back_fissure",
+      "type": "story",
+      "title": "The Back Fissure",
       "narration": "You squeeze through the cool fissure into a low gallery lit by a shaft of daylight. No one has heard you. Ahead, the passage forks: a worn path toward torchlight and kobold chatter, and a damp side-tunnel from which you hear trickling water.",
       "choices": [
-        { "id": "c_toward_chatter", "text": "Head toward the torchlight and voices.", "next": "guard_post" },
-        { "id": "c_toward_water", "text": "Follow the trickling water first.", "next": "spring_chamber" }
+        {
+          "id": "c_toward_chatter",
+          "text": "Head toward the torchlight and voices.",
+          "next": "guard_post"
+        },
+        {
+          "id": "c_toward_water",
+          "text": "Follow the trickling water first.",
+          "next": "spring_chamber"
+        }
       ]
     },
     "back_fissure_alert": {
-      "id": "back_fissure_alert", "type": "story", "title": "Through the Fissure, Unwelcome",
+      "id": "back_fissure_alert",
+      "type": "story",
+      "title": "Through the Fissure, Unwelcome",
       "narration": "You shoulder through the fissure into a low gallery — but the sentry's warning has done its work. Down the worn path, torchlight bobs and claws scrabble as kobolds rush to form a line. There's no sneaking now; a damp side-tunnel of trickling water offers the only other way.",
       "choices": [
-        { "id": "c_meet_guards", "text": "Meet the rushing kobolds head-on.", "next": "guard_post" },
-        { "id": "c_duck_water", "text": "Duck down the water tunnel to regroup.", "next": "spring_chamber" }
+        {
+          "id": "c_meet_guards",
+          "text": "Meet the rushing kobolds head-on.",
+          "next": "guard_post"
+        },
+        {
+          "id": "c_duck_water",
+          "text": "Duck down the water tunnel to regroup.",
+          "next": "spring_chamber"
+        }
       ]
     },
     "cave_mouth": {
-      "id": "cave_mouth", "type": "story", "title": "The Smuggler Cave Mouth",
+      "id": "cave_mouth",
+      "type": "story",
+      "title": "The Smuggler Cave Mouth",
       "narration": "The cave mouth yawns above the ford, old smuggler-marks chiseled around it. Just inside, a guard-post of stacked crates blocks the main passage, and you can hear kobolds bickering over Wren's stolen necklace. A narrow crawl-hole in the wall, half-hidden by a crate, leads off into darkness.",
       "choices": [
-        { "id": "c_front_post", "text": "Advance on the crate guard-post.", "next": "guard_post" },
-        { "id": "c_crawlhole", "text": "Slip through the hidden crawl-hole.", "check": { "skill": "perception", "dc": 11 }, "attemptedBy": "any", "onSuccess": "spring_chamber", "onFailure": "guard_post" }
+        {
+          "id": "c_front_post",
+          "text": "Advance on the crate guard-post.",
+          "next": "guard_post"
+        },
+        {
+          "id": "c_crawlhole",
+          "text": "Slip through the hidden crawl-hole.",
+          "check": {
+            "skill": "perception",
+            "dc": 11
+          },
+          "attemptedBy": "any",
+          "onSuccess": "spring_chamber",
+          "onFailure": "guard_post"
+        }
       ]
     },
     "guard_post": {
-      "id": "guard_post", "type": "combat", "title": "The Guard-Post",
+      "id": "guard_post",
+      "type": "combat",
+      "title": "The Guard-Post",
       "narration": "Three kobolds scramble over the crates, one loosing a sling-stone while the others jab with fire-hardened spears, all of them yipping for their captain. Hold the line and they'll break.",
       "enemies": [
-        { "name": "Kobold Spear", "maxHp": 7, "ac": 12, "attack": { "name": "Spear", "toHit": 4, "damageDice": "1d6", "damageBonus": 1 } },
-        { "name": "Kobold Spear", "maxHp": 7, "ac": 12, "attack": { "name": "Spear", "toHit": 4, "damageDice": "1d6", "damageBonus": 1 } },
-        { "name": "Kobold Slinger", "maxHp": 6, "ac": 12, "attack": { "name": "Sling", "toHit": 4, "damageDice": "1d4", "damageBonus": 2 } }
+        {
+          "name": "Kobold Spear",
+          "maxHp": 7,
+          "ac": 12,
+          "attack": {
+            "name": "Spear",
+            "toHit": 4,
+            "damageDice": "1d6",
+            "damageBonus": 1
+          }
+        },
+        {
+          "name": "Kobold Spear",
+          "maxHp": 7,
+          "ac": 12,
+          "attack": {
+            "name": "Spear",
+            "toHit": 4,
+            "damageDice": "1d6",
+            "damageBonus": 1
+          }
+        },
+        {
+          "name": "Kobold Slinger",
+          "maxHp": 6,
+          "ac": 12,
+          "attack": {
+            "name": "Sling",
+            "toHit": 4,
+            "damageDice": "1d4",
+            "damageBonus": 2
+          }
+        }
       ],
-      "onVictory": "inner_junction", "onDefeat": "ending_overrun"
+      "onVictory": "inner_junction",
+      "onDefeat": "ending_overrun"
     },
     "spring_chamber": {
-      "id": "spring_chamber", "type": "story", "title": "The Hidden Spring", "rest": true,
+      "id": "spring_chamber",
+      "type": "story",
+      "title": "The Hidden Spring",
+      "rest": true,
       "narration": "The water-tunnel opens into a quiet grotto where a clear spring wells up through pale stone, glittering in a beam of daylight. The smugglers once cached supplies here: in a dry niche you find stoppered vials of red healing draught and a half-eaten meal. No kobold has been here in days — a safe place to bind wounds and drink your fill.",
       "choices": [
-        { "id": "c_rest_spring", "text": "Rest, drink the spring, and pocket the vials.", "next": "inner_junction" },
-        { "id": "c_search_spring", "text": "Search the niche more carefully first.", "check": { "skill": "investigation", "dc": 12 }, "attemptedBy": "any", "onSuccess": "spring_secret", "onFailure": "inner_junction" }
+        {
+          "id": "c_rest_spring",
+          "text": "Rest, drink the spring, and pocket the vials.",
+          "next": "inner_junction"
+        },
+        {
+          "id": "c_search_spring",
+          "text": "Search the niche more carefully first.",
+          "check": {
+            "skill": "investigation",
+            "dc": 12
+          },
+          "attemptedBy": "any",
+          "onSuccess": "spring_secret",
+          "onFailure": "inner_junction"
+        }
       ]
     },
     "spring_secret": {
-      "id": "spring_secret", "type": "story", "title": "The Smuggler's Cache",
+      "id": "spring_secret",
+      "type": "story",
+      "title": "The Smuggler's Cache",
       "narration": "Behind a loose slab you find the smugglers' real stash: more healing draught and a chalked map of the caves showing the captain's chamber — and a back way into it that bypasses his bodyguards. Refreshed and informed, you ready yourselves to find Wren.",
       "choices": [
-        { "id": "c_back_route", "text": "Take the back way to the captain's chamber.", "next": "captain_alone" },
-        { "id": "c_main_route", "text": "Go the main way to the inner junction.", "next": "inner_junction" }
+        {
+          "id": "c_back_route",
+          "text": "Take the back way to the captain's chamber.",
+          "next": "captain_alone"
+        },
+        {
+          "id": "c_main_route",
+          "text": "Go the main way to the inner junction.",
+          "next": "inner_junction"
+        }
       ]
     },
     "inner_junction": {
-      "id": "inner_junction", "type": "story", "title": "The Inner Junction",
+      "id": "inner_junction",
+      "type": "story",
+      "title": "The Inner Junction",
       "narration": "The passages knot together at a torchlit junction strewn with stolen sacks of grain. From the left comes Wren's muffled, frightened voice; from the right, the bored grumble of the scarred captain and at least one guard. A drift of loose grain on the floor could be kicked up to blind anyone charging through.",
       "choices": [
-        { "id": "c_toward_wren", "text": "Go left toward Wren's voice.", "next": "wren_cell" },
-        { "id": "c_toward_captain", "text": "Go right and confront the captain.", "next": "captain_chamber" },
-        { "id": "c_grain_trap", "text": "Rig the loose grain as a blinding trap first.", "check": { "skill": "sleightOfHand", "dc": 13 }, "attemptedBy": "any", "onSuccess": "grain_ready", "onFailure": "captain_chamber" }
+        {
+          "id": "c_toward_wren",
+          "text": "Go left toward Wren's voice.",
+          "next": "wren_cell"
+        },
+        {
+          "id": "c_toward_captain",
+          "text": "Go right and confront the captain.",
+          "next": "captain_chamber"
+        },
+        {
+          "id": "c_grain_trap",
+          "text": "Rig the loose grain as a blinding trap first.",
+          "check": {
+            "skill": "sleightOfHand",
+            "dc": 13
+          },
+          "attemptedBy": "any",
+          "onSuccess": "grain_ready",
+          "onFailure": "captain_chamber"
+        }
       ]
     },
     "grain_ready": {
-      "id": "grain_ready", "type": "story", "title": "Dust in Their Eyes",
+      "id": "grain_ready",
+      "type": "story",
+      "title": "Dust in Their Eyes",
       "narration": "You heap loose grain on a propped sack and string a tripcord across the captain's doorway. When his guard charges, a faceful of chaff will leave it choking and blind. Now to draw them out — or take Wren first.",
       "choices": [
-        { "id": "c_grain_wren", "text": "Free Wren before springing the trap.", "next": "wren_cell" },
-        { "id": "c_grain_captain", "text": "Lure the captain through the trap now.", "next": "captain_trapped" }
+        {
+          "id": "c_grain_wren",
+          "text": "Free Wren before springing the trap.",
+          "next": "wren_cell"
+        },
+        {
+          "id": "c_grain_captain",
+          "text": "Lure the captain through the trap now.",
+          "next": "captain_trapped"
+        }
       ]
     },
     "wren_cell": {
-      "id": "wren_cell", "type": "story", "title": "Wren in the Crib",
+      "id": "wren_cell",
+      "type": "story",
+      "title": "Wren in the Crib",
       "narration": "In a side-crib the miller's daughter Wren is bound to a post, gagged but unhurt, eyes wide with relief. A single jumpy kobold jailer guards her, torch in one hand, knife in the other, ready to cry out. You could rush it, talk it down, or cut Wren free in the confusion.",
       "choices": [
-        { "id": "c_rush_jailer", "text": "Rush the jailer before it shouts.", "next": "fight_jailer" },
-        { "id": "c_bluff_jailer", "text": "Bluff it — claim the captain wants the prisoner moved.", "check": { "skill": "deception", "dc": 12 }, "attemptedBy": "any", "onSuccess": "wren_freed", "onFailure": "fight_jailer" }
+        {
+          "id": "c_rush_jailer",
+          "text": "Rush the jailer before it shouts.",
+          "next": "fight_jailer"
+        },
+        {
+          "id": "c_bluff_jailer",
+          "text": "Bluff it — claim the captain wants the prisoner moved.",
+          "check": {
+            "skill": "deception",
+            "dc": 12
+          },
+          "attemptedBy": "any",
+          "onSuccess": "wren_freed",
+          "onFailure": "fight_jailer"
+        }
       ]
     },
     "fight_jailer": {
-      "id": "fight_jailer", "type": "combat", "title": "The Jailer",
+      "id": "fight_jailer",
+      "type": "combat",
+      "title": "The Jailer",
       "narration": "The kobold jailer shrieks and slashes wildly with its knife, kicking the torch toward the straw to make a smoky panic. Put it down fast — Wren is right behind it.",
       "enemies": [
-        { "name": "Kobold Jailer", "maxHp": 7, "ac": 12, "attack": { "name": "Knife", "toHit": 4, "damageDice": "1d4", "damageBonus": 2 } }
+        {
+          "name": "Kobold Jailer",
+          "maxHp": 7,
+          "ac": 12,
+          "attack": {
+            "name": "Knife",
+            "toHit": 4,
+            "damageDice": "1d4",
+            "damageBonus": 2
+          }
+        }
       ],
-      "onVictory": "wren_freed", "onDefeat": "ending_smoke"
+      "onVictory": "wren_freed",
+      "onDefeat": "ending_smoke"
     },
     "wren_freed": {
-      "id": "wren_freed", "type": "story", "title": "Cutting Her Loose",
+      "id": "wren_freed",
+      "type": "story",
+      "title": "Cutting Her Loose",
       "narration": "You cut Wren's bonds and she rubs her wrists, fierce despite her fear. 'The scarred man — Garran — he's got the strongbox from the mill, and worse, he means to burn the valley for refusing his toll. He's just down the passage.' She snatches up a fallen kobold spear. 'I'm not hiding while you finish this.'",
       "choices": [
-        { "id": "c_finish_captain", "text": "Confront Garran with Wren at your back.", "next": "captain_chamber" },
-        { "id": "c_flee_now", "text": "Get Wren out safely and leave Garran be.", "next": "ending_rescue_only" }
+        {
+          "id": "c_finish_captain",
+          "text": "Confront Garran with Wren at your back.",
+          "next": "captain_chamber"
+        },
+        {
+          "id": "c_flee_now",
+          "text": "Get Wren out safely and leave Garran be.",
+          "next": "ending_rescue_only"
+        }
       ]
     },
     "captain_chamber": {
-      "id": "captain_chamber", "type": "story", "title": "Garran's Lair",
+      "id": "captain_chamber",
+      "type": "story",
+      "title": "Garran's Lair",
       "narration": "The passage opens into the captain's lair: a firelit chamber hung with stolen tackle, the mill's iron strongbox in the corner. Garran rises from a camp-chair, scarred jaw set, drawing a heavy blade, and a kobold bodyguard skitters up beside him hissing. 'You crossed my river,' he growls. 'Now you'll pay the toll in blood.'",
       "choices": [
-        { "id": "c_fight_captain", "text": "Draw steel and fight them both.", "next": "fight_captain" },
-        { "id": "c_intimidate_captain", "text": "Stare him down — his men are dead, he's alone.", "check": { "skill": "intimidation", "dc": 14 }, "attemptedBy": "any", "onSuccess": "captain_alone", "onFailure": "fight_captain" }
+        {
+          "id": "c_fight_captain",
+          "text": "Draw steel and fight them both.",
+          "next": "fight_captain"
+        },
+        {
+          "id": "c_intimidate_captain",
+          "text": "Stare him down — his men are dead, he's alone.",
+          "check": {
+            "skill": "intimidation",
+            "dc": 14
+          },
+          "attemptedBy": "any",
+          "onSuccess": "captain_alone",
+          "onFailure": "fight_captain"
+        }
       ]
     },
     "captain_trapped": {
-      "id": "captain_trapped", "type": "story", "title": "Sprung",
+      "id": "captain_trapped",
+      "type": "story",
+      "title": "Sprung",
       "narration": "You rap a spear on the crates and shout a taunt. Garran's bodyguard charges the doorway — straight into your tripcord and a billowing cloud of chaff, clawing blindly at its eyes and stumbling out of the fight. Garran himself storms in behind, blade bared, but now he faces you alone.",
       "choices": [
-        { "id": "c_trapped_fight", "text": "Take Garran while his guard chokes.", "next": "fight_captain_solo" }
+        {
+          "id": "c_trapped_fight",
+          "text": "Take Garran while his guard chokes.",
+          "next": "fight_captain_solo"
+        }
       ]
     },
     "captain_alone": {
-      "id": "captain_alone", "type": "story", "title": "The Captain, Cornered",
+      "id": "captain_alone",
+      "type": "story",
+      "title": "The Captain, Cornered",
       "narration": "Whether by the back way or by sheer nerve, you face Garran with no minions at his side. He glances at the empty chamber, at the blood already on your blades, and his confident sneer thins. But the scarred captain isn't the sort to drop his sword — he sets his feet to fight.",
       "choices": [
-        { "id": "c_solo_fight", "text": "Finish it — fight Garran together.", "next": "fight_captain_solo" },
-        { "id": "c_solo_surrender", "text": "Demand his surrender.", "check": { "skill": "persuasion", "dc": 13 }, "attemptedBy": "any", "onSuccess": "ending_surrender", "onFailure": "fight_captain_solo" }
+        {
+          "id": "c_solo_fight",
+          "text": "Finish it — fight Garran together.",
+          "next": "fight_captain_solo"
+        },
+        {
+          "id": "c_solo_surrender",
+          "text": "Demand his surrender.",
+          "check": {
+            "skill": "persuasion",
+            "dc": 13
+          },
+          "attemptedBy": "any",
+          "onSuccess": "ending_surrender",
+          "onFailure": "fight_captain_solo"
+        }
       ]
     },
     "fight_captain": {
-      "id": "fight_captain", "type": "combat", "title": "Garran the Scarred",
+      "id": "fight_captain",
+      "type": "combat",
+      "title": "Garran the Scarred",
       "narration": "Garran's heavy blade hums through the firelit air while his kobold bodyguard darts and stabs at your flanks. This is the man behind the raid — bring him down and the Snakewater is free.",
       "enemies": [
-        { "name": "Garran the Scarred", "maxHp": 26, "ac": 14, "attack": { "name": "Heavy Blade", "toHit": 4, "damageDice": "1d6", "damageBonus": 3 } },
-        { "name": "Kobold Bodyguard", "maxHp": 6, "ac": 12, "attack": { "name": "Spear", "toHit": 4, "damageDice": "1d6", "damageBonus": 1 } }
+        {
+          "name": "Garran the Scarred",
+          "maxHp": 26,
+          "ac": 14,
+          "attack": {
+            "name": "Heavy Blade",
+            "toHit": 4,
+            "damageDice": "1d6",
+            "damageBonus": 3
+          },
+          "ability": {
+            "name": "Rally",
+            "kind": "buff",
+            "uses": 1,
+            "description": "Rallies an ally — advantage on its next attack."
+          }
+        },
+        {
+          "name": "Kobold Bodyguard",
+          "maxHp": 6,
+          "ac": 12,
+          "attack": {
+            "name": "Spear",
+            "toHit": 4,
+            "damageDice": "1d6",
+            "damageBonus": 1
+          }
+        }
       ],
-      "onVictory": "victory_aftermath", "onDefeat": "ending_captain_wins"
+      "onVictory": "victory_aftermath",
+      "onDefeat": "ending_captain_wins"
     },
     "fight_captain_solo": {
-      "id": "fight_captain_solo", "type": "combat", "title": "Garran Alone",
+      "id": "fight_captain_solo",
+      "type": "combat",
+      "title": "Garran Alone",
       "narration": "With no kobolds left to guard his back, Garran fights like a cornered wolf — all fury and scarred muscle, his heavy blade carving the firelight. End him and the raid ends with him.",
       "enemies": [
-        { "name": "Garran the Scarred", "maxHp": 24, "ac": 14, "attack": { "name": "Heavy Blade", "toHit": 4, "damageDice": "1d6", "damageBonus": 3 } }
+        {
+          "name": "Garran the Scarred",
+          "maxHp": 24,
+          "ac": 14,
+          "attack": {
+            "name": "Heavy Blade",
+            "toHit": 4,
+            "damageDice": "1d6",
+            "damageBonus": 3
+          }
+        }
       ],
-      "onVictory": "victory_aftermath", "onDefeat": "ending_captain_wins"
+      "onVictory": "victory_aftermath",
+      "onDefeat": "ending_captain_wins"
     },
     "victory_aftermath": {
-      "id": "victory_aftermath", "type": "story", "title": "The Toll Repaid",
+      "id": "victory_aftermath",
+      "type": "story",
+      "title": "The Toll Repaid",
       "narration": "Garran crashes to the cave floor and the last kobolds flee yipping into the dark. You pry open the mill's strongbox — the valley's stolen coin, safe. If Wren stands with you, she lets out a whoop and kicks the captain's fallen sash. The smoke outside is already thinning against a clear noon sky.",
       "choices": [
-        { "id": "c_emerge", "text": "Lead everyone out into the daylight.", "next": "ending_victory" }
+        {
+          "id": "c_emerge",
+          "text": "Lead everyone out into the daylight.",
+          "next": "ending_victory"
+        }
       ]
     },
     "ending_victory": {
-      "id": "ending_victory", "type": "ending", "endingType": "victory", "title": "Heroes of the Snakewater",
+      "id": "ending_victory",
+      "type": "ending",
+      "endingType": "victory",
+      "title": "Heroes of the Snakewater",
       "narration": "You walk Wren back down to the smouldering mill, strongbox under your arm and the raiders scattered for good. The miller weeps and presses the recovered coin into your hands twice over, and by evening the whole valley knows your names. The Snakewater runs clear and untolled, and the ford is just a ford again."
     },
     "ending_surrender": {
-      "id": "ending_surrender", "type": "ending", "endingType": "victory", "title": "The Captain Yields",
+      "id": "ending_surrender",
+      "type": "ending",
+      "endingType": "victory",
+      "title": "The Captain Yields",
       "narration": "Garran weighs his odds, drops his blade with a curse, and kneels. You march him down to the valley in his own rope, the strongbox recovered and Wren safe at your side. The miller's folk will see him to the magistrate — and the tale of how you took a bandit captain without spilling his blood will outlive you all."
     },
     "ending_rescue_only": {
-      "id": "ending_rescue_only", "type": "ending", "endingType": "victory", "title": "Wren Comes Home",
+      "id": "ending_rescue_only",
+      "type": "ending",
+      "endingType": "victory",
+      "title": "Wren Comes Home",
       "narration": "You choose the girl over the gold, slipping out the way you came with Wren between you. The strongbox stays in Garran's lair and the valley's coin is lost — but the miller cares only that his daughter is home alive. Garran's still out there, though, and everyone knows he'll come again for his toll. A rescue won; a reckoning postponed."
     },
     "ending_ford_fall": {
-      "id": "ending_ford_fall", "type": "ending", "endingType": "defeat", "title": "Cut Down at the Crossing",
+      "id": "ending_ford_fall",
+      "type": "ending",
+      "endingType": "defeat",
+      "title": "Cut Down at the Crossing",
       "narration": "Sling-stones and kobold spears drop you one by one into the cold Snakewater, and the river carries you away from the smoke and the screaming. Wren is never seen again, and Garran's toll is paid in the valley's grain and gold for many seasons to come."
     },
     "ending_overrun": {
-      "id": "ending_overrun", "type": "ending", "endingType": "defeat", "title": "Overrun at the Crates",
+      "id": "ending_overrun",
+      "type": "ending",
+      "endingType": "defeat",
+      "title": "Overrun at the Crates",
       "narration": "The kobolds swarm the guard-post in a yipping tide, dragging you down behind the crates. Garran strolls out to inspect the bodies, grunts, and goes back to his fire. The mill burns to its foundations, and no one rides up the ford again."
     },
     "ending_smoke": {
-      "id": "ending_smoke", "type": "ending", "endingType": "defeat", "title": "Lost to the Smoke",
+      "id": "ending_smoke",
+      "type": "ending",
+      "endingType": "defeat",
+      "title": "Lost to the Smoke",
       "narration": "The jailer's torch catches the straw and the crib fills with choking smoke before you can put the creature down. You stumble blind and coughing into kobold spears, and Wren's cries are swallowed by the roar of the flames. The caves keep you all."
     },
     "ending_captain_wins": {
-      "id": "ending_captain_wins", "type": "ending", "endingType": "defeat", "title": "The River's Toll",
+      "id": "ending_captain_wins",
+      "type": "ending",
+      "endingType": "defeat",
+      "title": "The River's Toll",
       "narration": "Garran's heavy blade finds the last of you, and the scarred captain wipes it clean on a dead kobold's hide. He keeps the strongbox, keeps Wren, and keeps the river — and the Snakewater valley learns to pay the toll and never again send heroes up the ford."
     }
   }

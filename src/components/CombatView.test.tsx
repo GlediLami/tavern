@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { GameProvider } from '../state/GameContext';
 import { CombatView } from './CombatView';
@@ -30,8 +30,14 @@ describe('CombatView', () => {
   });
 
   it("shows the active hero's power button", () => {
-    renderCombat();
-    // Single-hero party (Gronk) -> always his turn first -> Reckless Strike button.
-    expect(screen.getByText(/left\)/i)).toBeInTheDocument();
+    // Pin RNG high so the lone hero (Gronk) wins initiative and it's his turn,
+    // making his "✦ Reckless Strike (2 left)" power button render.
+    const spy = vi.spyOn(Math, 'random').mockReturnValue(0.99);
+    try {
+      renderCombat();
+      expect(screen.getByText(/left\)/i)).toBeInTheDocument();
+    } finally {
+      spy.mockRestore();
+    }
   });
 });
