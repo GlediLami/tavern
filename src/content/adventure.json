@@ -1,0 +1,169 @@
+{
+  "title": "The Hollow Bell of Brackenmoor",
+  "startSceneId": "tavern_start",
+  "scenes": {
+    "tavern_start": {
+      "id": "tavern_start", "type": "story", "title": "The Sign of the Drowned Lantern",
+      "narration": "Rain drums the shutters of the Drowned Lantern as your band shares the only dry table. The innkeep, a wiry woman named Otha, sets down her rag: the village bell of Brackenmoor has begun tolling on its own at midnight, and three folk who went to investigate never came back. She slides a purse of silver across the warped wood.",
+      "choices": [
+        { "id": "c_accept", "text": "Take the coin and agree.", "next": "tavern_talk" },
+        { "id": "c_eavesdrop", "text": "Listen to the muttering locals first.", "check": { "skill": "perception", "dc": 12 }, "attemptedBy": "any", "onSuccess": "tavern_rumor_good", "onFailure": "tavern_rumor_bad" }
+      ]
+    },
+    "tavern_talk": {
+      "id": "tavern_talk", "type": "story", "title": "Otha's Warning",
+      "narration": "Otha lowers her voice. The old tower sits past the marsh road, and lately the marsh has crept closer, swallowing the old shrine. \"Two roads lead up. The marsh path is quick but wet. The ridge trail is dry but watched — wolves, lately.\" She presses a cold iron key into your palm.",
+      "choices": [
+        { "id": "c_marsh", "text": "Take the marsh path.", "next": "marsh_approach" },
+        { "id": "c_ridge", "text": "Take the ridge trail.", "next": "ridge_approach" }
+      ]
+    },
+    "tavern_rumor_good": {
+      "id": "tavern_rumor_good", "type": "story", "title": "Whispers Worth Hearing",
+      "narration": "You catch a drunk fisher muttering that the tolling started the night the old gravedigger's son went missing, and that cold iron \"quiets the dead things.\" Otha nods approvingly and hands you a cold iron key and a flask of oil.",
+      "choices": [
+        { "id": "c_marsh2", "text": "Take the marsh path.", "next": "marsh_approach" },
+        { "id": "c_ridge2", "text": "Take the ridge trail.", "next": "ridge_approach" }
+      ]
+    },
+    "tavern_rumor_bad": {
+      "id": "tavern_rumor_bad", "type": "story", "title": "Drunken Nonsense",
+      "narration": "You lean in, but the locals only trade ghost stories and spilled ale, and one takes offense at your prying. Otha waves you back before it turns ugly and hands you a cold iron key. \"Go on then, before you start a brawl in my common room.\"",
+      "choices": [
+        { "id": "c_marsh3", "text": "Take the marsh path.", "next": "marsh_approach" },
+        { "id": "c_ridge3", "text": "Take the ridge trail.", "next": "ridge_approach" }
+      ]
+    },
+    "marsh_approach": {
+      "id": "marsh_approach", "type": "story", "title": "The Sunken Road",
+      "narration": "The marsh path is a ribbon of mud between black pools, fog clinging to your knees. Halfway across you spot the half-sunk shrine Otha mentioned, and a glint of something metallic among its toppled stones. Webbing stretches thick across the shrine's doorway.",
+      "choices": [
+        { "id": "c_search_shrine", "text": "Search the shrine ruins.", "check": { "skill": "investigation", "dc": 13 }, "attemptedBy": "any", "onSuccess": "marsh_relic", "onFailure": "marsh_spider" },
+        { "id": "c_avoid_shrine", "text": "Skirt the webbing and press on.", "next": "tower_base" }
+      ]
+    },
+    "marsh_relic": {
+      "id": "marsh_relic", "type": "story", "title": "The Silver Clapper",
+      "narration": "Among the stones you pry loose a silver bell-clapper etched with old wards — the very piece torn from the tower bell. It hums faintly when the wind shifts north. As you stand, dry webbing crackles overhead.",
+      "choices": [
+        { "id": "c_relic_fight", "text": "Ready yourselves — something's in the web.", "next": "marsh_spider" },
+        { "id": "c_relic_flee", "text": "Take the clapper and slip away quickly.", "next": "tower_base" }
+      ]
+    },
+    "marsh_spider": {
+      "id": "marsh_spider", "type": "combat", "title": "Thing in the Web",
+      "narration": "A giant spider drops from the shrine's rafters on a line of silk, fangs glistening, and a second skitters from a flooded alcove.",
+      "enemies": [
+        { "name": "Giant Spider", "maxHp": 14, "ac": 14, "attack": { "name": "Bite", "toHit": 5, "damageDice": "1d8", "damageBonus": 3 } },
+        { "name": "Lesser Spider", "maxHp": 10, "ac": 13, "attack": { "name": "Bite", "toHit": 4, "damageDice": "1d6", "damageBonus": 2 } }
+      ],
+      "onVictory": "tower_base", "onDefeat": "ending_cocoon"
+    },
+    "ridge_approach": {
+      "id": "ridge_approach", "type": "story", "title": "The Watched Trail",
+      "narration": "The ridge trail climbs dry and stony, but you feel eyes in the gorse. Below, the bell tower's broken silhouette leans against a bruised sky. A low growl rolls out of the brush ahead, and yellow eyes catch the last light.",
+      "choices": [
+        { "id": "c_sneak_ridge", "text": "Move quietly past the pack.", "check": { "skill": "stealth", "dc": 12 }, "attemptedBy": "any", "onSuccess": "tower_base", "onFailure": "ridge_wolves" },
+        { "id": "c_scare_ridge", "text": "Stand tall and drive them off.", "check": { "skill": "intimidation", "dc": 14 }, "attemptedBy": "any", "onSuccess": "ridge_clear", "onFailure": "ridge_wolves" }
+      ]
+    },
+    "ridge_clear": {
+      "id": "ridge_clear", "type": "story", "title": "Backing Down the Pack",
+      "narration": "You roar and brandish your weapons; the wolves flatten their ears and slink back into the gorse. The way to the tower lies open, and you've lost no blood doing it.",
+      "choices": [
+        { "id": "c_to_tower_a", "text": "Approach the tower.", "next": "tower_base" }
+      ]
+    },
+    "ridge_wolves": {
+      "id": "ridge_wolves", "type": "combat", "title": "The Pack Strikes",
+      "narration": "Two lean wolves burst from the brush, snapping at your heels, driving you back against the rocks.",
+      "enemies": [
+        { "name": "Wolf", "maxHp": 11, "ac": 13, "attack": { "name": "Bite", "toHit": 4, "damageDice": "2d4", "damageBonus": 2 } },
+        { "name": "Wolf", "maxHp": 11, "ac": 13, "attack": { "name": "Bite", "toHit": 4, "damageDice": "2d4", "damageBonus": 2 } }
+      ],
+      "onVictory": "tower_base", "onDefeat": "ending_pack"
+    },
+    "tower_base": {
+      "id": "tower_base", "type": "story", "title": "The Leaning Tower",
+      "narration": "The bell tower of Brackenmoor rises crooked from the hilltop, its door barred from within by a rusted iron lock. Above, the great bronze bell hangs silent — but its clapper is missing, gouged free. Scratch marks claw the stone around the threshold.",
+      "choices": [
+        { "id": "c_unlock", "text": "Use Otha's iron key on the lock.", "next": "tower_interior" },
+        { "id": "c_force", "text": "Force the door instead.", "check": { "skill": "athletics", "dc": 13 }, "attemptedBy": "any", "onSuccess": "tower_interior", "onFailure": "tower_noise" }
+      ]
+    },
+    "tower_noise": {
+      "id": "tower_noise", "type": "story", "title": "A Bad Entrance",
+      "narration": "The door splinters loudly, and the racket wakes whatever waits inside. Bone scrapes on stone in the dark above, and the cold smell of grave-dirt rolls down the stair. There's no quiet way in now.",
+      "choices": [
+        { "id": "c_brace_noise", "text": "Climb up and meet it head-on.", "next": "tower_guardians" }
+      ]
+    },
+    "tower_interior": {
+      "id": "tower_interior", "type": "story", "title": "Up the Winding Stair",
+      "narration": "Inside, a spiral stair winds up past rotted ropes and a scatter of old bones. Cold air breathes down from the belfry, and somewhere above, knuckles of bone tap a slow rhythm against bronze. On the lowest step lies a journal, its last page fresh.",
+      "choices": [
+        { "id": "c_read_journal", "text": "Read the journal.", "check": { "skill": "investigation", "dc": 11 }, "attemptedBy": "any", "onSuccess": "tower_lore", "onFailure": "tower_guardians" },
+        { "id": "c_climb_now", "text": "Climb straight to the belfry.", "next": "tower_guardians" }
+      ]
+    },
+    "tower_lore": {
+      "id": "tower_lore", "type": "story", "title": "The Gravedigger's Confession",
+      "narration": "The journal is the gravedigger's: he stole the bell's silver clapper to sell, and the wards broke — now the restless dead climb the tower each midnight, drawn to ring it whole again. The final line reads: \"Only the clapper, set back in iron, will silence them.\"",
+      "choices": [
+        { "id": "c_lore_fight", "text": "Climb up and face the dead.", "next": "tower_guardians" }
+      ]
+    },
+    "tower_guardians": {
+      "id": "tower_guardians", "type": "combat", "title": "The Midnight Wardens",
+      "narration": "In the belfry, three skeletons turn from the great bell, eye-sockets glowing cold. Bony fingers close on rusted blades as they lurch to defend the tower.",
+      "enemies": [
+        { "name": "Skeleton", "maxHp": 13, "ac": 13, "attack": { "name": "Shortsword", "toHit": 4, "damageDice": "1d6", "damageBonus": 2 } },
+        { "name": "Skeleton", "maxHp": 13, "ac": 13, "attack": { "name": "Shortsword", "toHit": 4, "damageDice": "1d6", "damageBonus": 2 } },
+        { "name": "Skeleton", "maxHp": 9, "ac": 12, "attack": { "name": "Rusted Claw", "toHit": 3, "damageDice": "1d4", "damageBonus": 1 } }
+      ],
+      "onVictory": "belfry_choice", "onDefeat": "ending_tolled"
+    },
+    "belfry_choice": {
+      "id": "belfry_choice", "type": "story", "title": "The Silent Bell",
+      "narration": "The bones clatter to stillness, but the belfry air still hums with wrongness — the bell wants to ring. Midnight is moments away. Something must be set right, not merely fought.",
+      "choices": [
+        { "id": "c_use_clapper", "text": "Set the silver clapper back into the iron mount.", "next": "belfry_restore" },
+        { "id": "c_search_belfry", "text": "Search the belfry for whatever it needs.", "check": { "skill": "religion", "dc": 12 }, "attemptedBy": "any", "onSuccess": "belfry_restore", "onFailure": "belfry_ring" }
+      ]
+    },
+    "belfry_restore": {
+      "id": "belfry_restore", "type": "story", "title": "Setting It Right",
+      "narration": "You fit the silver clapper into its iron cradle and speak the ward etched along its length. As the final stroke of midnight nears, the bell tolls once — clear, true, and clean — and the cold weight lifts from the tower like fog burning off at dawn.",
+      "choices": [
+        { "id": "c_finish", "text": "Descend into the quiet morning.", "next": "ending_victory" }
+      ]
+    },
+    "belfry_ring": {
+      "id": "belfry_ring", "type": "story", "title": "The Wrong Stroke",
+      "narration": "You find nothing in time. At the stroke of midnight the empty bell shudders, and a thin clapper of knitted finger-bones rises to strike it. The toll that rings out is wrong, hungry, and it answers — something vast stirs beneath the marsh.",
+      "choices": [
+        { "id": "c_flee_ring", "text": "Flee the tower before it answers fully.", "check": { "skill": "athletics", "dc": 12 }, "attemptedBy": "any", "onSuccess": "ending_escape", "onFailure": "ending_tolled" }
+      ]
+    },
+    "ending_victory": {
+      "id": "ending_victory", "type": "ending", "endingType": "victory", "title": "The Bell That Sleeps",
+      "narration": "Brackenmoor wakes to a bell that tolls only at dawn, as it should. Otha pays your silver twice over, and the lost folk's families light candles in your name. The marsh recedes, and the Drowned Lantern's hearth has never felt warmer. You are heroes of a quiet, saved village."
+    },
+    "ending_escape": {
+      "id": "ending_escape", "type": "ending", "endingType": "victory", "title": "Alive, If Not Triumphant",
+      "narration": "You hurl yourselves down the stair as the wrong bell screams behind you, and burst into the rain with your lives. The tolling stops by dawn on its own, exhausted — but Brackenmoor knows the tower is not truly clean. Otha pays you half, and warns you'll be needed again."
+    },
+    "ending_cocoon": {
+      "id": "ending_cocoon", "type": "ending", "endingType": "defeat", "title": "Wrapped in Silk",
+      "narration": "The spiders drag your stilled bodies into the flooded shrine, to be unwrapped at leisure. The bell of Brackenmoor tolls on, and Otha's silver goes uncollected. No one comes looking this time."
+    },
+    "ending_pack": {
+      "id": "ending_pack", "type": "ending", "endingType": "defeat", "title": "The Ridge Wolves Feast",
+      "narration": "The pack pulls you down among the cold stones of the ridge trail, and the gorse swallows your cries. The tower still leans crooked against the sky, its clapper still missing, its midnight bell still tolling for the next fools brave enough to climb."
+    },
+    "ending_tolled": {
+      "id": "ending_tolled", "type": "ending", "endingType": "defeat", "title": "Bound to the Bell",
+      "narration": "You fall in the belfry, and the cold seeps into your bones before they cool. Come the next midnight, new skeletons turn to guard the tower — yours among them — tapping out the slow rhythm that will lure others to their doom."
+    }
+  }
+}

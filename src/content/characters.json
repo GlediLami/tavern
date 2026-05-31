@@ -1,0 +1,110 @@
+[
+  {
+    "id": "bjorn-ironhelm",
+    "name": "Bjorn Ironhelm",
+    "race": "Mountain Dwarf",
+    "class": "Fighter",
+    "level": 1,
+    "portrait": "🛡️",
+    "abilities": { "str": 16, "dex": 13, "con": 16, "int": 8, "wis": 12, "cha": 10 },
+    "maxHp": 13,
+    "ac": 18,
+    "proficiencyBonus": 2,
+    "skillProficiencies": ["athletics", "intimidation"],
+    "attacks": [
+      { "name": "Longsword", "ability": "str", "damageDice": "1d8", "damageBonus": 3 },
+      { "name": "Light Crossbow", "ability": "dex", "damageDice": "1d8", "damageBonus": 1 }
+    ],
+    "backstory": "Bjorn served as a hold-guard in the deep mountain halls until a collapse buried his garrison. Now he wanders the surface roads, selling his blade to honest folk and searching for the gold to rebuild his clan's broken gate."
+  },
+  {
+    "id": "sable-quickfinger",
+    "name": "Sable Quickfinger",
+    "race": "Lightfoot Halfling",
+    "class": "Rogue",
+    "level": 1,
+    "portrait": "🗡️",
+    "abilities": { "str": 8, "dex": 17, "con": 13, "int": 12, "wis": 10, "cha": 15 },
+    "maxHp": 9,
+    "ac": 14,
+    "proficiencyBonus": 2,
+    "skillProficiencies": ["stealth", "sleightOfHand", "acrobatics", "deception"],
+    "attacks": [
+      { "name": "Shortsword", "ability": "dex", "damageDice": "1d6", "damageBonus": 3 },
+      { "name": "Shortbow", "ability": "dex", "damageDice": "1d6", "damageBonus": 3 }
+    ],
+    "backstory": "Sable grew up lifting purses in the crowded river-markets of a trade city, never staying anywhere long enough to be caught. A botched job left her owing a dangerous fence, so she took up with adventurers hoping the treasure would clear her debt."
+  },
+  {
+    "id": "mara-dawnwarden",
+    "name": "Mara Dawnwarden",
+    "race": "Hill Dwarf",
+    "class": "Cleric",
+    "level": 1,
+    "portrait": "✨",
+    "abilities": { "str": 14, "dex": 8, "con": 15, "int": 10, "wis": 17, "cha": 12 },
+    "maxHp": 11,
+    "ac": 18,
+    "proficiencyBonus": 2,
+    "skillProficiencies": ["medicine", "insight", "religion"],
+    "attacks": [
+      { "name": "Mace", "ability": "str", "damageDice": "1d6", "damageBonus": 2 },
+      { "name": "Sacred Flame", "ability": "wis", "damageDice": "1d8", "damageBonus": 0 }
+    ],
+    "backstory": "Mara tended a roadside shrine to a god of dawn and healing, mending travelers wounded by the wilds beyond the walls. When raiders burned her chapel, she swore to carry her god's light into the dark places that bred such cruelty."
+  },
+  {
+    "id": "alaric-vance",
+    "name": "Alaric Vance",
+    "race": "High Elf",
+    "class": "Wizard",
+    "level": 1,
+    "portrait": "🔮",
+    "abilities": { "str": 8, "dex": 15, "con": 13, "int": 17, "wis": 12, "cha": 10 },
+    "maxHp": 7,
+    "ac": 12,
+    "proficiencyBonus": 2,
+    "skillProficiencies": ["arcana", "history", "investigation"],
+    "attacks": [
+      { "name": "Fire Bolt", "ability": "int", "damageDice": "1d10", "damageBonus": 0 },
+      { "name": "Dagger", "ability": "dex", "damageDice": "1d4", "damageBonus": 2 }
+    ],
+    "backstory": "Alaric spent decades as an apprentice copying spellbooks in a quiet arcane college, restless behind its high walls. When a forbidden tome whispered of magic the masters had hidden away, he stole into the world to seek the knowledge they denied him."
+  },
+  {
+    "id": "thornwick-greenstride",
+    "name": "Thornwick Greenstride",
+    "race": "Wood Elf",
+    "class": "Ranger",
+    "level": 1,
+    "portrait": "🏹",
+    "abilities": { "str": 12, "dex": 17, "con": 14, "int": 8, "wis": 15, "cha": 10 },
+    "maxHp": 12,
+    "ac": 15,
+    "proficiencyBonus": 2,
+    "skillProficiencies": ["survival", "perception", "stealth", "nature"],
+    "attacks": [
+      { "name": "Longbow", "ability": "dex", "damageDice": "1d8", "damageBonus": 3 },
+      { "name": "Shortsword", "ability": "dex", "damageDice": "1d6", "damageBonus": 3 }
+    ],
+    "backstory": "Thornwick was raised among the border woods, learning to track beasts and read the land before he could read words. After a logging company drove a monstrous predator from the deep forest into settled lands, he took up the hunt to protect both the wild and the folk at its edge."
+  },
+  {
+    "id": "gronk-skullsplitter",
+    "name": "Gronk Skullsplitter",
+    "race": "Half-Orc",
+    "class": "Barbarian",
+    "level": 1,
+    "portrait": "🪓",
+    "abilities": { "str": 17, "dex": 14, "con": 15, "int": 8, "wis": 12, "cha": 10 },
+    "maxHp": 14,
+    "ac": 14,
+    "proficiencyBonus": 2,
+    "skillProficiencies": ["athletics", "survival"],
+    "attacks": [
+      { "name": "Greataxe", "ability": "str", "damageDice": "1d12", "damageBonus": 3 },
+      { "name": "Handaxe (thrown)", "ability": "str", "damageDice": "1d6", "damageBonus": 3 }
+    ],
+    "backstory": "Gronk was cast out of his war-band for refusing to raid a defenseless village, branded a coward by the only family he knew. He now channels his fury against the marauders and monsters that prey on the weak, proving strength can serve more than conquest."
+  }
+]
