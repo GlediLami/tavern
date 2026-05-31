@@ -94,7 +94,7 @@
       "onVictory": "inner_junction", "onDefeat": "ending_overrun"
     },
     "spring_chamber": {
-      "id": "spring_chamber", "type": "story", "title": "The Hidden Spring",
+      "id": "spring_chamber", "type": "story", "title": "The Hidden Spring", "rest": true,
       "narration": "The water-tunnel opens into a quiet grotto where a clear spring wells up through pale stone, glittering in a beam of daylight. The smugglers once cached supplies here: in a dry niche you find stoppered vials of red healing draught and a half-eaten meal. No kobold has been here in days — a safe place to bind wounds and drink your fill.",
       "choices": [
         { "id": "c_rest_spring", "text": "Rest, drink the spring, and pocket the vials.", "next": "inner_junction" },

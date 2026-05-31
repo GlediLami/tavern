@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { effectiveMaxHp, restHp, scaleEnemies, config } from './difficulty';
+import { effectiveMaxHp, restHp, scaleEnemies, config, campRestHp } from './difficulty';
 import type { Character, Enemy } from '../types';
 
 const wizard: Character = {
@@ -51,6 +51,16 @@ describe('difficulty', () => {
 
   it('does not drop enemies for full parties', () => {
     expect(scaleEnemies(enemies, 'normal', 3)).toHaveLength(2);
+  });
+
+  it('camp rest fully restores on normal and revives the downed', () => {
+    expect(campRestHp(3, 12, 'normal')).toBe(12);   // full heal
+    expect(campRestHp(0, 12, 'normal')).toBe(6);     // downed -> half
+  });
+
+  it('camp rest is partial on hard', () => {
+    expect(campRestHp(4, 12, 'hard')).toBe(4 + Math.ceil(12 * 0.5)); // 4+6=10
+    expect(campRestHp(0, 12, 'hard')).toBe(3);                        // downed -> quarter
   });
 
   it('exposes labels for the UI', () => {

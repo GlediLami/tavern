@@ -1,6 +1,6 @@
 import charactersData from '../content/characters.json';
 import { getAdventureData, DEFAULT_ADVENTURE_ID } from '../content/adventures';
-import { effectiveMaxHp } from '../engine/difficulty';
+import { effectiveMaxHp, campRestHp } from '../engine/difficulty';
 import type { Character, Difficulty } from '../types';
 
 const characters = charactersData as unknown as Character[];
@@ -74,8 +74,20 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
-    case 'GOTO_SCENE':
-      return { ...state, sceneId: action.sceneId, phase: phaseForScene(state.adventureId, action.sceneId) };
+    case 'GOTO_SCENE': {
+      const scene = getAdventureData(state.adventureId).scenes[action.sceneId];
+      const base = { ...state, sceneId: action.sceneId, phase: phaseForScene(state.adventureId, action.sceneId) };
+      // A safe-room rest scene restores the party on arrival.
+      if (scene && scene.type === 'story' && scene.rest) {
+        const hp = { ...state.hp };
+        for (const id of state.partyIds) {
+          const c = characters.find((ch) => ch.id === id);
+          if (c) hp[id] = campRestHp(state.hp[id] ?? 0, effectiveMaxHp(c, state.difficulty), state.difficulty);
+        }
+        return { ...base, hp, log: [...state.log, 'You make camp in safety and recover your strength.'] };
+      }
+      return base;
+    }
 
     case 'SET_HP':
       return { ...state, hp: { ...state.hp, ...action.hp } };

@@ -127,7 +127,7 @@
       "onVictory": "ridge_shrine", "onDefeat": "ending_pack"
     },
     "ridge_shrine": {
-      "id": "ridge_shrine", "type": "story", "title": "The Wayshrine",
+      "id": "ridge_shrine", "type": "story", "title": "The Wayshrine", "rest": true,
       "narration": "Near the crest stands a weathered wayshrine to a forgotten god of safe passage, its little roof keeping a circle of dry stone. A traveler's mark is scratched fresh on its base. The tower waits just beyond, but here, for a moment, the cold eases.",
       "choices": [
         { "id": "c_pray", "text": "Speak the old rite of safe passage.", "check": { "skill": "religion", "dc": 12 }, "attemptedBy": "any", "onSuccess": "ridge_boon", "onFailure": "tower_base" },

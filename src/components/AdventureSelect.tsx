@@ -18,7 +18,7 @@ export function AdventureSelect({ onConfirm }: Props) {
     <div className="app-shell screen">
       <h2 className="display" style={{ fontSize: '2rem', marginBottom: 2 }}>Choose Your Tale</h2>
       <div className="rule-accent" />
-      <p className="muted">Two adventures await. Pick one, set the challenge, then gather your party.</p>
+      <p className="muted">Three adventures await. Pick one, set the challenge, then gather your party.</p>
 
       <div className="grid-cards stagger" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
         {ADVENTURES.map((a) => {
@@ -33,6 +33,7 @@ export function AdventureSelect({ onConfirm }: Props) {
               <h3 className="display" style={{ margin: '6px 0 2px', fontSize: '1.3rem' }}>{a.title}</h3>
               <div className="tag" style={{ marginBottom: 8 }}>{a.mood}</div>
               <p className="muted" style={{ fontSize: '0.98rem', margin: 0 }}>{a.tagline}</p>
+              {a.attribution && <p className="faint" style={{ fontSize: '0.74rem', margin: '8px 0 0' }}>{a.attribution}</p>}
               {sel && <div className="accent-text" style={{ fontWeight: 700, marginTop: 10 }}>✓ Selected</div>}
             </button>
           );

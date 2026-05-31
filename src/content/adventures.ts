@@ -1,5 +1,6 @@
 import brackenmoorData from './adventure.json';
 import snakewaterData from './snakewater.json';
+import chaoticCavesData from './chaoticcaves.json';
 import type { Adventure } from '../types';
 
 export interface AdventureEntry {
@@ -8,6 +9,7 @@ export interface AdventureEntry {
   tagline: string;
   mood: string;       // short vibe line
   emoji: string;
+  attribution?: string; // shown when the adventure is adapted from a licensed source
   data: Adventure;
 }
 
@@ -27,6 +29,15 @@ export const ADVENTURES: AdventureEntry[] = [
     mood: 'Daylight · Rescue · Bandits',
     emoji: '🏞️',
     data: snakewaterData as unknown as Adventure,
+  },
+  {
+    id: 'chaoticcaves',
+    title: (chaoticCavesData as unknown as Adventure).title,
+    tagline: 'A ravine of monster-warrens preys on the north road. Clear the caves and free the captives from the Cave Lord.',
+    mood: 'Classic delve · Kobolds → Boss',
+    emoji: '🗝️',
+    attribution: 'Adapted from “The Chaotic Caves” (Basic Fantasy RPG) · CC BY-SA 4.0',
+    data: chaoticCavesData as unknown as Adventure,
   },
 ];
 

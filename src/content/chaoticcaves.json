@@ -1,0 +1,189 @@
+{
+  "title": "The Chaotic Caves",
+  "startSceneId": "town_briefing",
+  "scenes": {
+    "town_briefing": {
+      "id": "town_briefing", "type": "story", "title": "Morgan's Rest",
+      "narration": "In the frontier town of Morgan's Rest, the reeve presses coins into your hands. Travelers have vanished on the north road, dragged into a ravine of caves the locals now call the Chaotic Caves. Your task: clear the warrens and bring back any captives still breathing.",
+      "choices": [
+        { "id": "ask_reeve", "text": "Question the reeve about what lurks in the caves.", "check": { "skill": "persuasion", "dc": 11 }, "attemptedBy": "any", "onSuccess": "reeve_intel", "onFailure": "road_north" },
+        { "id": "head_out", "text": "Waste no time and set out for the ravine.", "next": "road_north" }
+      ]
+    },
+    "reeve_intel": {
+      "id": "reeve_intel", "type": "story", "title": "Local Knowledge",
+      "narration": "The reeve lowers his voice: small scaled creatures raid by night, but a 'Cave Lord' rules them all from the deepest hall. He warns of an old crypt near the entrance and gifts you a healer's pack for the road.",
+      "choices": [
+        { "id": "to_road", "text": "Thank him and head for the road north.", "next": "road_north" }
+      ]
+    },
+    "road_north": {
+      "id": "road_north", "type": "story", "title": "The North Road",
+      "narration": "The road climbs into pine-dark hills. By dusk you reach a ravine mouth where three cave openings yawn in the rock face. Bones and a broken cart litter the gully floor.",
+      "choices": [
+        { "id": "track_signs", "text": "Search the gully for tracks to learn which cave is most used.", "check": { "skill": "survival", "dc": 12 }, "attemptedBy": "any", "onSuccess": "ravine_tracked", "onFailure": "ravine_blind" },
+        { "id": "just_pick", "text": "Pick a cave and enter without scouting.", "next": "ravine_blind" }
+      ]
+    },
+    "ravine_tracked": {
+      "id": "ravine_tracked", "type": "story", "title": "Reading the Ground",
+      "narration": "Clawed three-toed prints cluster at the left cave: kobolds, and many of them, with drag-marks of captives leading in. The center cave reeks of grave-rot; the right cave smells of woodsmoke and goblin filth.",
+      "choices": [
+        { "id": "enter_kobold_t", "text": "Enter the left cave (kobolds, captive drag-marks).", "next": "kobold_entry" },
+        { "id": "enter_crypt_t", "text": "Enter the center cave (grave-rot).", "next": "crypt_entry" },
+        { "id": "enter_goblin_t", "text": "Enter the right cave (woodsmoke, goblins).", "next": "goblin_entry" }
+      ]
+    },
+    "ravine_blind": {
+      "id": "ravine_blind", "type": "story", "title": "Three Dark Mouths",
+      "narration": "You cannot tell the caves apart. The left opening is low and littered with chewed bones, the center breathes cold and stinks of decay, and the right glows faintly with distant firelight.",
+      "choices": [
+        { "id": "enter_kobold_b", "text": "Enter the left cave (bones).", "next": "kobold_entry" },
+        { "id": "enter_crypt_b", "text": "Enter the center cave (cold decay).", "next": "crypt_entry" },
+        { "id": "enter_goblin_b", "text": "Enter the right cave (firelight).", "next": "goblin_entry" }
+      ]
+    },
+    "kobold_entry": {
+      "id": "kobold_entry", "type": "story", "title": "The Kobold Warren",
+      "narration": "The low tunnel opens into a smoky den strung with bone fetishes. Two kobold sentries snap to attention, yipping an alarm down the passage. Beyond them you glimpse a wicker cage with a frightened captive inside.",
+      "choices": [
+        { "id": "ambush_kobolds", "text": "Charge before they can rally reinforcements.", "next": "fight_kobolds" },
+        { "id": "sneak_cage", "text": "Slip along the wall toward the cage unseen.", "check": { "skill": "stealth", "dc": 13 }, "attemptedBy": "any", "onSuccess": "cage_reached", "onFailure": "fight_kobolds" }
+      ]
+    },
+    "fight_kobolds": {
+      "id": "fight_kobolds", "type": "combat", "title": "Kobold Sentries",
+      "narration": "The kobolds hurl javelins and close with rusty short swords, shrieking in their yapping tongue.",
+      "enemies": [
+        { "name": "Kobold Sentry", "maxHp": 7, "ac": 12, "attack": { "name": "Rusty Shortsword", "toHit": 3, "damageDice": "1d6", "damageBonus": 1 } },
+        { "name": "Kobold Sentry", "maxHp": 6, "ac": 12, "attack": { "name": "Javelin", "toHit": 3, "damageDice": "1d6", "damageBonus": 1 } }
+      ],
+      "onVictory": "cage_reached", "onDefeat": "ending_defeat_kobold"
+    },
+    "cage_reached": {
+      "id": "cage_reached", "type": "story", "title": "The Captive",
+      "narration": "Inside the wicker cage huddles Bryn, a captured trapper. She whispers that the kobolds answer to a Cave Lord in the deepest hall, reachable through a collapsed crypt. She knows a hidden side-passage to a quiet alcove where you could rest.",
+      "choices": [
+        { "id": "free_bryn", "text": "Pick the cage lock to free her.", "check": { "skill": "sleightOfHand", "dc": 12 }, "attemptedBy": "any", "onSuccess": "bryn_freed", "onFailure": "bryn_freed_force" },
+        { "id": "force_cage", "text": "Smash the cage open instead.", "next": "bryn_freed_force" }
+      ]
+    },
+    "bryn_freed": {
+      "id": "bryn_freed", "type": "story", "title": "Bryn Freed",
+      "narration": "The lock clicks open cleanly. Grateful, Bryn slips you two healing draughts she hid from her captors and points out the side-passage to the safe alcove.",
+      "choices": [
+        { "id": "to_safe_from_bryn", "text": "Take the side-passage to the safe alcove.", "next": "safe_alcove" },
+        { "id": "push_on_bryn", "text": "Press straight on toward the crypt.", "next": "crypt_entry" }
+      ]
+    },
+    "bryn_freed_force": {
+      "id": "bryn_freed_force", "type": "story", "title": "Cage Smashed",
+      "narration": "Wicker splinters loudly as Bryn scrambles free. The noise echoes, but no fresh kobolds come. She thanks you and gestures toward both a side-passage and the deeper tunnels.",
+      "choices": [
+        { "id": "to_safe_force", "text": "Take the side-passage to the safe alcove.", "next": "safe_alcove" },
+        { "id": "push_on_force", "text": "Press on toward the crypt.", "next": "crypt_entry" }
+      ]
+    },
+    "goblin_entry": {
+      "id": "goblin_entry", "type": "story", "title": "The Goblin Cookfire",
+      "narration": "Firelight reveals a foul mess-cave where goblins squabble over a roasting spit. A natural chimney-crack climbs the far wall toward the deeper caves, and a guarded archway leads toward the crypt.",
+      "choices": [
+        { "id": "parley_goblins", "text": "Bluff the goblins into thinking you serve the Cave Lord.", "check": { "skill": "deception", "dc": 14 }, "attemptedBy": "any", "onSuccess": "goblins_fooled", "onFailure": "fight_goblins" },
+        { "id": "fight_goblins_choice", "text": "Attack the goblins outright.", "next": "fight_goblins" }
+      ]
+    },
+    "fight_goblins": {
+      "id": "fight_goblins", "type": "combat", "title": "Goblin Cooks",
+      "narration": "The goblins snatch up cleavers and a crude spear, screeching as they swarm.",
+      "enemies": [
+        { "name": "Goblin Cook", "maxHp": 8, "ac": 13, "attack": { "name": "Cleaver", "toHit": 4, "damageDice": "1d6", "damageBonus": 2 } },
+        { "name": "Goblin Skulker", "maxHp": 7, "ac": 13, "attack": { "name": "Spear", "toHit": 3, "damageDice": "1d6", "damageBonus": 1 } }
+      ],
+      "onVictory": "goblins_fooled", "onDefeat": "ending_defeat_goblin"
+    },
+    "goblins_fooled": {
+      "id": "goblins_fooled", "type": "story", "title": "Past the Cookfire",
+      "narration": "Whether by bluff or blade, the cave is yours. Among the refuse you find a stoppered healing draught and a scrawled map showing a safe alcove and the route to the Cave Lord's hall.",
+      "choices": [
+        { "id": "goblin_to_safe", "text": "Follow the map to the safe alcove to rest.", "next": "safe_alcove" },
+        { "id": "goblin_to_crypt", "text": "Head for the crypt junction.", "next": "crypt_entry" }
+      ]
+    },
+    "crypt_entry": {
+      "id": "crypt_entry", "type": "story", "title": "The Old Crypt",
+      "narration": "Cold air pours from a vaulted crypt of cracked sarcophagi. As you cross the chamber, two skeletal guardians clatter upright, rusted blades raised. An archway beyond leads down to the Cave Lord's hall.",
+      "choices": [
+        { "id": "turn_undead_try", "text": "Invoke holy words to cow the undead.", "check": { "skill": "religion", "dc": 13 }, "attemptedBy": "any", "onSuccess": "crypt_cleared", "onFailure": "fight_skeletons" },
+        { "id": "fight_skeletons_choice", "text": "Meet the skeletons with steel.", "next": "fight_skeletons" }
+      ]
+    },
+    "fight_skeletons": {
+      "id": "fight_skeletons", "type": "combat", "title": "Crypt Guardians",
+      "narration": "The skeletons advance with dry, rattling steps, blades whistling.",
+      "enemies": [
+        { "name": "Skeleton Guardian", "maxHp": 9, "ac": 13, "attack": { "name": "Rusted Sword", "toHit": 4, "damageDice": "1d6", "damageBonus": 2 } },
+        { "name": "Skeleton Guardian", "maxHp": 8, "ac": 13, "attack": { "name": "Rusted Sword", "toHit": 3, "damageDice": "1d6", "damageBonus": 1 } }
+      ],
+      "onVictory": "crypt_cleared", "onDefeat": "ending_defeat_crypt"
+    },
+    "crypt_cleared": {
+      "id": "crypt_cleared", "type": "story", "title": "Crypt Junction",
+      "narration": "The guardians fall still. A side-niche holds a dusty alcove that would make a defensible rest spot, while a stair descends toward a torchlit hall echoing with a deep, reptilian voice.",
+      "choices": [
+        { "id": "crypt_to_safe", "text": "Duck into the alcove to rest and recover.", "next": "safe_alcove" },
+        { "id": "crypt_to_boss", "text": "Descend toward the Cave Lord's hall now.", "next": "boss_approach" }
+      ]
+    },
+    "safe_alcove": {
+      "id": "safe_alcove", "type": "story", "title": "The Safe Alcove", "rest": true,
+      "narration": "Behind a fall of rubble lies a quiet, defensible alcove with a trickle of clean spring water. You barricade the entrance, bind your wounds, and share out the healing draughts you've gathered — your strength returns.",
+      "choices": [
+        { "id": "rest_then_boss", "text": "Steel yourselves and seek the Cave Lord.", "next": "boss_approach" },
+        { "id": "scout_first", "text": "Scout the approach to the hall carefully first.", "check": { "skill": "perception", "dc": 12 }, "attemptedBy": "any", "onSuccess": "boss_approach_scouted", "onFailure": "boss_approach" }
+      ]
+    },
+    "boss_approach_scouted": {
+      "id": "boss_approach_scouted", "type": "story", "title": "Forewarned",
+      "narration": "Peering down the stair, you spot the Cave Lord pacing alone but for a single hunched goblin runt. You note loose flagstones near the throne you could exploit to throw the beast off balance.",
+      "choices": [
+        { "id": "scouted_to_boss", "text": "Strike, using the loose flagstones to your advantage.", "next": "fight_boss" }
+      ]
+    },
+    "boss_approach": {
+      "id": "boss_approach", "type": "story", "title": "The Cave Lord's Hall",
+      "narration": "The stair opens into a torchlit hall of crude grandeur. Upon a throne of stacked skulls sits the Cave Lord, a hulking scaled brute, with a single cowering goblin runt at its feet. It rises with a roar of challenge.",
+      "choices": [
+        { "id": "intimidate_lord", "text": "Roar a challenge back to rattle the beast before it strikes.", "check": { "skill": "intimidation", "dc": 14 }, "attemptedBy": "any", "onSuccess": "fight_boss", "onFailure": "fight_boss" }
+      ]
+    },
+    "fight_boss": {
+      "id": "fight_boss", "type": "combat", "title": "The Cave Lord",
+      "narration": "The Cave Lord swings a massive bone-club while its goblin runt darts in with a dagger. This is the reckoning the whole warren has been building toward.",
+      "enemies": [
+        { "name": "The Cave Lord", "maxHp": 27, "ac": 14, "attack": { "name": "Bone Club", "toHit": 5, "damageDice": "1d10", "damageBonus": 2 } },
+        { "name": "Goblin Runt", "maxHp": 6, "ac": 12, "attack": { "name": "Dagger", "toHit": 3, "damageDice": "1d4", "damageBonus": 1 } }
+      ],
+      "onVictory": "ending_victory", "onDefeat": "ending_defeat_boss"
+    },
+    "ending_victory": {
+      "id": "ending_victory", "type": "ending", "endingType": "victory", "title": "The Caves Fall Silent",
+      "narration": "The Cave Lord crashes down amid its throne of skulls and the runt flees screeching into the dark. You lead the freed captives out into clean morning air. Morgan's Rest is safe, and your names are sung in the tavern that night."
+    },
+    "ending_defeat_kobold": {
+      "id": "ending_defeat_kobold", "type": "ending", "endingType": "defeat", "title": "Overrun at the Threshold",
+      "narration": "The kobolds' yipping alarm brings more spears than you can answer. You fall in the smoky den, and the captives' fate is sealed in the dark."
+    },
+    "ending_defeat_goblin": {
+      "id": "ending_defeat_goblin", "type": "ending", "endingType": "defeat", "title": "Snuffed at the Cookfire",
+      "narration": "The goblins drag you down beside their roasting spit. The Chaotic Caves keep their secrets, and the north road stays closed."
+    },
+    "ending_defeat_crypt": {
+      "id": "ending_defeat_crypt", "type": "ending", "endingType": "defeat", "title": "Joining the Dead",
+      "narration": "The crypt guardians' rusted blades find every gap in your guard. The cold vault adds new bones to its ancient hoard."
+    },
+    "ending_defeat_boss": {
+      "id": "ending_defeat_boss", "type": "ending", "endingType": "defeat", "title": "The Cave Lord Reigns",
+      "narration": "The bone-club falls one last time and the hall goes dark. The Cave Lord adds your skulls to its throne, and Morgan's Rest waits for heroes who never return."
+    }
+  }
+}

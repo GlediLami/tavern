@@ -56,7 +56,7 @@ export interface Enemy {
 }
 
 export type Scene =
-  | { id: string; type: 'story'; title: string; narration: string; choices: Choice[] }
+  | { id: string; type: 'story'; title: string; narration: string; choices: Choice[]; rest?: boolean }
   | { id: string; type: 'combat'; title: string; narration: string; enemies: Enemy[]; onVictory: string; onDefeat: string }
   | { id: string; type: 'ending'; endingType: 'victory' | 'defeat'; title: string; narration: string };
 

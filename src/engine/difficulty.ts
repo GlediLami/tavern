@@ -56,6 +56,15 @@ export function restHp(current: number, max: number, difficulty: Difficulty): nu
   return Math.min(max, current + Math.ceil(max * cfg.restHealPct));
 }
 
+// A dedicated "safe room" rest, more generous than a between-fight breather.
+// Normal: living heroes fully recover, the downed revive at half. Hard: +50% / revive at 25%.
+export function campRestHp(current: number, max: number, difficulty: Difficulty): number {
+  if (current > 0) {
+    return difficulty === 'normal' ? max : Math.min(max, current + Math.ceil(max * 0.5));
+  }
+  return difficulty === 'normal' ? Math.ceil(max * 0.5) : Math.ceil(max * 0.25);
+}
+
 // Adjust an encounter's enemies for difficulty and party size.
 export function scaleEnemies(enemies: Enemy[], difficulty: Difficulty, partySize: number): Enemy[] {
   const cfg = config(difficulty);

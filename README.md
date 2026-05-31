@@ -9,7 +9,7 @@ server, no accounts, runs in any modern browser.
 
 - **Pass-and-play multiplayer** — multiple players share one screen, each controlling a hero.
 - **6 premade heroes** — Fighter, Rogue, Cleric, Wizard, Ranger, Barbarian, built on D&D 5e SRD rules (ability scores, AC, HP, skills, attacks).
-- **Two branching adventures** — *The Hollow Bell of Brackenmoor* (a haunted bell-tower) and *The Snakewater Raid* (a daylight kobold-cave rescue), each with meaningful choices, multiple paths, and several endings.
+- **Three branching adventures** — *The Hollow Bell of Brackenmoor* (a haunted bell-tower) and *The Snakewater Raid* (a daylight kobold-cave rescue), both original, plus *The Chaotic Caves*, adapted from the Basic Fantasy RPG one-shot under CC BY-SA 4.0 (see [CREDITS.md](CREDITS.md)). Each has meaningful choices, multiple paths, safe-room rests, and several endings.
 - **Two difficulty modes** — **Normal** (HP floor, between-fight recovery, in-combat Cleric heal, thinned foes for small parties) and **Hard** (real stat blocks, little recovery). Tuned to be tense-but-fair, not a one-hit-kill slog.
 - **Authentic d20 checks** — roll `d20 + ability modifier` vs a Difficulty Class, with natural-20 critical successes and natural-1 critical failures, shown with an animated die.
 - **Light turn-based combat** — initiative, attack rolls vs AC, damage dice, HP tracking, simple enemy AI, and a **visible dice readout** (every attack shows the d20, the math vs AC, and the damage dice rolled).
