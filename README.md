@@ -27,8 +27,12 @@ components are a thin layer over the engine.
 npm install
 npm run dev      # start the dev server
 npm test         # run the test suite (Vitest)
-npm run build    # production build
+npm run lint     # ESLint (TypeScript + React rules)
+npm run build    # type-check + production build
 ```
+
+Continuous integration (`.github/workflows/ci.yml`) runs lint, type-check, tests,
+and the build on every push and pull request to `main`.
 
 ## Project layout
 
