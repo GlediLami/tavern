@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { GameProvider, useGame } from './state/GameContext';
 import { initialState, type GameState } from './state/gameReducer';
-import { loadGame, clearSave } from './engine/save';
+import { clearSave } from './engine/save';
+import { loadValidatedGame } from './state/persistence';
 import { isMuted, setMuted } from './ui/sfx';
 import { TavernHome } from './components/TavernHome';
 import { AdventureSelect } from './components/AdventureSelect';
@@ -31,10 +32,10 @@ function Screens() {
     case 'home':
       return (
         <TavernHome
-          hasSave={loadGame<GameState>() !== null}
+          hasSave={loadValidatedGame() !== null}
           onNewGame={() => { clearSave(); dispatch({ type: 'START_GAME' }); }}
           onContinue={() => {
-            const saved = loadGame<GameState>();
+            const saved = loadValidatedGame();
             if (saved) dispatch({ type: 'LOAD', state: saved });
           }}
         />
@@ -62,7 +63,7 @@ function Screens() {
 
 export default function App() {
   // Seed the provider from a save if one exists, so a reload resumes mid-adventure.
-  const [initial] = useState<GameState>(() => loadGame<GameState>() ?? initialState);
+  const [initial] = useState<GameState>(() => loadValidatedGame() ?? initialState);
   return (
     <GameProvider initial={initial}>
       <MuteToggle />

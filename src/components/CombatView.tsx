@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGame } from '../state/GameContext';
 import { getScene } from '../engine/story';
 import { getAdventure, getCharacter, toHero, makeHeroAttackLookup } from '../engine/party';
@@ -39,6 +39,8 @@ export function CombatView() {
   const [target, setTarget] = useState<string | null>(null);
   const [healMode, setHealMode] = useState(false);
   const [flash, setFlash] = useState<Flash | null>(null);
+  const mounted = useRef(true);
+  useEffect(() => () => { mounted.current = false; }, []);
   const [healUses, setHealUses] = useState<Record<string, number>>(() => {
     const u: Record<string, number> = {};
     state.partyIds.forEach((id) => {
@@ -60,7 +62,7 @@ export function CombatView() {
     if (ev && ev.amount > 0) {
       if (ev.kind === 'heal') sfx.click(); else sfx.hit();
       setFlash({ id: ev.targetId, amount: ev.amount, heal: ev.kind === 'heal', nonce: Date.now() });
-      setTimeout(() => setFlash(null), 850);
+      setTimeout(() => { if (mounted.current) setFlash(null); }, 850);
     }
     setCombat(next);
 
@@ -128,8 +130,8 @@ export function CombatView() {
                   {isFlash && <span key={flash!.nonce} className={`dmg-float${flash!.heal ? ' heal' : ''}`}>{flash!.heal ? '+' : '-'}{flash!.amount}</span>}
                   <strong style={{ fontWeight: 600 }}>{e.name}</strong>
                   {e.hp <= 0 && <span className="faint"> — slain</span>}
-                  <div className="hp-bar" style={{ marginTop: 8 }}>
-                    <div className="hp-fill" style={{ width: `${(e.hp / e.maxHp) * 100}%`, background: hpColor(e.hp / e.maxHp) }} />
+                  <div className="hp-bar" style={{ marginTop: 8 }} role="progressbar" aria-label={`${e.name} hit points`} aria-valuenow={e.hp} aria-valuemin={0} aria-valuemax={e.maxHp}>
+                    <div className="hp-fill" style={{ width: `${(e.hp / Math.max(1, e.maxHp)) * 100}%`, background: hpColor(e.hp / Math.max(1, e.maxHp)) }} />
                   </div>
                   <div className="row" style={{ gap: 8, marginTop: 5, fontSize: '0.82rem' }}>
                     <span className="muted">{e.hp}/{e.maxHp} HP</span>
@@ -158,8 +160,8 @@ export function CombatView() {
                   {isFlash && <span key={flash!.nonce} className={`dmg-float${flash!.heal ? ' heal' : ''}`}>{flash!.heal ? '+' : '-'}{flash!.amount}</span>}
                   <strong style={{ fontWeight: 600 }}>{getCharacter(h.heroId!).portrait} {h.name}</strong>
                   {h.hp <= 0 && <span style={{ color: 'var(--accent-bright)' }}> — down</span>}
-                  <div className="hp-bar" style={{ marginTop: 8 }}>
-                    <div className="hp-fill" style={{ width: `${(h.hp / h.maxHp) * 100}%`, background: hpColor(h.hp / h.maxHp) }} />
+                  <div className="hp-bar" style={{ marginTop: 8 }} role="progressbar" aria-label={`${h.name} hit points`} aria-valuenow={h.hp} aria-valuemin={0} aria-valuemax={h.maxHp}>
+                    <div className="hp-fill" style={{ width: `${(h.hp / Math.max(1, h.maxHp)) * 100}%`, background: hpColor(h.hp / Math.max(1, h.maxHp)) }} />
                   </div>
                   <div className="muted" style={{ fontSize: '0.82rem', marginTop: 5 }}>{h.hp}/{h.maxHp} HP</div>
                 </button>

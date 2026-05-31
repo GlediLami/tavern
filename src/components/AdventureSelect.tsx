@@ -20,7 +20,7 @@ export function AdventureSelect({ onConfirm }: Props) {
       <div className="rule-accent" />
       <p className="muted">Three adventures await. Pick one, set the challenge, then gather your party.</p>
 
-      <div className="grid-cards stagger" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+      <div className="grid-cards stagger" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
         {ADVENTURES.map((a) => {
           const sel = adventureId === a.id;
           return (

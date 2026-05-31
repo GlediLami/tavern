@@ -13,8 +13,11 @@ export function GameProvider({ children, initial }: { children: ReactNode; initi
   const [state, dispatch] = useReducer(gameReducer, initial ?? initialState);
 
   useEffect(() => {
-    // Persist after the home screen (don't clobber a save just by mounting).
-    if (state.phase !== 'home') saveGame(state);
+    // Persist meaningful progress, but skip the home screen (don't clobber a
+    // save just by mounting) and skip the transient 'combat' phase — combat
+    // state isn't serialized, so a mid-fight reload cleanly resumes at the
+    // scene that led into the fight rather than restarting it with full-HP foes.
+    if (state.phase !== 'home' && state.phase !== 'combat') saveGame(state);
   }, [state]);
 
   return <GameContext.Provider value={{ state, dispatch }}>{children}</GameContext.Provider>;

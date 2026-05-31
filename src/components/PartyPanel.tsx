@@ -14,7 +14,7 @@ export function PartyPanel({ partyIds, hp, difficulty }: Props) {
     <div className="stack">
       {partyIds.map((id) => {
         const c = getCharacter(id);
-        const max = effectiveMaxHp(c, difficulty);
+        const max = Math.max(1, effectiveMaxHp(c, difficulty));
         const current = hp[id] ?? max;
         const ratio = current / max;
         const pct = Math.max(0, Math.min(100, ratio * 100));
@@ -28,7 +28,7 @@ export function PartyPanel({ partyIds, hp, difficulty }: Props) {
               </span>
               <span className="faint" style={{ fontSize: '0.78rem' }}>{c.class}</span>
             </div>
-            <div className="hp-bar" style={{ marginTop: 9 }}>
+            <div className="hp-bar" style={{ marginTop: 9 }} role="progressbar" aria-label={`${c.name} hit points`} aria-valuenow={Math.max(0, current)} aria-valuemin={0} aria-valuemax={max}>
               <div className="hp-fill" style={{ width: `${pct}%`, background: hpColor(ratio) }} />
             </div>
             <div style={{ fontSize: '0.85rem', marginTop: 4 }}>
