@@ -106,5 +106,113 @@
       { "name": "Handaxe (thrown)", "ability": "str", "damageDice": "1d6", "damageBonus": 3 }
     ],
     "backstory": "Gronk was cast out of his war-band for refusing to raid a defenseless village, branded a coward by the only family he knew. He now channels his fury against the marauders and monsters that prey on the weak, proving strength can serve more than conquest."
+  },
+  {
+    "id": "lyra-brightshield",
+    "name": "Lyra Brightshield",
+    "race": "Human",
+    "class": "Paladin",
+    "level": 1,
+    "portrait": "⚜️",
+    "abilities": { "str": 16, "dex": 9, "con": 14, "int": 11, "wis": 13, "cha": 15 },
+    "maxHp": 12,
+    "ac": 18,
+    "proficiencyBonus": 2,
+    "skillProficiencies": ["persuasion", "religion", "athletics"],
+    "attacks": [
+      { "name": "Longsword", "ability": "str", "damageDice": "1d8", "damageBonus": 3 },
+      { "name": "Javelin (thrown)", "ability": "str", "damageDice": "1d6", "damageBonus": 3 }
+    ],
+    "backstory": "Lyra knelt before the altar of a war-shrine as a squire and rose having sworn an oath to shield the helpless from those who prey on them. She rides the roads in dented plate, answering cries for help that the powerful would rather ignore."
+  },
+  {
+    "id": "kaito-stillwater",
+    "name": "Kaito Stillwater",
+    "race": "Wood Elf",
+    "class": "Monk",
+    "level": 1,
+    "portrait": "👊",
+    "abilities": { "str": 12, "dex": 17, "con": 13, "int": 8, "wis": 16, "cha": 10 },
+    "maxHp": 9,
+    "ac": 16,
+    "proficiencyBonus": 2,
+    "skillProficiencies": ["acrobatics", "insight", "stealth"],
+    "attacks": [
+      { "name": "Unarmed Strike", "ability": "dex", "damageDice": "1d4", "damageBonus": 3 },
+      { "name": "Shortsword", "ability": "dex", "damageDice": "1d6", "damageBonus": 3 }
+    ],
+    "backstory": "Kaito trained from childhood in a cliffside monastery, learning to make his body a weapon and his mind a still pond. When raiders shattered the monastery's peace, he set out to test his discipline against the chaos of the wider world."
+  },
+  {
+    "id": "fennel-quill",
+    "name": "Fennel Quill",
+    "race": "Half-Elf",
+    "class": "Bard",
+    "level": 1,
+    "portrait": "🎵",
+    "abilities": { "str": 8, "dex": 14, "con": 13, "int": 10, "wis": 12, "cha": 17 },
+    "maxHp": 9,
+    "ac": 13,
+    "proficiencyBonus": 2,
+    "skillProficiencies": ["performance", "persuasion", "deception", "insight"],
+    "attacks": [
+      { "name": "Vicious Mockery", "ability": "cha", "damageDice": "1d4", "damageBonus": 0 },
+      { "name": "Rapier", "ability": "dex", "damageDice": "1d8", "damageBonus": 2 }
+    ],
+    "backstory": "Fennel drifted from tavern to tavern, trading songs and barbed wit for a warm meal and a place by the fire. A noble's insult turned into a duel of words, then steel, and now Fennel travels with adventurers collecting tales worth singing about."
+  },
+  {
+    "id": "rowan-mossheart",
+    "name": "Rowan Mossheart",
+    "race": "Hill Dwarf",
+    "class": "Druid",
+    "level": 1,
+    "portrait": "🍃",
+    "abilities": { "str": 10, "dex": 12, "con": 15, "int": 8, "wis": 16, "cha": 13 },
+    "maxHp": 10,
+    "ac": 12,
+    "proficiencyBonus": 2,
+    "skillProficiencies": ["nature", "animalHandling", "perception", "medicine"],
+    "attacks": [
+      { "name": "Produce Flame", "ability": "wis", "damageDice": "1d8", "damageBonus": 0 },
+      { "name": "Scimitar", "ability": "dex", "damageDice": "1d6", "damageBonus": 1 }
+    ],
+    "backstory": "Rowan tended a sacred grove on the slopes above a dwarven hold, speaking with the beasts and warding the old trees from rot. When miners began carving into the grove's roots, Rowan left to find the balance that greed had broken."
+  },
+  {
+    "id": "ignis-emberfell",
+    "name": "Ignis Emberfell",
+    "race": "Dragonborn",
+    "class": "Sorcerer",
+    "level": 1,
+    "portrait": "🔥",
+    "abilities": { "str": 15, "dex": 14, "con": 12, "int": 10, "wis": 8, "cha": 16 },
+    "maxHp": 7,
+    "ac": 15,
+    "proficiencyBonus": 2,
+    "skillProficiencies": ["arcana", "intimidation", "persuasion"],
+    "attacks": [
+      { "name": "Fire Bolt", "ability": "cha", "damageDice": "1d10", "damageBonus": 0 },
+      { "name": "Dagger", "ability": "dex", "damageDice": "1d4", "damageBonus": 2 }
+    ],
+    "backstory": "Ignis was born with scales that glowed like banked coals, a sign of the draconic fire smoldering in the blood. Cast out by a fearful village, Ignis embraced the power, learning to call flame at will and to make the world reckon with it."
+  },
+  {
+    "id": "vesper-nightvow",
+    "name": "Vesper Nightvow",
+    "race": "Tiefling",
+    "class": "Warlock",
+    "level": 1,
+    "portrait": "👁️",
+    "abilities": { "str": 8, "dex": 14, "con": 13, "int": 13, "wis": 10, "cha": 17 },
+    "maxHp": 9,
+    "ac": 13,
+    "proficiencyBonus": 2,
+    "skillProficiencies": ["deception", "arcana", "intimidation"],
+    "attacks": [
+      { "name": "Eldritch Blast", "ability": "cha", "damageDice": "1d10", "damageBonus": 0 },
+      { "name": "Dagger", "ability": "dex", "damageDice": "1d4", "damageBonus": 2 }
+    ],
+    "backstory": "Vesper struck a bargain with a being from beyond the stars on a night of desperation, trading a measure of self for power enough to survive. Now the patron's whispers guide every step, and Vesper hunts the secrets that will pay the contract's price."
   }
 ]

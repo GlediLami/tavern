@@ -6,9 +6,9 @@ import type { Character } from '../types';
 const characters = charactersData as unknown as Character[];
 
 describe('characters.json', () => {
-  it('has 6 characters with unique ids', () => {
-    expect(characters).toHaveLength(6);
-    expect(new Set(characters.map((c) => c.id)).size).toBe(6);
+  it('has 12 characters with unique ids', () => {
+    expect(characters).toHaveLength(12);
+    expect(new Set(characters.map((c) => c.id)).size).toBe(12);
   });
 
   it('every skill proficiency is a real skill', () => {

@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { getCharacter, getAllCharacters, getAdventure, makeHeroAttackLookup, toHero } from './party';
 
 describe('party helpers', () => {
-  it('getAllCharacters returns 6', () => {
-    expect(getAllCharacters()).toHaveLength(6);
+  it('getAllCharacters returns the full roster', () => {
+    expect(getAllCharacters()).toHaveLength(12);
   });
 
   it('getCharacter finds by id and throws on unknown', () => {
