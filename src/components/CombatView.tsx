@@ -134,7 +134,7 @@ export function CombatView() {
     applyResult(next);
   }
 
-  function useItem(item: Item, targetIds: string[]) {
+  function consumeItem(item: Item, targetIds: string[]) {
     sfx.click();
     dispatch({ type: 'ADD_ITEM', itemId: item.id, delta: -1 });
     setPendingItem(null);
@@ -147,7 +147,7 @@ export function CombatView() {
 
   function chooseItem(item: Item) {
     sfx.click();
-    if (item.targeting === 'all-enemies') { useItem(item, []); return; }
+    if (item.targeting === 'all-enemies') { consumeItem(item, []); return; }
     setItemMenuOpen(false);
     setPendingItem(item); // ally / enemy -> enter targeting
   }
@@ -188,7 +188,7 @@ export function CombatView() {
                   key={e.id}
                   className={`panel combatant${isFlash ? (flash!.heal ? ' heal' : ' hit') : ''}${target === e.id ? ' active-turn' : ''}`}
                   disabled={!clickable}
-                  onClick={() => { sfx.click(); if (selectingEnemy) { pendingItem ? useItem(pendingItem, [e.id]) : resolvePower([e.id]); } else setTarget(e.id); }}
+                  onClick={() => { sfx.click(); if (!selectingEnemy) { setTarget(e.id); } else if (pendingItem) { consumeItem(pendingItem, [e.id]); } else { resolvePower([e.id]); } }}
                   style={{ position: 'relative', textAlign: 'left', cursor: clickable ? 'pointer' : 'default', opacity: e.hp <= 0 ? 0.4 : 1, padding: 14 }}
                 >
                   {isFlash && <span key={flash!.nonce} className={`dmg-float${flash!.heal ? ' heal' : ''}`}>{flash!.heal ? '+' : '-'}{flash!.amount}</span>}
@@ -219,7 +219,7 @@ export function CombatView() {
                   key={h.id}
                   className={`panel combatant${isFlash ? (flash!.heal ? ' heal' : ' hit') : ''}${actor.id === h.id ? ' active-turn' : ''}`}
                   disabled={!allyTargetable}
-                  onClick={() => { if (!allyTargetable) return; pendingItem ? useItem(pendingItem, [h.id]) : resolvePower([h.id]); }}
+                  onClick={() => { if (!allyTargetable) return; if (pendingItem) { consumeItem(pendingItem, [h.id]); } else { resolvePower([h.id]); } }}
                   style={{ position: 'relative', textAlign: 'left', width: '100%', opacity: h.hp <= 0 ? 0.45 : 1, padding: 14, cursor: allyTargetable ? 'pointer' : 'default' }}
                 >
                   {isFlash && <span key={flash!.nonce} className={`dmg-float${flash!.heal ? ' heal' : ''}`}>{flash!.heal ? '+' : '-'}{flash!.amount}</span>}
