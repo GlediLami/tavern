@@ -6,6 +6,7 @@ import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant } fr
 import { applyPower, getPower } from '../engine/powers';
 import { applyItem, rollLoot, getItem } from '../engine/items';
 import { getRelic } from '../engine/relics';
+import { isHandoffOn } from '../ui/handoff';
 import { scaleEnemies, restHp, effectiveMaxHp, levelPowerBonus } from '../engine/difficulty';
 import { defaultRng } from '../engine/rng';
 import { hpColor } from '../ui/visuals';
@@ -39,6 +40,7 @@ export function CombatView() {
   const [pendingPower, setPendingPower] = useState<Power | null>(null);
   const [pendingItem, setPendingItem] = useState<Item | null>(null);
   const [itemMenuOpen, setItemMenuOpen] = useState(false);
+  const [handoffDoneFor, setHandoffDoneFor] = useState<string | null>(null);
   const [flash, setFlash] = useState<Flash | null>(null);
   const mounted = useRef(true);
   useEffect(() => () => { mounted.current = false; }, []);
@@ -65,6 +67,7 @@ export function CombatView() {
   const selectingAlly = pendingPower?.targeting === 'ally' || pendingItem?.targeting === 'ally';
   const stash = Object.entries(state.inventory).filter(([, n]) => n > 0);
   const stashCount = stash.reduce((sum, [, n]) => sum + n, 0);
+  const handoffNeeded = actor.isHero && handoffDoneFor !== actor.id && isHandoffOn();
 
   function applyResult(next: CombatState) {
     const ev = next.lastAttack;
@@ -264,7 +267,14 @@ export function CombatView() {
           <strong className="accent-text">{actor.name}</strong>’s turn
         </p>
         {actor.isHero && heroChar ? (
-          pendingPower ? (
+          handoffNeeded ? (
+            <>
+              <p className="muted" style={{ marginTop: 4 }}>
+                Pass the device to <strong className="accent-text">{actor.name}</strong> — {getCharacter(actor.heroId!).name}'s turn.
+              </p>
+              <button className="btn btn-primary" onClick={() => { sfx.click(); setHandoffDoneFor(actor.id); }}>I'm ready ▸</button>
+            </>
+          ) : pendingPower ? (
             <>
               <p className="muted" style={{ marginTop: 4 }}>
                 {selectingAlly ? `Choose an ally for ${pendingPower.name}.` : `Choose a foe for ${pendingPower.name}.`}

@@ -369,14 +369,15 @@ h1, h2, h3, .display { font-family: var(--font-display); font-weight: 400; lette
 }
 .name-input:focus { outline: none; border-color: var(--accent); }
 
-/* mute toggle */
-.mute-toggle {
-  position: fixed; top: 14px; right: 16px; z-index: 50;
+/* top-right control cluster */
+.top-controls { position: fixed; top: 14px; right: 16px; z-index: 50; display: flex; gap: 8px; }
+.top-control {
   background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-soft); color: var(--ink-dim);
-  width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.1rem;
+  width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.05rem;
   transition: border-color 0.18s ease, color 0.18s ease;
 }
-.mute-toggle:hover { border-color: var(--accent); color: var(--ink); }
+.top-control:hover { border-color: var(--accent); color: var(--ink); }
+.top-control.on { border-color: var(--accent); color: var(--ink); }
 
 /* staggered entrance */
 .stagger > * { animation: rise-in 0.4s ease-out both; }

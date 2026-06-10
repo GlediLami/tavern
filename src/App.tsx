@@ -4,6 +4,8 @@ import { initialState, emptyStats, type GameState } from './state/gameReducer';
 import { clearSave } from './engine/save';
 import { loadValidatedGame } from './state/persistence';
 import { isMuted, setMuted } from './ui/sfx';
+import { isHandoffOn, setHandoffOn } from './ui/handoff';
+import { HelpOverlay } from './components/HelpOverlay';
 import { TavernHome } from './components/TavernHome';
 import { HallOfTales } from './components/HallOfTales';
 import { AdventureSelect } from './components/AdventureSelect';
@@ -12,17 +14,29 @@ import { GameScreen } from './components/GameScreen';
 import { CombatView } from './components/CombatView';
 import { EndingScreen } from './components/EndingScreen';
 
-function MuteToggle() {
+function TopControls() {
   const [muted, setMutedState] = useState<boolean>(isMuted());
+  const [handoff, setHandoffState] = useState<boolean>(isHandoffOn());
+  const [showHelp, setShowHelp] = useState(false);
   return (
-    <button
-      className="mute-toggle"
-      title={muted ? 'Unmute sound' : 'Mute sound'}
-      aria-label={muted ? 'Unmute sound' : 'Mute sound'}
-      onClick={() => { const next = !muted; setMuted(next); setMutedState(next); }}
-    >
-      {muted ? '🔇' : '🔊'}
-    </button>
+    <>
+      <div className="top-controls">
+        <button
+          className={`top-control${handoff ? ' on' : ''}`}
+          title={handoff ? 'Pass-the-device handoff on' : 'Pass-the-device handoff off'}
+          aria-label="Toggle pass-the-device handoff"
+          onClick={() => { const next = !handoff; setHandoffOn(next); setHandoffState(next); }}
+        >🤝</button>
+        <button
+          className="top-control"
+          title={muted ? 'Unmute sound' : 'Mute sound'}
+          aria-label={muted ? 'Unmute sound' : 'Mute sound'}
+          onClick={() => { const next = !muted; setMuted(next); setMutedState(next); }}
+        >{muted ? '🔇' : '🔊'}</button>
+        <button className="top-control" title="How to play" aria-label="How to play" onClick={() => setShowHelp(true)}>?</button>
+      </div>
+      {showHelp && <HelpOverlay onClose={() => setShowHelp(false)} />}
+    </>
   );
 }
 
@@ -81,7 +95,7 @@ export default function App() {
   const [initial] = useState<GameState>(() => loadValidatedGame() ?? initialState);
   return (
     <GameProvider initial={initial}>
-      <MuteToggle />
+      <TopControls />
       <Screens />
     </GameProvider>
   );
