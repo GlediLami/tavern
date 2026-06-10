@@ -37,6 +37,20 @@ describe('characters.json', () => {
     }
   });
 
+  it('Sacred Flame is a Dexterity-save spell', () => {
+    const mara = characters.find((c) => c.id === 'mara-dawnwarden')!;
+    const sf = mara.attacks.find((a) => a.name === 'Sacred Flame')!;
+    expect(sf.save).toBe('dex');
+  });
+
+  it('ranged-primary heroes have their first attack tagged ranged', () => {
+    const ranged = ['alaric-vance', 'thornwick-greenstride', 'fennel-quill', 'rowan-mossheart', 'ignis-emberfell', 'vesper-nightvow'];
+    for (const id of ranged) {
+      const c = characters.find((ch) => ch.id === id)!;
+      expect(c.attacks[0].ranged, `${id} primary should be ranged`).toBe(true);
+    }
+  });
+
   it('every hero has a powerId that exists in the registry', async () => {
     const { POWERS } = await import('../engine/powers');
     for (const c of characters) {
