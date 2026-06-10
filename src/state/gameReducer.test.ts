@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { initialState, gameReducer, type GameState } from './gameReducer';
+import { initialState, gameReducer, LUCK_PER_ADVENTURE, type GameState } from './gameReducer';
 
 describe('gameReducer', () => {
   it('starts at the home phase with no party', () => {
@@ -182,6 +182,24 @@ describe('gameReducer', () => {
     expect(s.playerNames).toEqual({ 'bjorn-ironhelm': 'Sam' });
     s = gameReducer(s, { type: 'ADVANCE_CAMPAIGN' });
     expect(s.playerNames).toEqual({ 'bjorn-ironhelm': 'Sam' });
+  });
+
+  it('CONFIRM_PARTY seeds luck and SPEND_LUCK decrements (clamped)', () => {
+    let s = gameReducer(initialState, { type: 'CONFIRM_PARTY', partyIds: ['bjorn-ironhelm'] });
+    expect(s.luck).toBe(LUCK_PER_ADVENTURE);
+    s = gameReducer(s, { type: 'SPEND_LUCK' });
+    expect(s.luck).toBe(LUCK_PER_ADVENTURE - 1);
+    s = gameReducer({ ...s, luck: 0 }, { type: 'SPEND_LUCK' });
+    expect(s.luck).toBe(0);
+  });
+
+  it('ADVANCE_CAMPAIGN and resting refill luck', () => {
+    let s = gameReducer(initialState, { type: 'START_CAMPAIGN', difficulty: 'normal' });
+    s = gameReducer(s, { type: 'CONFIRM_PARTY', partyIds: ['bjorn-ironhelm'] });
+    s = gameReducer({ ...s, luck: 0 }, { type: 'ADVANCE_CAMPAIGN' });
+    expect(s.luck).toBe(LUCK_PER_ADVENTURE);
+    const atRest = gameReducer({ ...s, luck: 0, phase: 'scene', sceneId: 'town_briefing' }, { type: 'GOTO_SCENE', sceneId: 'safe_alcove' });
+    expect(atRest.luck).toBe(LUCK_PER_ADVENTURE);
   });
 
   it('RESET returns to the initial state', () => {

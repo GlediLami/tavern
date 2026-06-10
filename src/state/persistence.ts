@@ -35,6 +35,7 @@ function isValid(s: unknown): s is GameState {
   if (g.relics !== undefined && (typeof g.relics !== 'object' || g.relics === null)) return false;
   if (g.draftsAvailable !== undefined && typeof g.draftsAvailable !== 'number') return false;
   if (g.playerNames !== undefined && (typeof g.playerNames !== 'object' || g.playerNames === null)) return false;
+  if (g.luck !== undefined && typeof g.luck !== 'number') return false;
 
   // Every saved hero must still exist.
   if (!(g.partyIds as unknown[]).every((id) => typeof id === 'string' && HERO_IDS.has(id))) return false;
@@ -53,7 +54,7 @@ function isValid(s: unknown): s is GameState {
 // Load a saved game only if it is structurally sound; otherwise drop it.
 export function loadValidatedGame(): GameState | null {
   const raw = loadGame<GameState>();
-  if (raw && isValid(raw)) return { ...raw, inventory: raw.inventory ?? {}, relics: raw.relics ?? {}, draftsAvailable: raw.draftsAvailable ?? 0, playerNames: raw.playerNames ?? {} };
+  if (raw && isValid(raw)) return { ...raw, inventory: raw.inventory ?? {}, relics: raw.relics ?? {}, draftsAvailable: raw.draftsAvailable ?? 0, playerNames: raw.playerNames ?? {}, luck: raw.luck ?? 0 };
   if (raw) clearSave(); // prune the unusable save so "Continue" disappears
   return null;
 }

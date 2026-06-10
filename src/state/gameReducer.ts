@@ -10,6 +10,9 @@ export type Phase = 'home' | 'adventure-select' | 'party-select' | 'scene' | 'co
 // Curated campaign sequence, easy -> hard, ending on the arena gauntlet.
 export const CAMPAIGN_ORDER = ['snakewater', 'chaoticcaves', 'brackenmoor', 'arena'];
 
+// Party-wide Luck tokens granted at the start of each adventure (and refilled at rests).
+export const LUCK_PER_ADVENTURE = 2;
+
 export interface CampaignState {
   order: string[];
   index: number;
@@ -60,6 +63,7 @@ export interface GameState {
   relics: Record<string, string[]>;   // heroId -> granted relic ids
   draftsAvailable: number;            // relic drafts the party can still take
   playerNames: Record<string, string>; // heroId -> the human player's name
+  luck: number;                       // party-wide reroll/advantage tokens
 }
 
 export const initialState: GameState = {
@@ -77,6 +81,7 @@ export const initialState: GameState = {
   relics: {},
   draftsAvailable: 0,
   playerNames: {},
+  luck: 0,
 };
 
 export type GameAction =
@@ -89,6 +94,7 @@ export type GameAction =
   | { type: 'ADD_ITEM'; itemId: string; delta: number }
   | { type: 'GRANT_RELIC'; heroId: string; relicId: string }
   | { type: 'SKIP_DRAFT' }
+  | { type: 'SPEND_LUCK' }
   | { type: 'GOTO_SCENE'; sceneId: string }
   | { type: 'SET_HP'; hp: Record<string, number> }
   | { type: 'LOG'; entry: string }
@@ -152,6 +158,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         relics: {},
         draftsAvailable: 0,
         playerNames: action.playerNames ?? {},
+        luck: LUCK_PER_ADVENTURE,
       };
     }
 
@@ -170,6 +177,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         log: [],
         phase: 'scene',
         draftsAvailable: state.draftsAvailable + 1,
+        luck: LUCK_PER_ADVENTURE,
       };
     }
 
@@ -184,7 +192,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           const c = characters.find((ch) => ch.id === id);
           if (c) hp[id] = campRestHp(state.hp[id] ?? 0, effectiveMaxHp(c, state.difficulty, level), state.difficulty);
         }
-        return { ...base, hp, log: [...state.log, 'You make camp in safety and recover your strength.'], draftsAvailable: state.draftsAvailable + 1 };
+        return { ...base, hp, log: [...state.log, 'You make camp in safety and recover your strength.'], draftsAvailable: state.draftsAvailable + 1, luck: LUCK_PER_ADVENTURE };
       }
       return base;
     }
@@ -206,6 +214,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'SKIP_DRAFT':
       return { ...state, draftsAvailable: Math.max(0, state.draftsAvailable - 1) };
+
+    case 'SPEND_LUCK':
+      return { ...state, luck: Math.max(0, state.luck - 1) };
 
     case 'SET_HP':
       return { ...state, hp: { ...state.hp, ...action.hp } };
