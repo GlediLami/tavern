@@ -69,6 +69,23 @@ describe('difficulty', () => {
     expect(effectiveMaxHp(wizard, 'hard', 3)).toBe(7 + 8); // no floor on hard
   });
 
+  it('scales enemies up with campaign level on a gentle curve', () => {
+    const big = enemies[0]; // maxHp 14, toHit 5, dmg 3
+    const l1 = scaleEnemies([big], 'hard', 4, 1)[0];
+    expect(l1.maxHp).toBe(14);
+    expect(l1.attack.toHit).toBe(5);
+    expect(l1.attack.damageBonus).toBe(3);
+
+    const l4 = scaleEnemies([big], 'hard', 4, 4)[0];
+    expect(l4.maxHp).toBe(Math.round(14 * 1.6));        // 22
+    expect(l4.attack.toHit).toBe(5 + 1);                // + floor(3/2)
+    expect(l4.attack.damageBonus).toBe(3 + Math.round(0.6 * 3)); // + 2 => 5
+  });
+
+  it('level-1 scaling is a no-op (single tales unaffected)', () => {
+    expect(scaleEnemies(enemies, 'hard', 4, 1)).toEqual(scaleEnemies(enemies, 'hard', 4));
+  });
+
   it('levelPowerBonus is level-1, never negative', () => {
     expect(levelPowerBonus(1)).toBe(0);
     expect(levelPowerBonus(4)).toBe(3);

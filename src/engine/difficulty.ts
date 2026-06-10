@@ -72,8 +72,8 @@ export function campRestHp(current: number, max: number, difficulty: Difficulty)
   return difficulty === 'normal' ? Math.ceil(max * 0.5) : Math.ceil(max * 0.25);
 }
 
-// Adjust an encounter's enemies for difficulty and party size.
-export function scaleEnemies(enemies: Enemy[], difficulty: Difficulty, partySize: number): Enemy[] {
+// Adjust an encounter's enemies for difficulty, party size, and campaign level.
+export function scaleEnemies(enemies: Enemy[], difficulty: Difficulty, partySize: number, level = 1): Enemy[] {
   const cfg = config(difficulty);
   let list = enemies;
 
@@ -88,12 +88,18 @@ export function scaleEnemies(enemies: Enemy[], difficulty: Difficulty, partySize
     });
   }
 
+  // Gentle per-level ramp so leveled parties still meet resistance.
+  const hpMult = 1 + 0.2 * (level - 1);
+  const toHitBonus = Math.floor((level - 1) / 2);
+  const dmgBonus = Math.round(0.6 * (level - 1));
+
   return list.map((e) => ({
     ...e,
+    maxHp: Math.round(e.maxHp * hpMult),
     attack: {
       ...e.attack,
-      toHit: e.attack.toHit + cfg.enemyToHitDelta,
-      damageBonus: Math.max(0, Math.round(e.attack.damageBonus * cfg.enemyDamageMult)),
+      toHit: e.attack.toHit + cfg.enemyToHitDelta + toHitBonus,
+      damageBonus: Math.max(0, Math.round(e.attack.damageBonus * cfg.enemyDamageMult)) + dmgBonus,
     },
   }));
 }
