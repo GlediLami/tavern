@@ -9,7 +9,7 @@ function renderAt(state: Partial<GameState>) {
   const full: GameState = {
     phase: 'scene', mode: 'single', adventureId: 'brackenmoor', difficulty: 'normal',
     partyIds: ['bjorn-ironhelm'], hp: { 'bjorn-ironhelm': 13 },
-    sceneId: 'tavern_start', log: [], stats: emptyStats, ...state,
+    sceneId: 'tavern_start', log: [], stats: emptyStats, inventory: {}, ...state,
   } as GameState;
   return render(
     <GameProvider initial={full}>
@@ -29,6 +29,13 @@ describe('GameScreen', () => {
     renderAt({ sceneId: 'route_choice' });
     await userEvent.click(screen.getByRole('button', { name: /marsh path/i }));
     expect(await screen.findByText(/marsh path is a ribbon of mud/i)).toBeInTheDocument();
+  });
+
+  it('shows the Satchel with carried items', () => {
+    renderAt({ inventory: { 'potion-healing': 2 } });
+    expect(screen.getByText(/Satchel/i)).toBeInTheDocument();
+    expect(screen.getByText('Potion of Healing')).toBeInTheDocument();
+    expect(screen.getByText('×2')).toBeInTheDocument();
   });
 
   it('a check choice prompts for who attempts it', async () => {

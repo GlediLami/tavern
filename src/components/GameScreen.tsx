@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGame } from '../state/GameContext';
 import { getScene, resolveChoice } from '../engine/story';
 import { getAdventure, getCharacter } from '../engine/party';
+import { getItem } from '../engine/items';
 import { resolveCheck } from '../engine/checks';
 import { skillLabel } from '../engine/skills';
 import { defaultRng } from '../engine/rng';
@@ -105,6 +106,19 @@ export function GameScreen() {
       <div>
         <h3 style={{ margin: '0 0 10px', fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>The Party</h3>
         <PartyPanel partyIds={state.partyIds} hp={state.hp} difficulty={state.difficulty} level={state.campaign?.level ?? 1} />
+        {Object.keys(state.inventory).length > 0 && (
+          <div style={{ marginTop: 18 }}>
+            <h3 style={{ margin: '0 0 10px', fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>Satchel</h3>
+            <div className="panel" style={{ padding: 12 }}>
+              {Object.entries(state.inventory).map(([id, n]) => (
+                <div key={id} className="row" style={{ justifyContent: 'space-between', gap: 8, fontSize: '0.88rem', padding: '2px 0' }}>
+                  <span>{getItem(id).name}</span>
+                  <span className="muted">×{n}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
