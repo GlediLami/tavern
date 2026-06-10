@@ -24,7 +24,7 @@ export function GameScreen() {
   const [pending, setPending] = useState<Pending | null>(null);
   const [pendingRelic, setPendingRelic] = useState<string | null>(null);
   const drafting = state.draftsAvailable > 0;
-  const draftChoices = useMemo(() => (drafting ? rollRelicChoices(defaultRng, 3) : []), [state.draftsAvailable, drafting]);
+  const draftChoices = useMemo(() => (state.draftsAvailable > 0 ? rollRelicChoices(defaultRng, 3) : []), [state.draftsAvailable]);
 
   if (scene.type !== 'story') return null; // combat/ending handled by other screens
 
