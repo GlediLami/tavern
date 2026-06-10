@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useGame } from '../state/GameContext';
 import { getScene, resolveChoice } from '../engine/story';
-import { getAdventure, getCharacter } from '../engine/party';
+import { getAdventure, getCharacter, heroDisplayName } from '../engine/party';
 import { getItem } from '../engine/items';
 import { rollRelicChoices, getRelic } from '../engine/relics';
 import { resolveCheck } from '../engine/checks';
@@ -42,14 +42,15 @@ export function GameScreen() {
   function attemptWith(heroId: string) {
     if (!pending || pending.stage !== 'choose-hero' || !pending.choice.check) return;
     const hero = getCharacter(heroId);
+    const name = heroDisplayName(heroId, state.playerNames);
     const { skill, dc } = pending.choice.check;
     const result = resolveCheck(hero, skill, dc, defaultRng);
     dispatch({
       type: 'LOG',
-      entry: `${hero.name} rolled ${result.roll}${result.modifier >= 0 ? '+' : ''}${result.modifier} = ${result.total} vs DC ${dc} — ${result.success ? 'success' : 'failure'}.`,
+      entry: `${name} rolled ${result.roll}${result.modifier >= 0 ? '+' : ''}${result.modifier} = ${result.total} vs DC ${dc} — ${result.success ? 'success' : 'failure'}.`,
     });
     dispatch({ type: 'RECORD', delta: result.success ? { checksPassed: 1 } : { checksFailed: 1 } });
-    setPending({ stage: 'reveal', choice: pending.choice, heroName: hero.name, result });
+    setPending({ stage: 'reveal', choice: pending.choice, heroName: name, result });
   }
 
   function finishReveal() {
@@ -87,7 +88,7 @@ export function GameScreen() {
                 <div className="row">
                   {state.partyIds.map((id) => (
                     <button key={id} className="btn btn-primary" onClick={() => { sfx.click(); dispatch({ type: 'GRANT_RELIC', heroId: id, relicId: pendingRelic }); setPendingRelic(null); }}>
-                      {getCharacter(id).portrait} {getCharacter(id).name}
+                      {getCharacter(id).portrait} {heroDisplayName(id, state.playerNames)}
                     </button>
                   ))}
                 </div>
@@ -119,7 +120,7 @@ export function GameScreen() {
               <div className="row">
                 {consciousHeroes.map((id) => (
                   <button key={id} className="btn" onClick={() => { sfx.click(); attemptWith(id); }}>
-                    {getCharacter(id).portrait} {getCharacter(id).name}
+                    {getCharacter(id).portrait} {heroDisplayName(id, state.playerNames)}
                   </button>
                 ))}
               </div>
@@ -131,7 +132,7 @@ export function GameScreen() {
                 <button key={c.id} className="btn btn-choice" onClick={() => pickChoice(c)}>
                   {c.text}
                   {c.check && (
-                    <span className="stat-pill" style={{ marginLeft: 8 }}>
+                    <span className="stat-pill" style={{ marginLeft: 8 }} title="Roll a d20, add the hero's skill modifier, and meet or beat the Difficulty Class (DC). A natural 20 is a critical success, a natural 1 a critical failure.">
                       {skillLabel(c.check.skill)} · DC {c.check.dc}
                     </span>
                   )}
@@ -143,7 +144,7 @@ export function GameScreen() {
       </div>
       <div>
         <h3 style={{ margin: '0 0 10px', fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>The Party</h3>
-        <PartyPanel partyIds={state.partyIds} hp={state.hp} difficulty={state.difficulty} level={state.campaign?.level ?? 1} relics={state.relics} />
+        <PartyPanel partyIds={state.partyIds} hp={state.hp} difficulty={state.difficulty} level={state.campaign?.level ?? 1} relics={state.relics} playerNames={state.playerNames} />
         {Object.keys(state.inventory).length > 0 && (
           <div style={{ marginTop: 18 }}>
             <h3 style={{ margin: '0 0 10px', fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>Satchel</h3>

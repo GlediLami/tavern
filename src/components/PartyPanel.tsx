@@ -15,9 +15,10 @@ interface Props {
   difficulty: Difficulty;
   level?: number;
   relics?: Record<string, string[]>;
+  playerNames?: Record<string, string>;
 }
 
-export function PartyPanel({ partyIds, hp, difficulty, level = 1, relics = {} }: Props) {
+export function PartyPanel({ partyIds, hp, difficulty, level = 1, relics = {}, playerNames = {} }: Props) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
   return (
@@ -53,6 +54,7 @@ export function PartyPanel({ partyIds, hp, difficulty, level = 1, relics = {} }:
                 </span>
               </div>
             </button>
+            {playerNames[id]?.trim() && <div className="faint" style={{ fontSize: '0.72rem', marginTop: 2 }}>Played by {playerNames[id]}</div>}
             <div className="hp-bar" style={{ marginTop: 9 }} role="progressbar" aria-label={`${c.name} hit points`} aria-valuenow={Math.max(0, current)} aria-valuemin={0} aria-valuemax={max}>
               <div className="hp-fill" style={{ width: `${pct}%`, background: hpColor(ratio) }} />
             </div>

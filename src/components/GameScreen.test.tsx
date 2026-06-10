@@ -52,6 +52,13 @@ describe('GameScreen', () => {
     expect(screen.getByText('×2')).toBeInTheDocument();
   });
 
+  it('the who-attempts prompt shows the player name', async () => {
+    renderAt({ sceneId: 'tavern_start', playerNames: { 'bjorn-ironhelm': 'Sam' } });
+    await userEvent.click(screen.getByRole('button', { name: /muttering locals/i }));
+    expect(await screen.findByText(/who attempts/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Sam/ })).toBeInTheDocument();
+  });
+
   it('a check choice prompts for who attempts it', async () => {
     renderAt({ sceneId: 'tavern_start' });
     await userEvent.click(screen.getByRole('button', { name: /muttering locals/i }));

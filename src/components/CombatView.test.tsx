@@ -41,6 +41,16 @@ describe('CombatView', () => {
     }
   });
 
+  it('shows the player name in the turn banner', () => {
+    const spy = vi.spyOn(Math, 'random').mockReturnValue(0.99); // Gronk's turn
+    try {
+      renderCombat({ playerNames: { 'gronk-skullsplitter': 'Sam' } });
+      expect(screen.getByText('Sam')).toBeInTheDocument(); // "<Sam>'s turn"
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
   it('shows a Use Item button and item picker when the stash is stocked', () => {
     const spy = vi.spyOn(Math, 'random').mockReturnValue(0.99); // Gronk wins initiative
     try {

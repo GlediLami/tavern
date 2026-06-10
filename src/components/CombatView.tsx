@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGame } from '../state/GameContext';
 import { getScene } from '../engine/story';
-import { getAdventure, getCharacter, toHero, makeHeroAttackLookup } from '../engine/party';
+import { getAdventure, getCharacter, toHero, makeHeroAttackLookup, heroDisplayName } from '../engine/party';
 import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant } from '../engine/combat';
 import { applyPower, getPower } from '../engine/powers';
 import { applyItem, rollLoot, getItem } from '../engine/items';
@@ -30,6 +30,7 @@ export function CombatView() {
       return toHero(id, state.hp[id] ?? effectiveMaxHp(c, state.difficulty, level), state.relics[id] ?? []);
     });
     heroes.forEach((h) => { h.maxHp = effectiveMaxHp(getCharacter(h.id), state.difficulty, level); });
+    heroes.forEach((h) => { h.name = heroDisplayName(h.id, state.playerNames); });
     const enemies = scaleEnemies(scene.enemies, state.difficulty, state.partyIds.length, level);
     return startCombat(heroes, enemies, defaultRng);
   });
@@ -224,8 +225,9 @@ export function CombatView() {
                   style={{ position: 'relative', textAlign: 'left', width: '100%', opacity: h.hp <= 0 ? 0.45 : 1, padding: 14, cursor: allyTargetable ? 'pointer' : 'default' }}
                 >
                   {isFlash && <span key={flash!.nonce} className={`dmg-float${flash!.heal ? ' heal' : ''}`}>{flash!.heal ? '+' : '-'}{flash!.amount}</span>}
-                  <strong style={{ fontWeight: 600 }}>{getCharacter(h.heroId!).portrait} {h.name} {badge(h)}</strong>
+                  <strong style={{ fontWeight: 600 }}>{getCharacter(h.heroId!).portrait} {getCharacter(h.heroId!).name} {badge(h)}</strong>
                   {h.hp <= 0 && <span style={{ color: 'var(--accent-bright)' }}> — down</span>}
+                  {state.playerNames[h.heroId!]?.trim() && <div className="faint" style={{ fontSize: '0.72rem' }}>Played by {state.playerNames[h.heroId!]}</div>}
                   <div className="hp-bar" style={{ marginTop: 8 }} role="progressbar" aria-label={`${h.name} hit points`} aria-valuenow={h.hp} aria-valuemin={0} aria-valuemax={h.maxHp}>
                     <div className="hp-fill" style={{ width: `${(h.hp / Math.max(1, h.maxHp)) * 100}%`, background: hpColor(h.hp / Math.max(1, h.maxHp)) }} />
                   </div>
