@@ -42,6 +42,8 @@ export interface Choice {
   onSuccess?: string;
   onFailure?: string;
   next?: string;
+  setFlags?: string[];     // flags set when this choice is committed
+  requiresFlag?: string;   // choice only shown when this flag is set
 }
 
 export interface EnemyAttack {
@@ -68,9 +70,9 @@ export interface Enemy {
 }
 
 export type Scene =
-  | { id: string; type: 'story'; title: string; narration: string; choices: Choice[]; rest?: boolean }
-  | { id: string; type: 'combat'; title: string; narration: string; enemies: Enemy[]; onVictory: string; onDefeat: string }
-  | { id: string; type: 'ending'; endingType: 'victory' | 'defeat'; title: string; narration: string };
+  | { id: string; type: 'story'; title: string; narration: string; choices: Choice[]; rest?: boolean; setFlags?: string[] }
+  | { id: string; type: 'combat'; title: string; narration: string; enemies: Enemy[]; onVictory: string; onDefeat: string; setFlags?: string[] }
+  | { id: string; type: 'ending'; endingType: 'victory' | 'defeat'; title: string; narration: string; setFlags?: string[]; epilogues?: { flag: string; text: string }[] };
 
 export interface Adventure {
   title: string;

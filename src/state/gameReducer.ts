@@ -64,6 +64,7 @@ export interface GameState {
   draftsAvailable: number;            // relic drafts the party can still take
   playerNames: Record<string, string>; // heroId -> the human player's name
   luck: number;                       // party-wide reroll/advantage tokens
+  flags: string[];                    // narrative flags set by choices/scenes this adventure
 }
 
 export const initialState: GameState = {
@@ -82,6 +83,7 @@ export const initialState: GameState = {
   draftsAvailable: 0,
   playerNames: {},
   luck: 0,
+  flags: [],
 };
 
 export type GameAction =
@@ -95,6 +97,7 @@ export type GameAction =
   | { type: 'GRANT_RELIC'; heroId: string; relicId: string }
   | { type: 'SKIP_DRAFT' }
   | { type: 'SPEND_LUCK' }
+  | { type: 'SET_FLAGS'; flags: string[] }
   | { type: 'GOTO_SCENE'; sceneId: string }
   | { type: 'SET_HP'; hp: Record<string, number> }
   | { type: 'LOG'; entry: string }
@@ -159,6 +162,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         draftsAvailable: 0,
         playerNames: action.playerNames ?? {},
         luck: LUCK_PER_ADVENTURE,
+        flags: [],
       };
     }
 
@@ -178,12 +182,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         phase: 'scene',
         draftsAvailable: state.draftsAvailable + 1,
         luck: LUCK_PER_ADVENTURE,
+        flags: [],
       };
     }
 
     case 'GOTO_SCENE': {
       const scene = getAdventureData(state.adventureId).scenes[action.sceneId];
-      const base = { ...state, sceneId: action.sceneId, phase: phaseForScene(state.adventureId, action.sceneId) };
+      const flags = scene?.setFlags?.length ? Array.from(new Set([...state.flags, ...scene.setFlags])) : state.flags;
+      const base = { ...state, sceneId: action.sceneId, phase: phaseForScene(state.adventureId, action.sceneId), flags };
       // A safe-room rest scene restores the party on arrival (capped at leveled max).
       if (scene && scene.type === 'story' && scene.rest) {
         const level = state.campaign?.level ?? 1;
@@ -217,6 +223,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'SPEND_LUCK':
       return { ...state, luck: Math.max(0, state.luck - 1) };
+
+    case 'SET_FLAGS':
+      return { ...state, flags: Array.from(new Set([...state.flags, ...action.flags])) };
 
     case 'SET_HP':
       return { ...state, hp: { ...state.hp, ...action.hp } };

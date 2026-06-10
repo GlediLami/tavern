@@ -9,7 +9,7 @@ function renderAt(state: Partial<GameState>) {
   const full: GameState = {
     phase: 'scene', mode: 'single', adventureId: 'brackenmoor', difficulty: 'normal',
     partyIds: ['bjorn-ironhelm'], hp: { 'bjorn-ironhelm': 13 },
-    sceneId: 'tavern_start', log: [], stats: emptyStats, inventory: {}, relics: {}, draftsAvailable: 0, playerNames: {}, luck: 0, ...state,
+    sceneId: 'tavern_start', log: [], stats: emptyStats, inventory: {}, relics: {}, draftsAvailable: 0, playerNames: {}, luck: 0, flags: [], ...state,
   } as GameState;
   return render(
     <GameProvider initial={full}>

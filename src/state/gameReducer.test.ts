@@ -202,6 +202,24 @@ describe('gameReducer', () => {
     expect(atRest.luck).toBe(LUCK_PER_ADVENTURE);
   });
 
+  it('SET_FLAGS merges flags uniquely', () => {
+    let s = gameReducer(initialState, { type: 'SET_FLAGS', flags: ['a', 'b'] });
+    s = gameReducer(s, { type: 'SET_FLAGS', flags: ['b', 'c'] });
+    expect([...s.flags].sort()).toEqual(['a', 'b', 'c']);
+  });
+
+  it("GOTO_SCENE applies a destination scene's setFlags", () => {
+    const s: GameState = { ...initialState, phase: 'scene', partyIds: ['bjorn-ironhelm'], hp: { 'bjorn-ironhelm': 13 }, sceneId: 'village_square' };
+    const next = gameReducer(s, { type: 'GOTO_SCENE', sceneId: 'gravedigger_cottage' });
+    expect(next.flags).toContain('visited_cottage');
+  });
+
+  it('CONFIRM_PARTY resets flags', () => {
+    let s: GameState = { ...initialState, flags: ['x'] };
+    s = gameReducer(s, { type: 'CONFIRM_PARTY', partyIds: ['bjorn-ironhelm'] });
+    expect(s.flags).toEqual([]);
+  });
+
   it('RESET returns to the initial state', () => {
     let s = gameReducer(initialState, { type: 'START_GAME' });
     s = gameReducer(s, { type: 'RESET' });

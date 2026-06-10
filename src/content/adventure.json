@@ -88,6 +88,7 @@
       "type": "story",
       "title": "The Gravedigger's Cottage",
       "narration": "Inside, the cottage has been ransacked — by the owner, it seems, in a hurry. A cold hearth, a half-packed bag, and a fresh patch of dug earth in the dirt floor where something was buried, then taken back up. Papers lie scattered in the damp.",
+      "setFlags": ["visited_cottage"],
       "choices": [
         {
           "id": "c_search_cottage",
@@ -129,12 +130,21 @@
         {
           "id": "c_marsh",
           "text": "Take the marsh path.",
-          "next": "marsh_approach"
+          "next": "marsh_approach",
+          "setFlags": ["route_marsh"]
         },
         {
           "id": "c_ridge",
           "text": "Take the ridge trail.",
-          "next": "ridge_approach"
+          "next": "ridge_approach",
+          "setFlags": ["route_ridge"]
+        },
+        {
+          "id": "c_cottage_map",
+          "text": "Follow the gravedigger's scrawled map straight to the marsh shrine.",
+          "next": "marsh_approach",
+          "setFlags": ["route_marsh"],
+          "requiresFlag": "visited_cottage"
         }
       ]
     },
@@ -653,7 +663,11 @@
       "type": "ending",
       "endingType": "victory",
       "title": "The Bell That Sleeps",
-      "narration": "Brackenmoor wakes to a bell that tolls only at dawn, as it should. Otha pays your silver twice over, and the lost folk's families light candles in your name. The marsh recedes, and the Drowned Lantern's hearth has never felt warmer. You are heroes of a quiet, saved village."
+      "narration": "Brackenmoor wakes to a bell that tolls only at dawn, as it should. Otha pays your silver twice over, and the lost folk's families light candles in your name. The marsh recedes, and the Drowned Lantern's hearth has never felt warmer. You are heroes of a quiet, saved village.",
+      "epilogues": [
+        { "flag": "route_marsh", "text": "You came to the bell through the drowned marsh, and its silt still clings to your boots — the half-sunk shrine will remember the ones who passed." },
+        { "flag": "route_ridge", "text": "You reached the bell over the wolf-haunted ridge, where the pack's amber eyes followed you up and, in the end, let you pass." }
+      ]
     },
     "ending_escape": {
       "id": "ending_escape",
