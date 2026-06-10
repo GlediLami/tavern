@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGame } from '../state/GameContext';
 import { getScene } from '../engine/story';
 import { getAdventure, getCharacter, toHero, makeHeroAttackLookup, heroDisplayName } from '../engine/party';
-import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant } from '../engine/combat';
+import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant, clone } from '../engine/combat';
 import { applyPower, getPower } from '../engine/powers';
 import { applyItem, rollLoot, getItem } from '../engine/items';
 import { getRelic } from '../engine/relics';
@@ -157,6 +157,18 @@ export function CombatView() {
     setPendingItem(item); // ally / enemy -> enter targeting
   }
 
+  function spendLuckAdvantage() {
+    if (state.luck <= 0 || actor.nextAttack) return;
+    sfx.click();
+    dispatch({ type: 'SPEND_LUCK' });
+    setCombat((c) => {
+      const next = clone(c);
+      const a = next.combatants.find((x) => x.id === actor.id);
+      if (a) a.nextAttack = 'adv';
+      return next;
+    });
+  }
+
   function choosePower() {
     if (!power) return;
     sfx.click();
@@ -265,6 +277,7 @@ export function CombatView() {
         <p style={{ marginTop: 0 }}>
           <span className="tag" style={{ marginRight: 8 }}>Round {combat.round}</span>
           <strong className="accent-text">{actor.name}</strong>’s turn
+          <span className="tag" style={{ marginLeft: 8 }}>✦ Luck {state.luck}</span>
         </p>
         {actor.isHero && heroChar ? (
           handoffNeeded ? (
@@ -307,6 +320,11 @@ export function CombatView() {
                 {stashCount > 0 && (
                   <button className="btn" onClick={() => { sfx.click(); setItemMenuOpen((o) => !o); }}>
                     🧪 Use Item ({stashCount})
+                  </button>
+                )}
+                {state.luck > 0 && !actor.nextAttack && (
+                  <button className="btn" title="Spend a Luck token for advantage on this attack" onClick={spendLuckAdvantage}>
+                    ✦ Luck: advantage ({state.luck})
                   </button>
                 )}
               </div>

@@ -55,6 +55,16 @@ describe('CombatView', () => {
     }
   });
 
+  it('offers a Luck advantage button when luck is available', () => {
+    const spy = vi.spyOn(Math, 'random').mockReturnValue(0.99); // Gronk's turn
+    try {
+      renderCombat({ luck: 1 });
+      expect(screen.getByRole('button', { name: /Luck: advantage/i })).toBeInTheDocument();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
   it('shows the player name in the turn banner', () => {
     const spy = vi.spyOn(Math, 'random').mockReturnValue(0.99); // Gronk's turn
     try {
