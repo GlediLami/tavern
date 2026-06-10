@@ -40,6 +40,7 @@ export function startCombat(heroes: Hero[], enemies: Enemy[], rng: Rng = default
       primaryAttack: h.attacks[0]?.name,
       maxHp: h.maxHp, hp: h.hp, ac: h.ac,
       initiative: rollD20(rng) + abilityMod(h.abilities.dex),
+      backLine: !!h.attacks[0]?.ranged,
     });
   }
   enemies.forEach((e, i) => {
@@ -262,8 +263,16 @@ export function performEnemyTurn(state: CombatState, rng: Rng = defaultRng): Com
 
   if (enemy.attack && targets.length > 0) {
     const target = targets[Math.floor(rng() * targets.length)];
-    const mode = enemy.nextAttack;
+    const frontLineAlive = next.combatants.some((c) => c.isHero && c.hp > 0 && !c.backLine);
+    const covered = !!target.backLine && frontLineAlive;
+    const hasAdv = enemy.nextAttack === 'adv';
+    const hasDis = enemy.nextAttack === 'dis' || covered;
+    let mode: 'adv' | 'dis' | undefined;
+    if (hasAdv && hasDis) mode = undefined;
+    else if (hasAdv) mode = 'adv';
+    else if (hasDis) mode = 'dis';
     enemy.nextAttack = undefined;
+    if (covered && mode === 'dis') next.log.push(`${target.name} fights from cover — ${enemy.name} attacks at disadvantage.`);
     const { value: d20, rolls: d20Rolls } = rollD20WithMode(rng, mode);
     const isCrit = d20 === 20;
     const hit = isCrit || (d20 !== 1 && d20 + enemy.attack.toHit >= target.ac);

@@ -14,6 +14,17 @@ function makeHero(id: string, dex: number, hp = 20): Hero {
   };
 }
 
+function makeRangedHero(id: string, hp = 20): Hero {
+  return {
+    id, name: id, race: 'r', class: 'c', level: 1, portrait: '🏹',
+    abilities: { str: 10, dex: 16, con: 14, int: 10, wis: 10, cha: 10 },
+    maxHp: hp, hp, ac: 14, proficiencyBonus: 2,
+    skillProficiencies: [],
+    attacks: [{ name: 'Bow', ability: 'dex', damageDice: '1d8', damageBonus: 3, ranged: true }],
+    backstory: '',
+  };
+}
+
 const goblin: Enemy = { name: 'Goblin', maxHp: 7, ac: 13, attack: { name: 'Scimitar', toHit: 4, damageDice: '1d6', damageBonus: 2 } };
 
 const hit = () => 0.999999;
@@ -171,5 +182,39 @@ describe('combat', () => {
     expect(ev.hit).toBe(false);
     expect(ev.amount).toBe(0);
     expect(st.combatants.find((c) => c.id === 'enemy-0')!.hp).toBe(7);
+  });
+
+  it('marks a hero whose primary attack is ranged as back-line', () => {
+    const st = startCombat([makeRangedHero('archer'), makeHero('tank', 10)], [goblin], hit);
+    expect(st.combatants.find((c) => c.id === 'archer')!.backLine).toBe(true);
+    expect(st.combatants.find((c) => c.id === 'tank')!.backLine).toBeFalsy();
+  });
+
+  it('enemies attack a covered back-line hero with disadvantage', () => {
+    // party order [archer (back), tank (front)]; miss rng picks target index 0 = archer
+    let st = startCombat([makeRangedHero('archer'), makeHero('tank', 10)], [goblin], miss);
+    st = { ...st, turnIndex: st.order.indexOf('enemy-0') };
+    st = performEnemyTurn(st, miss);
+    expect(st.lastAttack?.targetName).toBe('archer');
+    expect(st.lastAttack?.mode).toBe('dis');
+    expect(st.lastAttack?.d20Rolls).toHaveLength(2);
+  });
+
+  it('back-line cover disappears once the front line is down', () => {
+    let st = startCombat([makeRangedHero('archer'), makeHero('tank', 10)], [goblin], miss);
+    st.combatants.find((c) => c.id === 'tank')!.hp = 0; // front line falls
+    st = { ...st, turnIndex: st.order.indexOf('enemy-0') };
+    st = performEnemyTurn(st, miss);
+    expect(st.lastAttack?.targetName).toBe('archer');
+    expect(st.lastAttack?.mode).toBeUndefined();
+  });
+
+  it('enemy advantage cancels back-line cover to a straight roll', () => {
+    let st = startCombat([makeRangedHero('archer'), makeHero('tank', 10)], [goblin], miss);
+    st = { ...st, turnIndex: st.order.indexOf('enemy-0') };
+    st.combatants.find((c) => c.id === 'enemy-0')!.nextAttack = 'adv';
+    st = performEnemyTurn(st, miss);
+    expect(st.lastAttack?.mode).toBeUndefined();
+    expect(st.combatants.find((c) => c.id === 'enemy-0')!.nextAttack).toBeUndefined();
   });
 });

@@ -32,7 +32,8 @@
         "name": "Light Crossbow",
         "ability": "dex",
         "damageDice": "1d8",
-        "damageBonus": 1
+        "damageBonus": 1,
+        "ranged": true
       }
     ],
     "backstory": "Bjorn served as a hold-guard in the deep mountain halls until a collapse buried his garrison. Now he wanders the surface roads, selling his blade to honest folk and searching for the gold to rebuild his clan's broken gate.",
@@ -73,7 +74,8 @@
         "name": "Shortbow",
         "ability": "dex",
         "damageDice": "1d6",
-        "damageBonus": 3
+        "damageBonus": 3,
+        "ranged": true
       }
     ],
     "backstory": "Sable grew up lifting purses in the crowded river-markets of a trade city, never staying anywhere long enough to be caught. A botched job left her owing a dangerous fence, so she took up with adventurers hoping the treasure would clear her debt.",
@@ -149,7 +151,8 @@
         "name": "Fire Bolt",
         "ability": "int",
         "damageDice": "1d10",
-        "damageBonus": 0
+        "damageBonus": 0,
+        "ranged": true
       },
       {
         "name": "Dagger",
@@ -190,7 +193,8 @@
         "name": "Longbow",
         "ability": "dex",
         "damageDice": "1d8",
-        "damageBonus": 3
+        "damageBonus": 3,
+        "ranged": true
       },
       {
         "name": "Shortsword",
@@ -235,7 +239,8 @@
         "name": "Handaxe (thrown)",
         "ability": "str",
         "damageDice": "1d6",
-        "damageBonus": 3
+        "damageBonus": 3,
+        "ranged": true
       }
     ],
     "backstory": "Gronk was cast out of his war-band for refusing to raid a defenseless village, branded a coward by the only family he knew. He now channels his fury against the marauders and monsters that prey on the weak, proving strength can serve more than conquest.",
@@ -275,7 +280,8 @@
         "name": "Javelin (thrown)",
         "ability": "str",
         "damageDice": "1d6",
-        "damageBonus": 3
+        "damageBonus": 3,
+        "ranged": true
       }
     ],
     "backstory": "Lyra knelt before the altar of a war-shrine as a squire and rose having sworn an oath to shield the helpless from those who prey on them. She rides the roads in dented plate, answering cries for help that the powerful would rather ignore.",
@@ -350,7 +356,8 @@
         "name": "Vicious Mockery",
         "ability": "cha",
         "damageDice": "1d4",
-        "damageBonus": 0
+        "damageBonus": 0,
+        "ranged": true
       },
       {
         "name": "Rapier",
@@ -391,7 +398,8 @@
         "name": "Produce Flame",
         "ability": "wis",
         "damageDice": "1d8",
-        "damageBonus": 0
+        "damageBonus": 0,
+        "ranged": true
       },
       {
         "name": "Scimitar",
@@ -431,7 +439,8 @@
         "name": "Fire Bolt",
         "ability": "cha",
         "damageDice": "1d10",
-        "damageBonus": 0
+        "damageBonus": 0,
+        "ranged": true
       },
       {
         "name": "Dagger",
@@ -471,7 +480,8 @@
         "name": "Eldritch Blast",
         "ability": "cha",
         "damageDice": "1d10",
-        "damageBonus": 0
+        "damageBonus": 0,
+        "ranged": true
       },
       {
         "name": "Dagger",
