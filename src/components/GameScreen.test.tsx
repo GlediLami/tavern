@@ -45,6 +45,11 @@ describe('GameScreen', () => {
     }
   });
 
+  it('shows the Luck pill with the token count', () => {
+    renderAt({ luck: 2 });
+    expect(screen.getByText(/Luck 2/i)).toBeInTheDocument();
+  });
+
   it('shows the Satchel with carried items', () => {
     renderAt({ inventory: { 'potion-healing': 2 } });
     expect(screen.getByText(/Satchel/i)).toBeInTheDocument();

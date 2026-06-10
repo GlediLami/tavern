@@ -15,7 +15,7 @@ import { DiceRoller } from './DiceRoller';
 
 type Pending =
   | { stage: 'choose-hero'; choice: Choice }
-  | { stage: 'reveal'; choice: Choice; heroName: string; result: CheckResult };
+  | { stage: 'reveal'; choice: Choice; heroId: string; heroName: string; result: CheckResult; nonce: number };
 
 export function GameScreen() {
   const { state, dispatch } = useGame();
@@ -49,12 +49,23 @@ export function GameScreen() {
       type: 'LOG',
       entry: `${name} rolled ${result.roll}${result.modifier >= 0 ? '+' : ''}${result.modifier} = ${result.total} vs DC ${dc} — ${result.success ? 'success' : 'failure'}.`,
     });
-    dispatch({ type: 'RECORD', delta: result.success ? { checksPassed: 1 } : { checksFailed: 1 } });
-    setPending({ stage: 'reveal', choice: pending.choice, heroName: name, result });
+    setPending({ stage: 'reveal', choice: pending.choice, heroId, heroName: name, result, nonce: 0 });
+  }
+
+  function rerollCheck() {
+    if (!pending || pending.stage !== 'reveal' || !pending.choice.check || state.luck <= 0) return;
+    sfx.click();
+    const hero = getCharacter(pending.heroId);
+    const { skill, dc } = pending.choice.check;
+    const result = resolveCheck(hero, skill, dc, defaultRng);
+    dispatch({ type: 'SPEND_LUCK' });
+    dispatch({ type: 'LOG', entry: `${pending.heroName} spends Luck and rerolls: ${result.roll}${result.modifier >= 0 ? '+' : ''}${result.modifier} = ${result.total} vs DC ${dc} — ${result.success ? 'success' : 'failure'}.` });
+    setPending({ ...pending, result, nonce: pending.nonce + 1 });
   }
 
   function finishReveal() {
     if (!pending || pending.stage !== 'reveal') return;
+    dispatch({ type: 'RECORD', delta: pending.result.success ? { checksPassed: 1 } : { checksFailed: 1 } });
     const next = resolveChoice(pending.choice, pending.result.success);
     setPending(null);
     dispatch({ type: 'GOTO_SCENE', sceneId: next });
@@ -106,10 +117,13 @@ export function GameScreen() {
 
           {pending?.stage === 'reveal' ? (
             <DiceRoller
+              key={pending.nonce}
               heroName={pending.heroName}
               skillLabel={skillLabel(pending.choice.check!.skill)}
               result={pending.result}
               onContinue={finishReveal}
+              onReroll={rerollCheck}
+              rerollsLeft={state.luck}
             />
           ) : pending?.stage === 'choose-hero' ? (
             <div className="stack" style={{ marginTop: 8 }}>
@@ -143,7 +157,10 @@ export function GameScreen() {
         </div>
       </div>
       <div>
-        <h3 style={{ margin: '0 0 10px', fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>The Party</h3>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline', margin: '0 0 10px' }}>
+          <h3 style={{ margin: 0, fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>The Party</h3>
+          <span className="stat-pill" title="Spend a Luck token to reroll a check or gain advantage in combat">✦ Luck {state.luck}</span>
+        </div>
         <PartyPanel partyIds={state.partyIds} hp={state.hp} difficulty={state.difficulty} level={state.campaign?.level ?? 1} relics={state.relics} playerNames={state.playerNames} />
         {Object.keys(state.inventory).length > 0 && (
           <div style={{ marginTop: 18 }}>
