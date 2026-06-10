@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useGame } from '../state/GameContext';
 import { getScene, resolveChoice } from '../engine/story';
 import { getAdventure, getCharacter } from '../engine/party';
 import { getItem } from '../engine/items';
+import { rollRelicChoices, getRelic } from '../engine/relics';
 import { resolveCheck } from '../engine/checks';
 import { skillLabel } from '../engine/skills';
 import { defaultRng } from '../engine/rng';
@@ -21,6 +22,9 @@ export function GameScreen() {
   const adventure = getAdventure(state.adventureId);
   const scene = getScene(adventure, state.sceneId);
   const [pending, setPending] = useState<Pending | null>(null);
+  const [pendingRelic, setPendingRelic] = useState<string | null>(null);
+  const drafting = state.draftsAvailable > 0;
+  const draftChoices = useMemo(() => (drafting ? rollRelicChoices(defaultRng, 3) : []), [state.draftsAvailable, drafting]);
 
   if (scene.type !== 'story') return null; // combat/ending handled by other screens
 
@@ -58,6 +62,40 @@ export function GameScreen() {
   return (
     <div className="app-shell screen game-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 290px', gap: 22, alignItems: 'start' }}>
       <div>
+        {drafting && (
+          <div className="panel panel--framed" style={{ marginBottom: 16 }}>
+            <h3 className="scene-title" style={{ marginTop: 0 }}>Choose a Boon</h3>
+            <div className="scene-rule" />
+            {!pendingRelic ? (
+              <>
+                <p className="muted">Claim a relic for one of your heroes.</p>
+                <div className="stack">
+                  {draftChoices.map((id) => {
+                    const r = getRelic(id);
+                    return (
+                      <button key={id} className="btn btn-choice" onClick={() => { sfx.click(); setPendingRelic(id); }}>
+                        <strong>✦ {r.name}</strong> — {r.description}
+                      </button>
+                    );
+                  })}
+                </div>
+                <button className="btn" style={{ marginTop: 10 }} onClick={() => { sfx.click(); dispatch({ type: 'SKIP_DRAFT' }); }}>Skip this boon</button>
+              </>
+            ) : (
+              <>
+                <p className="muted">Give <strong className="accent-text">✦ {getRelic(pendingRelic).name}</strong> to:</p>
+                <div className="row">
+                  {state.partyIds.map((id) => (
+                    <button key={id} className="btn btn-primary" onClick={() => { sfx.click(); dispatch({ type: 'GRANT_RELIC', heroId: id, relicId: pendingRelic }); setPendingRelic(null); }}>
+                      {getCharacter(id).portrait} {getCharacter(id).name}
+                    </button>
+                  ))}
+                </div>
+                <button className="btn" style={{ marginTop: 10 }} onClick={() => { sfx.click(); setPendingRelic(null); }}>← Back</button>
+              </>
+            )}
+          </div>
+        )}
         <NarrationLog entries={state.log} />
         <div className="panel panel--framed corner-frame">
           <span className="corner tl" /><span className="corner tr" /><span className="corner bl" /><span className="corner br" />
@@ -105,7 +143,7 @@ export function GameScreen() {
       </div>
       <div>
         <h3 style={{ margin: '0 0 10px', fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>The Party</h3>
-        <PartyPanel partyIds={state.partyIds} hp={state.hp} difficulty={state.difficulty} level={state.campaign?.level ?? 1} />
+        <PartyPanel partyIds={state.partyIds} hp={state.hp} difficulty={state.difficulty} level={state.campaign?.level ?? 1} relics={state.relics} />
         {Object.keys(state.inventory).length > 0 && (
           <div style={{ marginTop: 18 }}>
             <h3 style={{ margin: '0 0 10px', fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>Satchel</h3>

@@ -3,6 +3,7 @@ import { getCharacter } from '../engine/party';
 import { effectiveMaxHp } from '../engine/difficulty';
 import { abilityMod } from '../engine/skills';
 import { getPower } from '../engine/powers';
+import { getRelic } from '../engine/relics';
 import { hpColor } from '../ui/visuals';
 import type { Ability, Difficulty } from '../types';
 
@@ -13,9 +14,10 @@ interface Props {
   hp: Record<string, number>;
   difficulty: Difficulty;
   level?: number;
+  relics?: Record<string, string[]>;
 }
 
-export function PartyPanel({ partyIds, hp, difficulty, level = 1 }: Props) {
+export function PartyPanel({ partyIds, hp, difficulty, level = 1, relics = {} }: Props) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
   return (
@@ -71,6 +73,11 @@ export function PartyPanel({ partyIds, hp, difficulty, level = 1 }: Props) {
                 </div>
                 <div className="faint" style={{ fontSize: '0.8rem', lineHeight: 1.5 }}>{attacksLine}</div>
                 {power && <div className="accent-text" style={{ fontSize: '0.8rem' }}>✦ {power.name}</div>}
+                {(relics[id] ?? []).length > 0 && (
+                  <div className="faint" style={{ fontSize: '0.8rem' }}>
+                    Relics: {(relics[id] ?? []).map((rid) => getRelic(rid).name).join(', ')}
+                  </div>
+                )}
               </div>
             )}
           </div>

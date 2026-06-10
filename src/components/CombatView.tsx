@@ -5,6 +5,7 @@ import { getAdventure, getCharacter, toHero, makeHeroAttackLookup } from '../eng
 import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant } from '../engine/combat';
 import { applyPower, getPower } from '../engine/powers';
 import { applyItem, rollLoot, getItem } from '../engine/items';
+import { getRelic } from '../engine/relics';
 import { scaleEnemies, restHp, effectiveMaxHp, levelPowerBonus } from '../engine/difficulty';
 import { defaultRng } from '../engine/rng';
 import { hpColor } from '../ui/visuals';
@@ -26,7 +27,7 @@ export function CombatView() {
     if (scene.type !== 'combat') throw new Error('CombatView requires a combat scene');
     const heroes = state.partyIds.map((id) => {
       const c = getCharacter(id);
-      return toHero(id, state.hp[id] ?? effectiveMaxHp(c, state.difficulty, level));
+      return toHero(id, state.hp[id] ?? effectiveMaxHp(c, state.difficulty, level), state.relics[id] ?? []);
     });
     heroes.forEach((h) => { h.maxHp = effectiveMaxHp(getCharacter(h.id), state.difficulty, level); });
     const enemies = scaleEnemies(scene.enemies, state.difficulty, state.partyIds.length, level);
@@ -233,6 +234,13 @@ export function CombatView() {
                     <div className="tag" style={{ fontSize: '0.72rem', marginTop: 5, display: 'inline-block' }}
                       title={frontLineAlive ? 'At range — enemies attack at disadvantage while the front line holds' : 'Exposed — no front line to screen'}>
                       ⤢ {frontLineAlive ? 'Covered' : 'Exposed'}
+                    </div>
+                  )}
+                  {(state.relics[h.heroId!] ?? []).length > 0 && (
+                    <div className="row" style={{ gap: 5, marginTop: 5, flexWrap: 'wrap' }}>
+                      {(state.relics[h.heroId!] ?? []).map((rid) => (
+                        <span key={rid} className="tag" style={{ fontSize: '0.7rem' }} title={getRelic(rid).description}>✦ {getRelic(rid).name}</span>
+                      ))}
                     </div>
                   )}
                 </button>

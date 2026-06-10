@@ -10,6 +10,12 @@ describe('PartyPanel', () => {
     expect(screen.getByText(/down/i)).toBeInTheDocument();
   });
 
+  it('lists a hero relic when expanded', () => {
+    render(<PartyPanel partyIds={['mara-dawnwarden']} hp={{ 'mara-dawnwarden': 8 }} difficulty="normal" relics={{ 'mara-dawnwarden': ['whetstone'] }} />);
+    fireEvent.click(screen.getByRole('button', { name: /Mara Dawnwarden/i }));
+    expect(screen.getByText(/Whetstone/)).toBeInTheDocument();
+  });
+
   it('expands a card to reveal abilities, AC, attacks, and power', () => {
     render(<PartyPanel partyIds={['mara-dawnwarden']} hp={{ 'mara-dawnwarden': 8 }} difficulty="normal" />);
     expect(screen.queryByText('WIS +3')).toBeNull();        // collapsed by default

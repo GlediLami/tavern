@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GameProvider } from '../state/GameContext';
 import { GameScreen } from './GameScreen';
@@ -9,7 +9,7 @@ function renderAt(state: Partial<GameState>) {
   const full: GameState = {
     phase: 'scene', mode: 'single', adventureId: 'brackenmoor', difficulty: 'normal',
     partyIds: ['bjorn-ironhelm'], hp: { 'bjorn-ironhelm': 13 },
-    sceneId: 'tavern_start', log: [], stats: emptyStats, inventory: {}, ...state,
+    sceneId: 'tavern_start', log: [], stats: emptyStats, inventory: {}, relics: {}, draftsAvailable: 0, ...state,
   } as GameState;
   return render(
     <GameProvider initial={full}>
@@ -29,6 +29,20 @@ describe('GameScreen', () => {
     renderAt({ sceneId: 'route_choice' });
     await userEvent.click(screen.getByRole('button', { name: /marsh path/i }));
     expect(await screen.findByText(/marsh path is a ribbon of mud/i)).toBeInTheDocument();
+  });
+
+  it('a pending draft grants a relic to a chosen hero', () => {
+    const spy = vi.spyOn(Math, 'random').mockReturnValue(0.99); // deterministic trio (registry order)
+    try {
+      renderAt({ draftsAvailable: 1, partyIds: ['bjorn-ironhelm'], hp: { 'bjorn-ironhelm': 13 } });
+      expect(screen.getByText(/Choose a Boon/i)).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /Ironhide Charm/i }));
+      const give = screen.getAllByRole('button', { name: /Bjorn Ironhelm/i }).find((b) => !/Fighter/.test(b.textContent ?? ''));
+      fireEvent.click(give!);
+      expect(screen.queryByText(/Choose a Boon/i)).toBeNull();
+    } finally {
+      spy.mockRestore();
+    }
   });
 
   it('shows the Satchel with carried items', () => {
