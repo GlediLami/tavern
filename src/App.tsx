@@ -81,6 +81,7 @@ function Screens() {
           level={state.campaign?.level ?? 1}
           stats={state.stats ?? emptyStats}
           campaign={state.campaign}
+          flags={state.flags}
           onAdvance={() => dispatch({ type: 'ADVANCE_CAMPAIGN' })}
           onReturn={() => { clearSave(); dispatch({ type: 'RESET' }); }}
         />

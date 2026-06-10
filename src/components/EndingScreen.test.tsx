@@ -9,6 +9,16 @@ const stats = { ...emptyStats, encountersWon: 2, crits: 1, biggestHit: 12, damag
 describe('EndingScreen', () => {
   beforeEach(() => localStorage.clear());
 
+  it('renders an epilogue for a flag the run set', () => {
+    render(<EndingScreen mode="single" adventureId="brackenmoor" sceneId="ending_victory" difficulty="normal" level={1} stats={stats} flags={['route_marsh']} onReturn={() => {}} onAdvance={() => {}} />);
+    expect(screen.getByText(/drowned marsh/i)).toBeInTheDocument();
+  });
+
+  it('omits epilogues whose flag is absent', () => {
+    render(<EndingScreen mode="single" adventureId="brackenmoor" sceneId="ending_victory" difficulty="normal" level={1} stats={stats} flags={[]} onReturn={() => {}} onAdvance={() => {}} />);
+    expect(screen.queryByText(/drowned marsh/i)).toBeNull();
+  });
+
   it('single-mode victory shows the run summary and a Share button', async () => {
     const onReturn = vi.fn();
     render(<EndingScreen mode="single" adventureId="brackenmoor" sceneId="ending_victory" difficulty="normal" level={1} stats={stats} onReturn={onReturn} onAdvance={() => {}} />);

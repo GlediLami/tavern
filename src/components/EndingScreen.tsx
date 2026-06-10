@@ -16,6 +16,7 @@ interface Props {
   level: number;
   stats: RunStats;
   campaign?: CampaignState;
+  flags?: string[];
   onReturn: () => void;
   onAdvance: () => void;
 }
@@ -27,7 +28,7 @@ function mvp(stats: RunStats): string | undefined {
   try { return getCharacter(id).name; } catch { return undefined; }
 }
 
-export function EndingScreen({ mode, adventureId, sceneId, difficulty, level, stats, campaign, onReturn, onAdvance }: Props) {
+export function EndingScreen({ mode, adventureId, sceneId, difficulty, level, stats, campaign, flags = [], onReturn, onAdvance }: Props) {
   const scene = getScene(getAdventure(adventureId), sceneId);
   const victory = scene.type === 'ending' && scene.endingType === 'victory';
   const [shareMsg, setShareMsg] = useState<string | null>(null);
@@ -79,6 +80,14 @@ export function EndingScreen({ mode, adventureId, sceneId, difficulty, level, st
       <p className="subtitle" style={{ maxWidth: 600, margin: '0 auto 28px', lineHeight: 1.8, fontSize: '1.12rem' }}>
         {scene.narration}
       </p>
+
+      {scene.epilogues && scene.epilogues.some((e) => flags.includes(e.flag)) && (
+        <div style={{ maxWidth: 600, margin: '0 auto 26px' }}>
+          {scene.epilogues.filter((e) => flags.includes(e.flag)).map((e) => (
+            <p key={e.flag} className="muted" style={{ fontStyle: 'italic', lineHeight: 1.7, margin: '0 0 8px' }}>{e.text}</p>
+          ))}
+        </div>
+      )}
 
       {advancing && (
         <div className="panel panel--framed" style={{ maxWidth: 460, margin: '0 auto 26px' }}>
