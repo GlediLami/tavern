@@ -35,6 +35,11 @@ describe('GameScreen', () => {
     renderAt({ sceneId: 'tavern_start' });
     await userEvent.click(screen.getByRole('button', { name: /muttering locals/i }));
     expect(await screen.findByText(/who attempts/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Bjorn Ironhelm/ })).toBeInTheDocument();
+    // Two buttons carry the hero name now: the party-sheet toggle (which also shows
+    // the class) and the check-attempt button. Pick the attempt button specifically.
+    const attempt = screen
+      .getAllByRole('button', { name: /Bjorn Ironhelm/ })
+      .find((b) => !/Fighter/.test(b.textContent ?? ''));
+    expect(attempt).toBeDefined();
   });
 });
