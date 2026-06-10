@@ -8,11 +8,13 @@ interface Props {
   skillLabel: string;
   result: CheckResult;
   onContinue: () => void;
+  onReroll?: () => void;
+  rerollsLeft?: number;
 }
 
 type Phase = 'rolling' | 'settled';
 
-export function DiceRoller({ heroName, skillLabel, result, onContinue }: Props) {
+export function DiceRoller({ heroName, skillLabel, result, onContinue, onReroll, rerollsLeft }: Props) {
   const { roll, modifier, total, dc, success, crit } = result;
   const reduced = prefersReducedMotion();
   const [phase, setPhase] = useState<Phase>(reduced ? 'settled' : 'rolling');
@@ -97,6 +99,11 @@ export function DiceRoller({ heroName, skillLabel, result, onContinue }: Props) 
             {roll} {sign}{modifier} = <strong>{total}</strong> vs <strong>DC {dc}</strong>
           </p>
           <p className="outcome reveal" style={{ color: outcomeColor }}>{outcomeText}</p>
+          {onReroll && (rerollsLeft ?? 0) > 0 && (
+            <button className="btn reveal" style={{ marginRight: 8 }} onClick={() => { sfx.click(); onReroll(); }}>
+              ✦ Spend Luck to reroll ({rerollsLeft})
+            </button>
+          )}
           <button className="btn btn-primary reveal" onClick={() => { sfx.click(); onContinue(); }}>
             Continue
           </button>

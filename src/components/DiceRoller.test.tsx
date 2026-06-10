@@ -21,6 +21,15 @@ describe('DiceRoller', () => {
     expect(onContinue).toHaveBeenCalled();
   });
 
+  it('offers a reroll when luck is available', async () => {
+    const onReroll = vi.fn();
+    render(<DiceRoller heroName="Bjorn" skillLabel="Athletics" result={success} onContinue={() => {}} onReroll={onReroll} rerollsLeft={2} />);
+    const btn = screen.getByRole('button', { name: /reroll/i });
+    expect(btn).toBeInTheDocument();
+    await userEvent.click(btn);
+    expect(onReroll).toHaveBeenCalled();
+  });
+
   describe('animated roll (motion enabled)', () => {
     afterEach(() => {
       vi.useRealTimers();
