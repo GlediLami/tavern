@@ -67,6 +67,22 @@ describe.each(ADVENTURES.map((a) => [a.id, a.data] as const))('adventure %s', (_
     }
   });
 
+  it('every requiresFlag / epilogue flag is set somewhere in the adventure', () => {
+    const set = new Set<string>();
+    for (const s of Object.values(adventure.scenes)) {
+      (s.setFlags ?? []).forEach((f) => set.add(f));
+      if (s.type === 'story') for (const c of s.choices) (c.setFlags ?? []).forEach((f) => set.add(f));
+    }
+    for (const s of Object.values(adventure.scenes)) {
+      if (s.type === 'story') for (const c of s.choices) {
+        if (c.requiresFlag) expect(set.has(c.requiresFlag), `flag "${c.requiresFlag}" never set in ${_id}`).toBe(true);
+      }
+      if (s.type === 'ending') for (const e of (s.epilogues ?? [])) {
+        expect(set.has(e.flag), `epilogue flag "${e.flag}" never set in ${_id}`).toBe(true);
+      }
+    }
+  });
+
   it('every check choice has both branches; every plain choice has next', () => {
     for (const scene of Object.values(adventure.scenes)) {
       if (scene.type !== 'story') continue;
