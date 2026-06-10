@@ -57,6 +57,8 @@ export interface GameState {
   log: string[];                // narration / roll history
   stats: RunStats;              // accumulated stats for the current run
   inventory: Record<string, number>;  // shared party stash: itemId -> count
+  relics: Record<string, string[]>;   // heroId -> granted relic ids
+  draftsAvailable: number;            // relic drafts the party can still take
 }
 
 export const initialState: GameState = {
@@ -71,6 +73,8 @@ export const initialState: GameState = {
   log: [],
   stats: emptyStats,
   inventory: {},
+  relics: {},
+  draftsAvailable: 0,
 };
 
 export type GameAction =
@@ -81,6 +85,8 @@ export type GameAction =
   | { type: 'ADVANCE_CAMPAIGN' }
   | { type: 'RECORD'; delta: Partial<RunStats> }
   | { type: 'ADD_ITEM'; itemId: string; delta: number }
+  | { type: 'GRANT_RELIC'; heroId: string; relicId: string }
+  | { type: 'SKIP_DRAFT' }
   | { type: 'GOTO_SCENE'; sceneId: string }
   | { type: 'SET_HP'; hp: Record<string, number> }
   | { type: 'LOG'; entry: string }
@@ -141,6 +147,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         log: [],
         stats: emptyStats,
         inventory: {},
+        relics: {},
+        draftsAvailable: 0,
       };
     }
 
@@ -158,6 +166,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         sceneId: getAdventureData(adventureId).startSceneId,
         log: [],
         phase: 'scene',
+        draftsAvailable: state.draftsAvailable + 1,
       };
     }
 
@@ -172,7 +181,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           const c = characters.find((ch) => ch.id === id);
           if (c) hp[id] = campRestHp(state.hp[id] ?? 0, effectiveMaxHp(c, state.difficulty, level), state.difficulty);
         }
-        return { ...base, hp, log: [...state.log, 'You make camp in safety and recover your strength.'] };
+        return { ...base, hp, log: [...state.log, 'You make camp in safety and recover your strength.'], draftsAvailable: state.draftsAvailable + 1 };
       }
       return base;
     }
@@ -186,6 +195,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (n > 0) inventory[action.itemId] = n; else delete inventory[action.itemId];
       return { ...state, inventory };
     }
+
+    case 'GRANT_RELIC': {
+      const list = [...(state.relics[action.heroId] ?? []), action.relicId];
+      return { ...state, relics: { ...state.relics, [action.heroId]: list }, draftsAvailable: Math.max(0, state.draftsAvailable - 1) };
+    }
+
+    case 'SKIP_DRAFT':
+      return { ...state, draftsAvailable: Math.max(0, state.draftsAvailable - 1) };
 
     case 'SET_HP':
       return { ...state, hp: { ...state.hp, ...action.hp } };

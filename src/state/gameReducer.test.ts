@@ -139,6 +139,43 @@ describe('gameReducer', () => {
     expect(s.inventory['smoke-bomb']).toBe(1);
   });
 
+  it('GRANT_RELIC appends to a hero and consumes a draft', () => {
+    let s = { ...initialState, draftsAvailable: 2 };
+    s = gameReducer(s, { type: 'GRANT_RELIC', heroId: 'bjorn-ironhelm', relicId: 'ironhide-charm' });
+    expect(s.relics['bjorn-ironhelm']).toEqual(['ironhide-charm']);
+    expect(s.draftsAvailable).toBe(1);
+  });
+
+  it('SKIP_DRAFT consumes a draft (clamped at zero)', () => {
+    let s = { ...initialState, draftsAvailable: 1 };
+    s = gameReducer(s, { type: 'SKIP_DRAFT' });
+    expect(s.draftsAvailable).toBe(0);
+    s = gameReducer(s, { type: 'SKIP_DRAFT' });
+    expect(s.draftsAvailable).toBe(0);
+  });
+
+  it('arriving at a rest scene grants a draft', () => {
+    let s: GameState = { ...initialState, phase: 'scene', partyIds: ['bjorn-ironhelm'], hp: { 'bjorn-ironhelm': 13 }, sceneId: 'tower_base' };
+    s = gameReducer(s, { type: 'GOTO_SCENE', sceneId: 'ridge_shrine' });
+    expect(s.draftsAvailable).toBe(1);
+  });
+
+  it('ADVANCE_CAMPAIGN grants a draft and carries relics', () => {
+    let s = gameReducer(initialState, { type: 'START_CAMPAIGN', difficulty: 'normal' });
+    s = gameReducer(s, { type: 'CONFIRM_PARTY', partyIds: ['bjorn-ironhelm'] });
+    s = gameReducer(s, { type: 'GRANT_RELIC', heroId: 'bjorn-ironhelm', relicId: 'whetstone' });
+    s = gameReducer(s, { type: 'ADVANCE_CAMPAIGN' });
+    expect(s.relics['bjorn-ironhelm']).toEqual(['whetstone']);
+    expect(s.draftsAvailable).toBe(1);
+  });
+
+  it('CONFIRM_PARTY resets relics and drafts', () => {
+    let s: GameState = { ...initialState, draftsAvailable: 3, relics: { 'bjorn-ironhelm': ['whetstone'] } };
+    s = gameReducer(s, { type: 'CONFIRM_PARTY', partyIds: ['bjorn-ironhelm'] });
+    expect(s.relics).toEqual({});
+    expect(s.draftsAvailable).toBe(0);
+  });
+
   it('RESET returns to the initial state', () => {
     let s = gameReducer(initialState, { type: 'START_GAME' });
     s = gameReducer(s, { type: 'RESET' });
