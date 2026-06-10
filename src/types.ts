@@ -172,3 +172,19 @@ export interface Power {
   healDice?: string;         // heal dice, e.g. "1d8"
   healBonus?: number;        // heal flat bonus
 }
+
+export type ItemRarity = 'common' | 'uncommon' | 'rare';
+export type ItemKind = 'heal' | 'damage' | 'grant-advantage' | 'mass-disadvantage';
+export type ItemTargeting = 'ally' | 'enemy' | 'all-enemies';
+
+export interface Item {
+  id: string;
+  name: string;
+  description: string;
+  rarity: ItemRarity;
+  kind: ItemKind;
+  targeting: ItemTargeting;
+  healDice?: string;     // heal kind, e.g. "2d4"
+  healBonus?: number;    // heal flat bonus
+  damageDice?: string;   // damage kind, e.g. "2d6"
+}
