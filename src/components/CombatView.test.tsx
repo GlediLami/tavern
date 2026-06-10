@@ -8,7 +8,7 @@ function renderCombat(overrides: Partial<GameState> = {}) {
   const full: GameState = {
     phase: 'combat', mode: 'single', adventureId: 'brackenmoor', difficulty: 'normal',
     partyIds: ['gronk-skullsplitter'], hp: { 'gronk-skullsplitter': 14 },
-    sceneId: 'ridge_wolves', log: [], stats: emptyStats, inventory: {}, relics: {}, draftsAvailable: 0, ...overrides,
+    sceneId: 'ridge_wolves', log: [], stats: emptyStats, inventory: {}, relics: {}, draftsAvailable: 0, playerNames: {}, ...overrides,
   };
   return render(
     <GameProvider initial={full}>

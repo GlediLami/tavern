@@ -176,6 +176,14 @@ describe('gameReducer', () => {
     expect(s.draftsAvailable).toBe(0);
   });
 
+  it('CONFIRM_PARTY stores player names and carries them across the campaign', () => {
+    let s = gameReducer(initialState, { type: 'START_CAMPAIGN', difficulty: 'normal' });
+    s = gameReducer(s, { type: 'CONFIRM_PARTY', partyIds: ['bjorn-ironhelm'], playerNames: { 'bjorn-ironhelm': 'Sam' } });
+    expect(s.playerNames).toEqual({ 'bjorn-ironhelm': 'Sam' });
+    s = gameReducer(s, { type: 'ADVANCE_CAMPAIGN' });
+    expect(s.playerNames).toEqual({ 'bjorn-ironhelm': 'Sam' });
+  });
+
   it('RESET returns to the initial state', () => {
     let s = gameReducer(initialState, { type: 'START_GAME' });
     s = gameReducer(s, { type: 'RESET' });

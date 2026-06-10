@@ -59,6 +59,7 @@ export interface GameState {
   inventory: Record<string, number>;  // shared party stash: itemId -> count
   relics: Record<string, string[]>;   // heroId -> granted relic ids
   draftsAvailable: number;            // relic drafts the party can still take
+  playerNames: Record<string, string>; // heroId -> the human player's name
 }
 
 export const initialState: GameState = {
@@ -75,13 +76,14 @@ export const initialState: GameState = {
   inventory: {},
   relics: {},
   draftsAvailable: 0,
+  playerNames: {},
 };
 
 export type GameAction =
   | { type: 'START_GAME' }
   | { type: 'SELECT_ADVENTURE'; adventureId: string; difficulty: Difficulty }
   | { type: 'START_CAMPAIGN'; difficulty: Difficulty }
-  | { type: 'CONFIRM_PARTY'; partyIds: string[] }
+  | { type: 'CONFIRM_PARTY'; partyIds: string[]; playerNames?: Record<string, string> }
   | { type: 'ADVANCE_CAMPAIGN' }
   | { type: 'RECORD'; delta: Partial<RunStats> }
   | { type: 'ADD_ITEM'; itemId: string; delta: number }
@@ -149,6 +151,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         inventory: {},
         relics: {},
         draftsAvailable: 0,
+        playerNames: action.playerNames ?? {},
       };
     }
 
