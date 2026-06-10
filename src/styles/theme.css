@@ -355,6 +355,13 @@ h1, h2, h3, .display { font-family: var(--font-display); font-weight: 400; lette
 .adv-badge.adv { color: var(--green); }
 .adv-badge.dis { color: var(--accent-bright); }
 
+/* player-name inputs */
+.name-input {
+  flex: 1; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-soft);
+  color: var(--ink); border-radius: 8px; padding: 8px 11px; font: inherit; font-size: 0.95rem;
+}
+.name-input:focus { outline: none; border-color: var(--accent); }
+
 /* mute toggle */
 .mute-toggle {
   position: fixed; top: 14px; right: 16px; z-index: 50;

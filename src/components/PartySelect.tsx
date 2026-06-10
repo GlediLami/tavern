@@ -8,11 +8,12 @@ const MAX_PARTY = 4;
 const ABILS: Ability[] = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
 interface Props {
-  onConfirm: (partyIds: string[]) => void;
+  onConfirm: (partyIds: string[], playerNames: Record<string, string>) => void;
 }
 
 export function PartySelect({ onConfirm }: Props) {
   const [selected, setSelected] = useState<string[]>([]);
+  const [names, setNames] = useState<Record<string, string>>({});
   const characters = getAllCharacters();
 
   function toggle(id: string) {
@@ -66,12 +67,41 @@ export function PartySelect({ onConfirm }: Props) {
         })}
       </div>
 
+      {selected.length > 0 && (
+        <div className="panel" style={{ marginTop: 18, padding: 16 }}>
+          <h3 style={{ margin: '0 0 10px', fontSize: '1rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>Name Your Players (optional)</h3>
+          <div className="stack">
+            {selected.map((id) => {
+              const c = getAllCharacters().find((ch) => ch.id === id)!;
+              return (
+                <div key={id} className="row" style={{ alignItems: 'center', gap: 10 }}>
+                  <span className="portrait" style={{ width: 30, height: 30, fontSize: '1rem' }}>{c.portrait}</span>
+                  <span style={{ minWidth: 150 }}>{c.name}</span>
+                  <input
+                    className="name-input"
+                    aria-label={`Player name for ${c.name}`}
+                    placeholder="Player name"
+                    value={names[id] ?? ''}
+                    onChange={(e) => setNames((n) => ({ ...n, [id]: e.target.value }))}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="row" style={{ marginTop: 22, justifyContent: 'flex-end' }}>
         <button
           className="btn btn-primary"
           style={{ fontSize: '1.02rem', padding: '13px 26px' }}
           disabled={selected.length === 0}
-          onClick={() => { sfx.click(); onConfirm(selected); }}
+          onClick={() => {
+            sfx.click();
+            const playerNames: Record<string, string> = {};
+            for (const id of selected) { const v = names[id]?.trim(); if (v) playerNames[id] = v; }
+            onConfirm(selected, playerNames);
+          }}
         >
           Enter the Tavern ({selected.length}/{MAX_PARTY})
         </button>

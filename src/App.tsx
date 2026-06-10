@@ -52,7 +52,7 @@ function Screens() {
         />
       );
     case 'party-select':
-      return <PartySelect onConfirm={(ids) => dispatch({ type: 'CONFIRM_PARTY', partyIds: ids })} />;
+      return <PartySelect onConfirm={(ids, playerNames) => dispatch({ type: 'CONFIRM_PARTY', partyIds: ids, playerNames })} />;
     case 'scene':
       return <GameScreen />;
     case 'combat':

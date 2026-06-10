@@ -18,7 +18,16 @@ describe('PartySelect', () => {
     await userEvent.click(screen.getByText('Bjorn Ironhelm'));
     expect(confirm).toBeEnabled();
     await userEvent.click(confirm);
-    expect(onConfirm).toHaveBeenCalledWith(['bjorn-ironhelm']);
+    expect(onConfirm).toHaveBeenCalledWith(['bjorn-ironhelm'], {});
+  });
+
+  it('passes typed player names to onConfirm', async () => {
+    const onConfirm = vi.fn();
+    render(<PartySelect onConfirm={onConfirm} />);
+    await userEvent.click(screen.getByText('Bjorn Ironhelm'));
+    await userEvent.type(screen.getByLabelText(/player name for Bjorn Ironhelm/i), 'Sam');
+    await userEvent.click(screen.getByRole('button', { name: /enter the tavern/i }));
+    expect(onConfirm).toHaveBeenCalledWith(['bjorn-ironhelm'], { 'bjorn-ironhelm': 'Sam' });
   });
 
   it('does not allow more than 4 heroes', async () => {
