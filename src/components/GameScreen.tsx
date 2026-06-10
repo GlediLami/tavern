@@ -32,6 +32,7 @@ export function GameScreen() {
 
   function pickChoice(choice: Choice) {
     sfx.click();
+    if (choice.setFlags && choice.setFlags.length) dispatch({ type: 'SET_FLAGS', flags: choice.setFlags });
     if (!choice.check) {
       dispatch({ type: 'GOTO_SCENE', sceneId: resolveChoice(choice, null) });
       return;
@@ -142,7 +143,7 @@ export function GameScreen() {
             </div>
           ) : (
             <div className="stack" style={{ marginTop: 16 }}>
-              {scene.choices.map((c) => (
+              {scene.choices.filter((c) => !c.requiresFlag || state.flags.includes(c.requiresFlag)).map((c) => (
                 <button key={c.id} className="btn btn-choice" onClick={() => pickChoice(c)}>
                   {c.text}
                   {c.check && (

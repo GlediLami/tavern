@@ -45,6 +45,14 @@ describe('GameScreen', () => {
     }
   });
 
+  it('hides a requiresFlag choice until the flag is set', () => {
+    const { unmount } = renderAt({ sceneId: 'route_choice', flags: [] });
+    expect(screen.queryByText(/gravedigger's scrawled map/i)).toBeNull();
+    unmount();
+    renderAt({ sceneId: 'route_choice', flags: ['visited_cottage'] });
+    expect(screen.getByText(/gravedigger's scrawled map/i)).toBeInTheDocument();
+  });
+
   it('shows the Luck pill with the token count', () => {
     renderAt({ luck: 2 });
     expect(screen.getByText(/Luck 2/i)).toBeInTheDocument();
