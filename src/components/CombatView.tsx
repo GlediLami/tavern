@@ -4,11 +4,12 @@ import { getScene } from '../engine/story';
 import { getAdventure, getCharacter, toHero, makeHeroAttackLookup } from '../engine/party';
 import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant } from '../engine/combat';
 import { applyPower, getPower } from '../engine/powers';
+import { applyItem, rollLoot, getItem } from '../engine/items';
 import { scaleEnemies, restHp, effectiveMaxHp, levelPowerBonus } from '../engine/difficulty';
 import { defaultRng } from '../engine/rng';
 import { hpColor } from '../ui/visuals';
 import { sfx } from '../ui/sfx';
-import type { CombatState, Power } from '../types';
+import type { CombatState, Power, Item } from '../types';
 import { CombatDice } from './CombatDice';
 
 interface Flash { id: string; amount: number; heal: boolean; nonce: number; }
@@ -34,6 +35,8 @@ export function CombatView() {
 
   const [target, setTarget] = useState<string | null>(null);
   const [pendingPower, setPendingPower] = useState<Power | null>(null);
+  const [pendingItem, setPendingItem] = useState<Item | null>(null);
+  const [itemMenuOpen, setItemMenuOpen] = useState(false);
   const [flash, setFlash] = useState<Flash | null>(null);
   const mounted = useRef(true);
   useEffect(() => () => { mounted.current = false; }, []);
@@ -56,8 +59,10 @@ export function CombatView() {
   const heroChar = actor.isHero ? getCharacter(actor.heroId!) : null;
   const power = heroChar?.powerId ? getPower(heroChar.powerId) : null;
   const usesLeft = power ? (powerUses[actor.id] ?? 0) : 0;
-  const selectingEnemy = pendingPower?.targeting === 'enemy';
-  const selectingAlly = pendingPower?.targeting === 'ally';
+  const selectingEnemy = pendingPower?.targeting === 'enemy' || pendingItem?.targeting === 'enemy';
+  const selectingAlly = pendingPower?.targeting === 'ally' || pendingItem?.targeting === 'ally';
+  const stash = Object.entries(state.inventory).filter(([, n]) => n > 0);
+  const stashCount = stash.reduce((sum, [, n]) => sum + n, 0);
 
   function applyResult(next: CombatState) {
     const ev = next.lastAttack;
@@ -90,6 +95,11 @@ export function CombatView() {
         dispatch({ type: 'SET_HP', hp: healed });
         const gained = Object.keys(healed).some((id) => healed[id] > (hp[id] ?? 0));
         if (gained) dispatch({ type: 'LOG', entry: 'The party catches their breath and binds their wounds.' });
+        const drop = rollLoot(defaultRng, state.difficulty);
+        if (drop) {
+          dispatch({ type: 'ADD_ITEM', itemId: drop, delta: 1 });
+          dispatch({ type: 'LOG', entry: `You loot a ${getItem(drop).name}!` });
+        }
         setTimeout(() => dispatch({ type: 'GOTO_SCENE', sceneId: scene.onVictory }), 700);
       } else {
         setTimeout(() => dispatch({ type: 'GOTO_SCENE', sceneId: scene.onDefeat }), 700);
@@ -124,6 +134,24 @@ export function CombatView() {
     applyResult(next);
   }
 
+  function useItem(item: Item, targetIds: string[]) {
+    sfx.click();
+    dispatch({ type: 'ADD_ITEM', itemId: item.id, delta: -1 });
+    setPendingItem(null);
+    setItemMenuOpen(false);
+    setTarget(null);
+    const next = applyItem(combat, actor.id, item.id, targetIds, defaultRng);
+    recordHeroDamage(actor.heroId!, next);
+    applyResult(next);
+  }
+
+  function chooseItem(item: Item) {
+    sfx.click();
+    if (item.targeting === 'all-enemies') { useItem(item, []); return; }
+    setItemMenuOpen(false);
+    setPendingItem(item); // ally / enemy -> enter targeting
+  }
+
   function choosePower() {
     if (!power) return;
     sfx.click();
@@ -154,13 +182,13 @@ export function CombatView() {
           <div className="stack">
             {combat.combatants.filter((c) => !c.isHero).map((e) => {
               const isFlash = flash?.id === e.id;
-              const clickable = e.hp > 0 && actor.isHero && (!pendingPower || selectingEnemy);
+              const clickable = e.hp > 0 && actor.isHero && ((!pendingPower && !pendingItem) || selectingEnemy);
               return (
                 <button
                   key={e.id}
                   className={`panel combatant${isFlash ? (flash!.heal ? ' heal' : ' hit') : ''}${target === e.id ? ' active-turn' : ''}`}
                   disabled={!clickable}
-                  onClick={() => { sfx.click(); if (selectingEnemy) resolvePower([e.id]); else setTarget(e.id); }}
+                  onClick={() => { sfx.click(); if (selectingEnemy) { pendingItem ? useItem(pendingItem, [e.id]) : resolvePower([e.id]); } else setTarget(e.id); }}
                   style={{ position: 'relative', textAlign: 'left', cursor: clickable ? 'pointer' : 'default', opacity: e.hp <= 0 ? 0.4 : 1, padding: 14 }}
                 >
                   {isFlash && <span key={flash!.nonce} className={`dmg-float${flash!.heal ? ' heal' : ''}`}>{flash!.heal ? '+' : '-'}{flash!.amount}</span>}
@@ -185,13 +213,13 @@ export function CombatView() {
           <div className="stack">
             {combat.combatants.filter((c) => c.isHero).map((h) => {
               const isFlash = flash?.id === h.id;
-              const allyTargetable = selectingAlly && h.hp > 0;
+              const allyTargetable = selectingAlly && (h.hp > 0 || pendingItem?.kind === 'heal');
               return (
                 <button
                   key={h.id}
                   className={`panel combatant${isFlash ? (flash!.heal ? ' heal' : ' hit') : ''}${actor.id === h.id ? ' active-turn' : ''}`}
                   disabled={!allyTargetable}
-                  onClick={() => allyTargetable && resolvePower([h.id])}
+                  onClick={() => { if (!allyTargetable) return; pendingItem ? useItem(pendingItem, [h.id]) : resolvePower([h.id]); }}
                   style={{ position: 'relative', textAlign: 'left', width: '100%', opacity: h.hp <= 0 ? 0.45 : 1, padding: 14, cursor: allyTargetable ? 'pointer' : 'default' }}
                 >
                   {isFlash && <span key={flash!.nonce} className={`dmg-float${flash!.heal ? ' heal' : ''}`}>{flash!.heal ? '+' : '-'}{flash!.amount}</span>}
@@ -233,6 +261,13 @@ export function CombatView() {
               </p>
               <button className="btn" onClick={() => { sfx.click(); setPendingPower(null); }}>← Cancel</button>
             </>
+          ) : pendingItem ? (
+            <>
+              <p className="muted" style={{ marginTop: 4 }}>
+                {pendingItem.targeting === 'ally' ? `Choose an ally for ${pendingItem.name}.` : `Choose a foe for ${pendingItem.name}.`}
+              </p>
+              <button className="btn" onClick={() => { sfx.click(); setPendingItem(null); }}>← Cancel</button>
+            </>
           ) : (
             <>
               <p className="muted" style={{ marginTop: 4 }}>
@@ -249,7 +284,24 @@ export function CombatView() {
                     ✦ {power.name} <span style={{ opacity: 0.7 }}>({usesLeft} left)</span>
                   </button>
                 )}
+                {stashCount > 0 && (
+                  <button className="btn" onClick={() => { sfx.click(); setItemMenuOpen((o) => !o); }}>
+                    🧪 Use Item ({stashCount})
+                  </button>
+                )}
               </div>
+              {itemMenuOpen && (
+                <div className="row" style={{ marginTop: 8 }}>
+                  {stash.map(([id, n]) => {
+                    const it = getItem(id);
+                    return (
+                      <button key={id} className="btn" title={it.description} onClick={() => chooseItem(it)}>
+                        {it.name} ×{n}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
               {power && <p className="faint" style={{ fontSize: '0.82rem', marginTop: 8 }}>{power.description}</p>}
             </>
           )
