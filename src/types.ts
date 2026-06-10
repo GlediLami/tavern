@@ -11,6 +11,8 @@ export interface Attack {
   ability: Ability;
   damageDice: string;   // e.g. "1d8"
   damageBonus: number;
+  save?: Ability;       // if set, target makes this saving throw instead of being attacked
+  ranged?: boolean;     // ranged/thrown attack (used for back-line cover)
 }
 
 export interface Character {
@@ -62,6 +64,7 @@ export interface Enemy {
   ac: number;
   attack: EnemyAttack;
   ability?: EnemyAbility;
+  dexSave?: number;     // bonus to Dexterity saving throws (default +1 in the engine)
 }
 
 export type Scene =
@@ -101,6 +104,8 @@ export interface Combatant {
   ability?: EnemyAbility; // present if enemy has a special ability
   abilityUses?: number;   // remaining uses of `ability` this encounter
   nextAttack?: 'adv' | 'dis';  // one-shot advantage/disadvantage on this combatant's next attack
+  backLine?: boolean;          // hero whose primary attack is ranged (eligible for cover)
+  dexSave?: number;            // enemy Dexterity save bonus
 }
 
 // A resolved attack/heal, surfaced so the UI can show the actual dice.
@@ -117,6 +122,8 @@ export interface AttackEvent {
   crit: boolean;
   mode?: 'adv' | 'dis';  // advantage/disadvantage applied to the attack roll, if any
   d20Rolls?: number[];   // both raw d20s when rolled with advantage/disadvantage
+  save?: Ability;        // set when this was a saving-throw spell (d20 is the target's save roll)
+  saveDC?: number;       // the spell save DC the target rolled against
   damageDice: string;    // e.g. "1d8"
   damageRolls: number[]; // individual die faces rolled (incl. crit dice / heal dice)
   damageBonus: number;

@@ -4,11 +4,14 @@ import { defaultRng } from './rng';
 import { rollD20, rollDice, rollD20WithMode } from './dice';
 import { abilityMod } from './skills';
 
+export const DEFAULT_ENEMY_DEX_SAVE = 1;
+
 export interface ResolvedAttack {
   ability: Ability;
   damageDice: string;
   damageBonus: number;
   abilityScore: number;
+  save?: Ability;       // if set, the attack is resolved as a target saving throw
 }
 
 export type HeroAttackLookup = (heroId: string, attackName: string) => ResolvedAttack;
@@ -47,6 +50,7 @@ export function startCombat(heroes: Hero[], enemies: Enemy[], rng: Rng = default
       attack: e.attack,
       ability: e.ability,
       abilityUses: e.ability?.uses,
+      dexSave: e.dexSave,
     });
   });
 
@@ -115,6 +119,31 @@ export function applyAttack(
   const toHitMod = abilityMod(stats.abilityScore) + 2; // proficiency +2 at level 1
   const mode = opts.mode ?? attacker.nextAttack;
   attacker.nextAttack = undefined;
+
+  if (stats.save) {
+    const saveDC = 8 + 2 + abilityMod(stats.abilityScore); // 8 + proficiency + casting mod
+    const saveBonus = stats.save === 'dex' ? (target.dexSave ?? DEFAULT_ENEMY_DEX_SAVE) : 0;
+    const saveRoll = rollD20(rng);
+    const saved = saveRoll + saveBonus >= saveDC;
+    let saveRolls: number[] = [];
+    let saveTotal = 0;
+    const saveFlat = stats.damageBonus + (opts.bonusFlat ?? 0);
+    if (!saved) {
+      saveRolls = [...rollDice(stats.damageDice, rng).rolls];
+      saveTotal = saveRolls.reduce((a, b) => a + b, 0) + saveFlat;
+      target.hp = Math.max(0, target.hp - saveTotal);
+      next.log.push(`${attacker.name} invokes ${attackName} — ${target.name} fails a DC ${saveDC} ${stats.save.toUpperCase()} save and takes ${saveTotal} damage.`);
+      if (target.hp === 0) next.log.push(`${target.name} falls!`);
+    } else {
+      next.log.push(`${attacker.name} invokes ${attackName} — ${target.name} succeeds on a DC ${saveDC} ${stats.save.toUpperCase()} save and is unharmed.`);
+    }
+    return {
+      kind: 'attack', attackerName: attacker.name, targetName: target.name, actionName: attackName,
+      targetId, d20: saveRoll, toHit: saveBonus, ac: saveDC, hit: !saved, crit: false,
+      save: stats.save, saveDC,
+      damageDice: stats.damageDice, damageRolls: saveRolls, damageBonus: saveFlat, amount: saveTotal,
+    };
+  }
 
   const { value: d20, rolls: d20Rolls } = rollD20WithMode(rng, mode);
   const isCrit = d20 === 20;

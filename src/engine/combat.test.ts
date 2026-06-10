@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant, applyAttack, applyHeal } from './combat';
+import type { HeroAttackLookup } from './combat';
 import type { Hero, Enemy } from '../types';
 
 function makeHero(id: string, dex: number, hp = 20): Hero {
@@ -145,5 +146,30 @@ describe('combat', () => {
     st = performEnemyTurn(st, hit);
     expect(st.lastAttack?.kind).toBe('attack');
     expect(st.combatants.find((c) => c.id === 'h1')!.nextAttack).toBeUndefined();
+  });
+
+  const saveLookup: HeroAttackLookup = () => ({
+    ability: 'wis', damageDice: '1d8', damageBonus: 0, abilityScore: 17, save: 'dex',
+  });
+
+  it('a save spell damages a target that fails its Dexterity save', () => {
+    const st = startCombat([makeHero('h1', 10)], [goblin], hit);
+    // miss rng => save roll d20=1 (+1 default) = 2 < DC 13 -> fails; 1d8 rolls 1 -> 1 damage
+    const ev = applyAttack(st, 'h1', 'Sacred Flame', 'enemy-0', miss, saveLookup);
+    expect(ev.save).toBe('dex');
+    expect(ev.saveDC).toBe(13);          // 8 + 2 prof + 3 (WIS 17)
+    expect(ev.hit).toBe(true);           // failed save = "hit" for damage/flash
+    expect(ev.amount).toBe(1);
+    expect(st.combatants.find((c) => c.id === 'enemy-0')!.hp).toBe(6);
+  });
+
+  it('a save spell deals no damage when the target succeeds', () => {
+    const st = startCombat([makeHero('h1', 10)], [goblin], hit);
+    // hit rng => save roll d20=20 (+1) = 21 >= DC 13 -> saves; no damage
+    const ev = applyAttack(st, 'h1', 'Sacred Flame', 'enemy-0', hit, saveLookup);
+    expect(ev.save).toBe('dex');
+    expect(ev.hit).toBe(false);
+    expect(ev.amount).toBe(0);
+    expect(st.combatants.find((c) => c.id === 'enemy-0')!.hp).toBe(7);
   });
 });

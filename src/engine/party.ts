@@ -32,6 +32,7 @@ export function makeHeroAttackLookup(_partyIds: string[]): HeroAttackLookup {
       damageDice: atk.damageDice,
       damageBonus: atk.damageBonus,
       abilityScore: c.abilities[atk.ability],
+      save: atk.save,
     };
   };
 }

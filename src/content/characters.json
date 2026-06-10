@@ -113,7 +113,9 @@
         "name": "Sacred Flame",
         "ability": "wis",
         "damageDice": "1d8",
-        "damageBonus": 0
+        "damageBonus": 0,
+        "save": "dex",
+        "ranged": true
       }
     ],
     "backstory": "Mara tended a roadside shrine to a god of dawn and healing, mending travelers wounded by the wilds beyond the walls. When raiders burned her chapel, she swore to carry her god's light into the dark places that bred such cruelty.",
