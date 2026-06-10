@@ -188,3 +188,21 @@ export interface Item {
   healBonus?: number;    // heal flat bonus
   damageDice?: string;   // damage kind, e.g. "2d6"
 }
+
+export interface RelicEffect {
+  acBonus?: number;            // +AC (folded in at combat start)
+  damageBonus?: number;        // flat +damage on every hero attack
+  attackBonus?: number;        // +to-hit
+  bloodiedDamage?: number;     // extra flat damage while the hero is at <= half HP
+  critHeal?: number;           // heal self this much on a crit
+  damageReduction?: number;    // reduce each incoming hit by this much
+  firstStrikeAdvantage?: boolean; // advantage on the hero's first attack each fight
+}
+
+export interface Relic {
+  id: string;
+  name: string;
+  description: string;
+  synergy?: string;
+  effect: RelicEffect;
+}
