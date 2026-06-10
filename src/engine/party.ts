@@ -23,6 +23,10 @@ export function toHero(id: string, hp: number, relics: string[] = []): Hero {
   return { ...getCharacter(id), hp, relics };
 }
 
+export function heroDisplayName(heroId: string, playerNames: Record<string, string> = {}): string {
+  return playerNames[heroId]?.trim() || getCharacter(heroId).name;
+}
+
 export function makeHeroAttackLookup(_partyIds: string[]): HeroAttackLookup {
   return (heroId: string, attackName: string): ResolvedAttack => {
     const c = getCharacter(heroId);
