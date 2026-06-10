@@ -6,7 +6,7 @@ import { emptyStats, type GameState } from './gameReducer';
 const valid: GameState = {
   phase: 'scene', mode: 'single', adventureId: 'brackenmoor', difficulty: 'normal',
   partyIds: ['bjorn-ironhelm'], hp: { 'bjorn-ironhelm': 13 },
-  sceneId: 'tavern_start', log: [], stats: emptyStats,
+  sceneId: 'tavern_start', log: [], stats: emptyStats, inventory: {},
 };
 
 describe('loadValidatedGame', () => {
@@ -35,6 +35,13 @@ describe('loadValidatedGame', () => {
 
   it('returns null when there is no save', () => {
     expect(loadValidatedGame()).toBeNull();
+  });
+
+  it('normalizes a save that predates inventory to an empty stash', () => {
+    const { inventory, ...noInv } = valid;
+    void inventory;
+    saveGame(noInv);
+    expect(loadValidatedGame()?.inventory).toEqual({});
   });
 
   it('round-trips a valid campaign save', () => {
