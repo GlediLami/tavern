@@ -28,7 +28,7 @@ export function CombatView() {
       return toHero(id, state.hp[id] ?? effectiveMaxHp(c, state.difficulty, level));
     });
     heroes.forEach((h) => { h.maxHp = effectiveMaxHp(getCharacter(h.id), state.difficulty, level); });
-    const enemies = scaleEnemies(scene.enemies, state.difficulty, state.partyIds.length);
+    const enemies = scaleEnemies(scene.enemies, state.difficulty, state.partyIds.length, level);
     return startCombat(heroes, enemies, defaultRng);
   });
 
@@ -52,6 +52,7 @@ export function CombatView() {
 
   const actor = currentCombatant(combat);
   const livingEnemies = combat.combatants.filter((c) => !c.isHero && c.hp > 0);
+  const frontLineAlive = combat.combatants.some((c) => c.isHero && c.hp > 0 && !c.backLine);
   const heroChar = actor.isHero ? getCharacter(actor.heroId!) : null;
   const power = heroChar?.powerId ? getPower(heroChar.powerId) : null;
   const usesLeft = power ? (powerUses[actor.id] ?? 0) : 0;
@@ -200,6 +201,12 @@ export function CombatView() {
                     <div className="hp-fill" style={{ width: `${(h.hp / Math.max(1, h.maxHp)) * 100}%`, background: hpColor(h.hp / Math.max(1, h.maxHp)) }} />
                   </div>
                   <div className="muted" style={{ fontSize: '0.82rem', marginTop: 5 }}>{h.hp}/{h.maxHp} HP</div>
+                  {h.backLine && h.hp > 0 && (
+                    <div className="tag" style={{ fontSize: '0.72rem', marginTop: 5, display: 'inline-block' }}
+                      title={frontLineAlive ? 'At range — enemies attack at disadvantage while the front line holds' : 'Exposed — no front line to screen'}>
+                      ⤢ {frontLineAlive ? 'Covered' : 'Exposed'}
+                    </div>
+                  )}
                 </button>
               );
             })}
