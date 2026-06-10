@@ -14,7 +14,7 @@ export function CombatDice({ event }: { event: AttackEvent }) {
         <span className="muted">→ {event.targetName}</span>
       </div>
 
-      {!isHeal && event.d20 !== undefined && (
+      {!isHeal && !event.save && event.d20 !== undefined && (
         <div className="cd-roll">
           <span className={`cd-d20${event.crit ? ' crit' : ''}${event.d20 === 1 ? ' fumble' : ''}`}>{event.d20}</span>
           <span className="cd-math">
@@ -25,6 +25,19 @@ export function CombatDice({ event }: { event: AttackEvent }) {
           </span>
           <span className={`cd-result ${event.hit ? 'hit' : 'miss'}`}>
             {event.crit ? 'CRIT!' : event.hit ? 'HIT' : 'MISS'}
+          </span>
+        </div>
+      )}
+
+      {!isHeal && event.save && event.d20 !== undefined && (
+        <div className="cd-roll">
+          <span className={`cd-d20${event.hit ? ' fumble' : ''}`}>{event.d20}</span>
+          <span className="cd-math">
+            {event.save.toUpperCase()} save: d20 {event.d20} {fmt(event.toHit ?? 0)} ={' '}
+            <strong>{event.d20 + (event.toHit ?? 0)}</strong> vs DC {event.saveDC}
+          </span>
+          <span className={`cd-result ${event.hit ? 'hit' : 'miss'}`}>
+            {event.hit ? 'FAILED' : 'SAVED'}
           </span>
         </div>
       )}
