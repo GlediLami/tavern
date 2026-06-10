@@ -41,6 +41,20 @@ describe('CombatView', () => {
     }
   });
 
+  it('gates a hero turn behind the handoff when it is on', () => {
+    const spy = vi.spyOn(Math, 'random').mockReturnValue(0.99); // Gronk's turn
+    localStorage.setItem('tavern.handoff.v1', '1');
+    try {
+      renderCombat({ playerNames: { 'gronk-skullsplitter': 'Sam' } });
+      expect(screen.getByText(/Pass the device/i)).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /I'm ready/i }));
+      expect(screen.getByText(/left\)/i)).toBeInTheDocument(); // power button now visible
+    } finally {
+      localStorage.removeItem('tavern.handoff.v1');
+      spy.mockRestore();
+    }
+  });
+
   it('shows the player name in the turn banner', () => {
     const spy = vi.spyOn(Math, 'random').mockReturnValue(0.99); // Gronk's turn
     try {
