@@ -116,6 +116,29 @@ describe('gameReducer', () => {
     expect(s.stats.encountersWon).toBe(2);
   });
 
+  it('ADD_ITEM adds, increments, decrements, and prunes at zero', () => {
+    let s = gameReducer(initialState, { type: 'ADD_ITEM', itemId: 'potion-healing', delta: 1 });
+    expect(s.inventory['potion-healing']).toBe(1);
+    s = gameReducer(s, { type: 'ADD_ITEM', itemId: 'potion-healing', delta: 2 });
+    expect(s.inventory['potion-healing']).toBe(3);
+    s = gameReducer(s, { type: 'ADD_ITEM', itemId: 'potion-healing', delta: -3 });
+    expect(s.inventory['potion-healing']).toBeUndefined();
+  });
+
+  it('CONFIRM_PARTY clears the inventory', () => {
+    let s = gameReducer(initialState, { type: 'ADD_ITEM', itemId: 'potion-healing', delta: 2 });
+    s = gameReducer(s, { type: 'CONFIRM_PARTY', partyIds: ['bjorn-ironhelm'] });
+    expect(s.inventory).toEqual({});
+  });
+
+  it('ADVANCE_CAMPAIGN carries the inventory across tales', () => {
+    let s = gameReducer(initialState, { type: 'START_CAMPAIGN', difficulty: 'normal' });
+    s = gameReducer(s, { type: 'CONFIRM_PARTY', partyIds: ['bjorn-ironhelm'] });
+    s = gameReducer(s, { type: 'ADD_ITEM', itemId: 'smoke-bomb', delta: 1 });
+    s = gameReducer(s, { type: 'ADVANCE_CAMPAIGN' });
+    expect(s.inventory['smoke-bomb']).toBe(1);
+  });
+
   it('RESET returns to the initial state', () => {
     let s = gameReducer(initialState, { type: 'START_GAME' });
     s = gameReducer(s, { type: 'RESET' });

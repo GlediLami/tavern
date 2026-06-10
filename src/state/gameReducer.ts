@@ -56,6 +56,7 @@ export interface GameState {
   sceneId: string;
   log: string[];                // narration / roll history
   stats: RunStats;              // accumulated stats for the current run
+  inventory: Record<string, number>;  // shared party stash: itemId -> count
 }
 
 export const initialState: GameState = {
@@ -69,6 +70,7 @@ export const initialState: GameState = {
   sceneId: getAdventureData(DEFAULT_ADVENTURE_ID).startSceneId,
   log: [],
   stats: emptyStats,
+  inventory: {},
 };
 
 export type GameAction =
@@ -78,6 +80,7 @@ export type GameAction =
   | { type: 'CONFIRM_PARTY'; partyIds: string[] }
   | { type: 'ADVANCE_CAMPAIGN' }
   | { type: 'RECORD'; delta: Partial<RunStats> }
+  | { type: 'ADD_ITEM'; itemId: string; delta: number }
   | { type: 'GOTO_SCENE'; sceneId: string }
   | { type: 'SET_HP'; hp: Record<string, number> }
   | { type: 'LOG'; entry: string }
@@ -137,6 +140,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         sceneId: getAdventureData(state.adventureId).startSceneId,
         log: [],
         stats: emptyStats,
+        inventory: {},
       };
     }
 
@@ -175,6 +179,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'RECORD':
       return { ...state, stats: mergeStats(state.stats, action.delta) };
+
+    case 'ADD_ITEM': {
+      const n = (state.inventory[action.itemId] ?? 0) + action.delta;
+      const inventory = { ...state.inventory };
+      if (n > 0) inventory[action.itemId] = n; else delete inventory[action.itemId];
+      return { ...state, inventory };
+    }
 
     case 'SET_HP':
       return { ...state, hp: { ...state.hp, ...action.hp } };
