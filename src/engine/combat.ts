@@ -3,6 +3,7 @@ import type { Rng } from './rng';
 import { defaultRng } from './rng';
 import { rollD20, rollDice, rollD20WithMode } from './dice';
 import { abilityMod } from './skills';
+import { sumRelicEffects } from './relics';
 
 export const DEFAULT_ENEMY_DEX_SAVE = 1;
 
@@ -35,12 +36,19 @@ export function startCombat(heroes: Hero[], enemies: Enemy[], rng: Rng = default
   const combatants: Combatant[] = [];
 
   for (const h of heroes) {
+    const eff = sumRelicEffects(h.relics ?? []);
     combatants.push({
       id: h.id, name: h.name, isHero: true, heroId: h.id,
       primaryAttack: h.attacks[0]?.name,
-      maxHp: h.maxHp, hp: h.hp, ac: h.ac,
+      maxHp: h.maxHp, hp: h.hp, ac: h.ac + (eff.acBonus ?? 0),
       initiative: rollD20(rng) + abilityMod(h.abilities.dex),
       backLine: !!h.attacks[0]?.ranged,
+      relicDamage: eff.damageBonus,
+      relicToHit: eff.attackBonus,
+      bloodiedDamage: eff.bloodiedDamage,
+      critHeal: eff.critHeal,
+      damageReduction: eff.damageReduction,
+      nextAttack: eff.firstStrikeAdvantage ? 'adv' : undefined,
     });
   }
   enemies.forEach((e, i) => {
@@ -117,7 +125,7 @@ export function applyAttack(
     ? lookup(attackerId, attackName)
     : { ability: 'str', damageDice: '1d8', damageBonus: 3, abilityScore: 16 };
 
-  const toHitMod = abilityMod(stats.abilityScore) + 2; // proficiency +2 at level 1
+  const toHitMod = abilityMod(stats.abilityScore) + 2 + (attacker.relicToHit ?? 0); // proficiency +2 at level 1
   const mode = opts.mode ?? attacker.nextAttack;
   attacker.nextAttack = undefined;
 
@@ -152,7 +160,8 @@ export function applyAttack(
 
   let rolls: number[] = [];
   let total = 0;
-  const flat = stats.damageBonus + (opts.bonusFlat ?? 0);
+  const bloodied = attacker.hp * 2 <= attacker.maxHp;
+  const flat = stats.damageBonus + (opts.bonusFlat ?? 0) + (attacker.relicDamage ?? 0) + (bloodied ? (attacker.bloodiedDamage ?? 0) : 0);
   if (hit) {
     rolls = [...rollDice(stats.damageDice, rng).rolls];
     if (isCrit) rolls = [...rolls, ...rollDice(stats.damageDice, rng).rolls];
@@ -161,6 +170,7 @@ export function applyAttack(
     target.hp = Math.max(0, target.hp - total);
     next.log.push(`${attacker.name} hits ${target.name} with ${attackName} for ${total} damage${isCrit ? ' (CRITICAL!)' : ''}.`);
     if (target.hp === 0) next.log.push(`${target.name} falls!`);
+    if (isCrit && attacker.critHeal) attacker.hp = Math.min(attacker.maxHp, attacker.hp + attacker.critHeal);
   } else {
     next.log.push(`${attacker.name} attacks ${target.name} with ${attackName} but misses.`);
   }
@@ -283,6 +293,7 @@ export function performEnemyTurn(state: CombatState, rng: Rng = defaultRng): Com
       rolls = [...dmg.rolls];
       if (isCrit) rolls = [...rolls, ...rollDice(enemy.attack.damageDice, rng).rolls];
       total = rolls.reduce((a, b) => a + b, 0) + enemy.attack.damageBonus;
+      total = Math.max(0, total - (target.damageReduction ?? 0));
       target.hp = Math.max(0, target.hp - total);
       next.log.push(`${enemy.name} hits ${target.name} with ${enemy.attack.name} for ${total} damage${isCrit ? ' (CRITICAL!)' : ''}.`);
       if (target.hp === 0) next.log.push(`${target.name} is down!`);

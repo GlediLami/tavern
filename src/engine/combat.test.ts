@@ -159,6 +159,60 @@ describe('combat', () => {
     expect(st.combatants.find((c) => c.id === 'h1')!.nextAttack).toBeUndefined();
   });
 
+  it('relic damage raises a hero attack', () => {
+    const h = { ...makeHero('h1', 10), relics: ['whetstone'] }; // +2 dmg
+    let st = startCombat([h], [goblin], hit);
+    st = { ...st, turnIndex: st.order.indexOf('h1') };
+    const ev = applyAttack(st, 'h1', 'Sword', 'enemy-0', hit); // crit: 1d8(8)+1d8(8)+flat(3+2)
+    expect(ev.amount).toBe(8 + 8 + 3 + 2);
+  });
+
+  it('keen-sight raises the to-hit modifier', () => {
+    const h = { ...makeHero('h1', 10), relics: ['keen-sight'] };
+    let st = startCombat([h], [goblin], hit);
+    st = { ...st, turnIndex: st.order.indexOf('h1') };
+    const ev = applyAttack(st, 'h1', 'Sword', 'enemy-0', hit);
+    expect(ev.toHit).toBe(3 + 2 + 1); // str mod 3 + prof 2 + keen-sight 1
+  });
+
+  it("berserker's pact adds damage only while bloodied", () => {
+    const full = { ...makeHero('h1', 10, 20), relics: ['berserkers-pact'] };
+    let st = startCombat([full], [goblin], hit);
+    st = { ...st, turnIndex: st.order.indexOf('h1') };
+    expect(applyAttack(st, 'h1', 'Sword', 'enemy-0', hit).amount).toBe(8 + 8 + 3); // not bloodied
+
+    const low = { ...makeHero('h2', 10, 20), relics: ['berserkers-pact'] };
+    let st2 = startCombat([low], [goblin], hit);
+    st2.combatants.find((c) => c.id === 'h2')!.hp = 8; // 8/20 -> bloodied
+    st2 = { ...st2, turnIndex: st2.order.indexOf('h2') };
+    expect(applyAttack(st2, 'h2', 'Sword', 'enemy-0', hit).amount).toBe(8 + 8 + 3 + 3);
+  });
+
+  it("oathkeeper's light heals the attacker on a crit", () => {
+    const h = { ...makeHero('h1', 10, 20), relics: ['oathkeepers-light'] };
+    let st = startCombat([h], [goblin], hit);
+    st.combatants.find((c) => c.id === 'h1')!.hp = 10;
+    st = { ...st, turnIndex: st.order.indexOf('h1') };
+    applyAttack(st, 'h1', 'Sword', 'enemy-0', hit); // crit -> heal 3
+    expect(st.combatants.find((c) => c.id === 'h1')!.hp).toBe(13);
+  });
+
+  it('damage reduction lowers incoming enemy damage', () => {
+    const h = { ...makeHero('h1', 10, 30), relics: ['stoneward-totem'] }; // -2 per hit
+    let st = startCombat([h], [goblin], hit);
+    st = { ...st, turnIndex: st.order.indexOf('enemy-0') };
+    const before = st.combatants.find((c) => c.id === 'h1')!.hp;
+    st = performEnemyTurn(st, hit); // crit: 1d6(6)+1d6(6)+bonus(2)=14, minus DR 2
+    const dealt = before - st.combatants.find((c) => c.id === 'h1')!.hp;
+    expect(dealt).toBe(14 - 2);
+  });
+
+  it("hunter's focus seeds advantage on the first attack", () => {
+    const h = { ...makeHero('h1', 10), relics: ['hunters-focus'] };
+    const st = startCombat([h], [goblin], hit);
+    expect(st.combatants.find((c) => c.id === 'h1')!.nextAttack).toBe('adv');
+  });
+
   const saveLookup: HeroAttackLookup = () => ({
     ability: 'wis', damageDice: '1d8', damageBonus: 0, abilityScore: 17, save: 'dex',
   });

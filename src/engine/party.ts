@@ -19,8 +19,8 @@ export function getAdventure(adventureId: string): Adventure {
   return getAdventureData(adventureId);
 }
 
-export function toHero(id: string, hp: number): Hero {
-  return { ...getCharacter(id), hp };
+export function toHero(id: string, hp: number, relics: string[] = []): Hero {
+  return { ...getCharacter(id), hp, relics };
 }
 
 export function makeHeroAttackLookup(_partyIds: string[]): HeroAttackLookup {

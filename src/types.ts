@@ -79,7 +79,7 @@ export interface Adventure {
 }
 
 // Runtime party member (current hp tracked separately from maxHp)
-export interface Hero extends Character { hp: number; }
+export interface Hero extends Character { hp: number; relics?: string[]; }
 
 export interface CheckResult {
   roll: number;          // raw d20
@@ -106,6 +106,11 @@ export interface Combatant {
   nextAttack?: 'adv' | 'dis';  // one-shot advantage/disadvantage on this combatant's next attack
   backLine?: boolean;          // hero whose primary attack is ranged (eligible for cover)
   dexSave?: number;            // enemy Dexterity save bonus
+  relicDamage?: number;        // flat bonus damage from relics
+  relicToHit?: number;         // bonus to-hit from relics
+  bloodiedDamage?: number;     // extra flat damage while at <= half HP
+  critHeal?: number;           // self-heal on a crit
+  damageReduction?: number;    // reduce each incoming hit by this
 }
 
 // A resolved attack/heal, surfaced so the UI can show the actual dice.
