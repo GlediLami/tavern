@@ -56,6 +56,20 @@ describe.each(ADVENTURES.map((a) => [a.id, a.data] as const))('adventure %s', (_
     expect(endings.some((e) => e.endingType === 'defeat')).toBe(true);
   });
 
+  it('every boss phase is well-formed', () => {
+    for (const scene of Object.values(adventure.scenes)) {
+      if (scene.type !== 'combat') continue;
+      for (const e of scene.enemies) {
+        for (const ph of e.phases ?? []) {
+          expect(ph.atHpPct).toBeGreaterThan(0);
+          expect(ph.atHpPct).toBeLessThanOrEqual(1);
+          expect(typeof ph.message).toBe('string');
+          expect(ph.message.length).toBeGreaterThan(0);
+        }
+      }
+    }
+  });
+
   it('every enemy ability has a valid kind and at least one use', () => {
     for (const scene of Object.values(adventure.scenes)) {
       if (scene.type !== 'combat') continue;

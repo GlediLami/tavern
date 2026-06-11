@@ -54,7 +54,7 @@
       "id": "fight_champion", "type": "combat", "title": "Final Bout: The Pit Champion",
       "narration": "The greatclub whistles through the torchlit air as the champion bellows for his hound to tear into your flank. This is the bout the whole pit came to see.",
       "enemies": [
-        { "name": "The Pit Champion", "maxHp": 26, "ac": 14, "attack": { "name": "Greatclub", "toHit": 5, "damageDice": "1d10", "damageBonus": 3 }, "ability": { "name": "Rally Roar", "kind": "buff", "uses": 1, "description": "A bellowing roar — an ally attacks with advantage." } },
+        { "name": "The Pit Champion", "maxHp": 26, "ac": 14, "attack": { "name": "Greatclub", "toHit": 5, "damageDice": "1d10", "damageBonus": 3 }, "ability": { "name": "Rally Roar", "kind": "buff", "uses": 1, "description": "A bellowing roar — an ally attacks with advantage." }, "phases": [ { "atHpPct": 0.5, "enrageDamage": 3, "message": "Bloodied, the Pit Champion bellows and swings harder!" }, { "atHpPct": 0.25, "enrageDamage": 2, "heal": 4, "message": "Cornered, the Champion fights like a wounded beast!" } ] },
         { "name": "Pit Hound", "maxHp": 9, "ac": 13, "attack": { "name": "Bite", "toHit": 4, "damageDice": "1d6", "damageBonus": 2 } }
       ],
       "onVictory": "pit_victory", "onDefeat": "ending_pit_fall_boss"
