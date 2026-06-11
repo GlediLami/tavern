@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GameProvider, useGame } from './state/GameContext';
 import { initialState, emptyStats, type GameState } from './state/gameReducer';
 import { clearSave } from './engine/save';
 import { loadValidatedGame } from './state/persistence';
 import { isMuted, setMuted } from './ui/sfx';
 import { isHandoffOn, setHandoffOn } from './ui/handoff';
+import { setMusicScene, refreshMusic } from './ui/music';
 import { HelpOverlay } from './components/HelpOverlay';
 import { TavernHome } from './components/TavernHome';
 import { HallOfTales } from './components/HallOfTales';
@@ -31,7 +32,7 @@ function TopControls() {
           className="top-control"
           title={muted ? 'Unmute sound' : 'Mute sound'}
           aria-label={muted ? 'Unmute sound' : 'Mute sound'}
-          onClick={() => { const next = !muted; setMuted(next); setMutedState(next); }}
+          onClick={() => { const next = !muted; setMuted(next); setMutedState(next); refreshMusic(); }}
         >{muted ? '🔇' : '🔊'}</button>
         <button className="top-control" title="How to play" aria-label="How to play" onClick={() => setShowHelp(true)}>?</button>
       </div>
@@ -43,6 +44,10 @@ function TopControls() {
 function Screens() {
   const { state, dispatch } = useGame();
   const [showHall, setShowHall] = useState(false);
+
+  useEffect(() => {
+    setMusicScene(state.phase === 'combat' ? 'combat' : state.phase === 'home' ? 'none' : 'explore');
+  }, [state.phase]);
 
   switch (state.phase) {
     case 'home':
