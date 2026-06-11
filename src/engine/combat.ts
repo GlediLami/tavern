@@ -1,4 +1,4 @@
-import type { Hero, Enemy, Ability, Combatant, CombatState, AttackEvent } from '../types';
+import type { Hero, Enemy, Ability, Combatant, CombatState, AttackEvent, EnemyIntent } from '../types';
 import type { Rng } from './rng';
 import { defaultRng } from './rng';
 import { rollD20, rollDice, rollD20WithMode } from './dice';
@@ -6,6 +6,8 @@ import { abilityMod } from './skills';
 import { sumRelicEffects } from './relics';
 
 export const DEFAULT_ENEMY_DEX_SAVE = 1;
+export const MARK_BONUS = 2;
+export const TACTIC_USES = 2;
 
 export interface ResolvedAttack {
   ability: Ability;
@@ -99,6 +101,7 @@ export function advanceTurn(state: CombatState): void {
     if (c.hp > 0) break;
   }
   state.turnIndex = next;
+  if (state.tauntTargetId && state.order[next] === state.tauntTargetId) state.tauntTargetId = undefined;
 }
 
 export function checkStatus(state: CombatState): void {
@@ -161,7 +164,7 @@ export function applyAttack(
   let rolls: number[] = [];
   let total = 0;
   const bloodied = attacker.hp * 2 <= attacker.maxHp;
-  const flat = stats.damageBonus + (opts.bonusFlat ?? 0) + (attacker.relicDamage ?? 0) + (bloodied ? (attacker.bloodiedDamage ?? 0) : 0);
+  const flat = stats.damageBonus + (opts.bonusFlat ?? 0) + (attacker.relicDamage ?? 0) + (bloodied ? (attacker.bloodiedDamage ?? 0) : 0) + (target.marked ? MARK_BONUS : 0);
   if (hit) {
     rolls = [...rollDice(stats.damageDice, rng).rolls];
     if (isCrit) rolls = [...rolls, ...rollDice(stats.damageDice, rng).rolls];
@@ -220,6 +223,26 @@ export function performHeroAttack(
   return next;
 }
 
+export function performTaunt(state: CombatState, taunterId: string): CombatState {
+  const next = clone(state);
+  const taunter = next.combatants.find((c) => c.id === taunterId)!;
+  next.tauntTargetId = taunterId;
+  next.log.push(`${taunter.name} roars a challenge — the foes turn toward them!`);
+  next.lastAttack = undefined;
+  if (next.status === 'active') advanceTurn(next);
+  return next;
+}
+
+export function performMark(state: CombatState, markerId: string, enemyId: string): CombatState {
+  const next = clone(state);
+  const marker = next.combatants.find((c) => c.id === markerId)!;
+  const enemy = next.combatants.find((c) => c.id === enemyId);
+  if (enemy) { enemy.marked = true; next.log.push(`${marker.name} marks ${enemy.name} — strike it down!`); }
+  next.lastAttack = undefined;
+  if (next.status === 'active') advanceTurn(next);
+  return next;
+}
+
 // A supporting hero (e.g. Cleric) heals an ally for `dice` + `bonus`.
 export function performHeroHeal(
   state: CombatState,
@@ -236,43 +259,65 @@ export function performHeroHeal(
   return next;
 }
 
+export function avgDamage(dice: string, bonus: number): number {
+  const m = /^\s*(\d+)d(\d+)/.exec(dice);
+  if (!m) return bonus;
+  return Math.round((parseInt(m[1], 10) * (parseInt(m[2], 10) + 1)) / 2) + bonus;
+}
+
+// Deterministic hero target: the taunter if alive, else the lowest-HP hero (ties -> turn order).
+function pickHero(state: CombatState, candidates: Combatant[]): Combatant | undefined {
+  if (candidates.length === 0) return undefined;
+  if (state.tauntTargetId) {
+    const t = candidates.find((h) => h.id === state.tauntTargetId);
+    if (t) return t;
+  }
+  let best = candidates[0];
+  let bestIdx = state.order.indexOf(best.id);
+  for (const h of candidates) {
+    const idx = state.order.indexOf(h.id);
+    if (h.hp < best.hp || (h.hp === best.hp && idx < bestIdx)) { best = h; bestIdx = idx; }
+  }
+  return best;
+}
+
+// Pure: what this enemy will do on its turn (the telegraph), matching performEnemyTurn.
+export function enemyIntent(state: CombatState, enemyId: string): EnemyIntent | undefined {
+  const enemy = state.combatants.find((c) => c.id === enemyId);
+  if (!enemy || enemy.hp <= 0) return undefined;
+  if (enemy.ability && (enemy.abilityUses ?? 0) > 0) {
+    if (enemy.ability.kind === 'buff') {
+      const ally = state.combatants.find((c) => !c.isHero && c.hp > 0 && c.id !== enemy.id && c.nextAttack !== 'adv');
+      if (ally) return { kind: 'buff', targetId: ally.id, label: enemy.ability.name };
+    } else {
+      const hero = pickHero(state, livingHeroes(state).filter((h) => h.nextAttack !== 'dis'));
+      if (hero) return { kind: 'debuff', targetId: hero.id, label: enemy.ability.name };
+    }
+  }
+  const target = pickHero(state, livingHeroes(state));
+  if (!enemy.attack || !target) return undefined;
+  return { kind: 'attack', targetId: target.id, estDamage: avgDamage(enemy.attack!.damageDice, enemy.attack!.damageBonus), label: enemy.attack!.name };
+}
+
 export function performEnemyTurn(state: CombatState, rng: Rng = defaultRng): CombatState {
   const next = clone(state);
   const enemy = next.combatants.find((c) => c.id === next.order[next.turnIndex])!;
+  const intent = enemyIntent(next, enemy.id);
 
-  // Special ability: use it when available and a valid target exists; else attack.
-  if (enemy.ability && (enemy.abilityUses ?? 0) > 0) {
-    if (enemy.ability.kind === 'buff') {
-      const allies = next.combatants.filter((c) => !c.isHero && c.hp > 0 && c.id !== enemy.id && c.nextAttack !== 'adv');
-      if (allies.length > 0) {
-        const ally = allies[Math.floor(rng() * allies.length)];
-        ally.nextAttack = 'adv';
-        enemy.abilityUses = (enemy.abilityUses ?? 0) - 1;
-        next.log.push(`${enemy.name} uses ${enemy.ability.name} — ${ally.name} attacks with advantage.`);
-        next.lastAttack = undefined;
-        checkStatus(next);
-        if (next.status === 'active') advanceTurn(next);
-        return next;
-      }
-    } else {
-      const heroes = next.combatants.filter((c) => c.isHero && c.hp > 0 && c.nextAttack !== 'dis');
-      if (heroes.length > 0) {
-        const hero = heroes[Math.floor(rng() * heroes.length)];
-        hero.nextAttack = 'dis';
-        enemy.abilityUses = (enemy.abilityUses ?? 0) - 1;
-        next.log.push(`${enemy.name} uses ${enemy.ability.name} — ${hero.name} attacks with disadvantage.`);
-        next.lastAttack = undefined;
-        checkStatus(next);
-        if (next.status === 'active') advanceTurn(next);
-        return next;
-      }
-    }
-  }
-
-  const targets = livingHeroes(next);
-
-  if (enemy.attack && targets.length > 0) {
-    const target = targets[Math.floor(rng() * targets.length)];
+  if (intent?.kind === 'buff') {
+    const ally = next.combatants.find((c) => c.id === intent.targetId)!;
+    ally.nextAttack = 'adv';
+    enemy.abilityUses = (enemy.abilityUses ?? 0) - 1;
+    next.log.push(`${enemy.name} uses ${enemy.ability!.name} — ${ally.name} attacks with advantage.`);
+    next.lastAttack = undefined;
+  } else if (intent?.kind === 'debuff') {
+    const hero = next.combatants.find((c) => c.id === intent.targetId)!;
+    hero.nextAttack = 'dis';
+    enemy.abilityUses = (enemy.abilityUses ?? 0) - 1;
+    next.log.push(`${enemy.name} uses ${enemy.ability!.name} — ${hero.name} attacks with disadvantage.`);
+    next.lastAttack = undefined;
+  } else if (intent?.kind === 'attack') {
+    const target = next.combatants.find((c) => c.id === intent.targetId)!;
     const frontLineAlive = next.combatants.some((c) => c.isHero && c.hp > 0 && !c.backLine);
     const covered = !!target.backLine && frontLineAlive;
     const hasAdv = enemy.nextAttack === 'adv';
@@ -285,25 +330,25 @@ export function performEnemyTurn(state: CombatState, rng: Rng = defaultRng): Com
     if (covered && mode === 'dis') next.log.push(`${target.name} fights from cover — ${enemy.name} attacks at disadvantage.`);
     const { value: d20, rolls: d20Rolls } = rollD20WithMode(rng, mode);
     const isCrit = d20 === 20;
-    const hit = isCrit || (d20 !== 1 && d20 + enemy.attack.toHit >= target.ac);
+    const hit = isCrit || (d20 !== 1 && d20 + enemy.attack!.toHit >= target.ac);
     let rolls: number[] = [];
     let total = 0;
     if (hit) {
-      const dmg = rollDice(enemy.attack.damageDice, rng, enemy.attack.damageBonus);
+      const dmg = rollDice(enemy.attack!.damageDice, rng, enemy.attack!.damageBonus);
       rolls = [...dmg.rolls];
-      if (isCrit) rolls = [...rolls, ...rollDice(enemy.attack.damageDice, rng).rolls];
-      total = rolls.reduce((a, b) => a + b, 0) + enemy.attack.damageBonus;
+      if (isCrit) rolls = [...rolls, ...rollDice(enemy.attack!.damageDice, rng).rolls];
+      total = rolls.reduce((a, b) => a + b, 0) + enemy.attack!.damageBonus;
       total = Math.max(0, total - (target.damageReduction ?? 0));
       target.hp = Math.max(0, target.hp - total);
-      next.log.push(`${enemy.name} hits ${target.name} with ${enemy.attack.name} for ${total} damage${isCrit ? ' (CRITICAL!)' : ''}.`);
+      next.log.push(`${enemy.name} hits ${target.name} with ${enemy.attack!.name} for ${total} damage${isCrit ? ' (CRITICAL!)' : ''}.`);
       if (target.hp === 0) next.log.push(`${target.name} is down!`);
     } else {
       next.log.push(`${enemy.name} attacks ${target.name} but misses.`);
     }
     next.lastAttack = {
-      kind: 'attack', attackerName: enemy.name, targetName: target.name, actionName: enemy.attack.name,
-      targetId: target.id, d20, toHit: enemy.attack.toHit, ac: target.ac, hit, crit: isCrit,
-      damageDice: enemy.attack.damageDice, damageRolls: rolls, damageBonus: enemy.attack.damageBonus, amount: total,
+      kind: 'attack', attackerName: enemy.name, targetName: target.name, actionName: enemy.attack!.name,
+      targetId: target.id, d20, toHit: enemy.attack!.toHit, ac: target.ac, hit, crit: isCrit,
+      damageDice: enemy.attack!.damageDice, damageRolls: rolls, damageBonus: enemy.attack!.damageBonus, amount: total,
       mode, d20Rolls: mode ? d20Rolls : undefined,
     };
   }

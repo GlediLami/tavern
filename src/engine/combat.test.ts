@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant, applyAttack, applyHeal } from './combat';
+import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant, applyAttack, applyHeal, enemyIntent, avgDamage, performTaunt, performMark, advanceTurn } from './combat';
 import type { HeroAttackLookup } from './combat';
 import type { Hero, Enemy } from '../types';
 
@@ -215,6 +215,61 @@ describe('combat', () => {
 
   const saveLookup: HeroAttackLookup = () => ({
     ability: 'wis', damageDice: '1d8', damageBonus: 0, abilityScore: 17, save: 'dex',
+  });
+
+  it('avgDamage rounds the average of the dice plus bonus', () => {
+    expect(avgDamage('1d6', 2)).toBe(6); // 3.5 -> 4, +2
+    expect(avgDamage('2d6', 0)).toBe(7);
+  });
+
+  it('enemyIntent attacks the lowest-HP hero (ties by order)', () => {
+    const st = startCombat([makeHero('h1', 10, 20), makeHero('h2', 10, 20)], [goblin], hit);
+    st.combatants.find((c) => c.id === 'h2')!.hp = 4; // h2 wounded
+    const intent = enemyIntent(st, 'enemy-0');
+    expect(intent?.kind).toBe('attack');
+    expect(intent?.targetId).toBe('h2');
+    expect(intent?.estDamage).toBe(avgDamage('1d6', 2));
+  });
+
+  it('enemyIntent prefers the taunter over the lowest-HP hero', () => {
+    let st = startCombat([makeHero('h1', 10, 20), makeHero('h2', 10, 20)], [goblin], hit);
+    st.combatants.find((c) => c.id === 'h2')!.hp = 4;
+    st = { ...st, tauntTargetId: 'h1' };
+    expect(enemyIntent(st, 'enemy-0')?.targetId).toBe('h1');
+  });
+
+  it('enemyIntent reports a buff/debuff for ability enemies', () => {
+    const bSt = startCombat([makeHero('h1', 10)], [buffer, goblin], hit);
+    expect(enemyIntent(bSt, 'enemy-0')).toMatchObject({ kind: 'buff', targetId: 'enemy-1' });
+    const hSt = startCombat([makeHero('h1', 10)], [hexer], hit);
+    expect(enemyIntent(hSt, 'enemy-0')).toMatchObject({ kind: 'debuff', targetId: 'h1' });
+  });
+
+  it('performEnemyTurn attacks the intent target (deterministic, not random)', () => {
+    let st = startCombat([makeHero('h1', 10, 20), makeHero('h2', 10, 20)], [goblin], hit);
+    st.combatants.find((c) => c.id === 'h2')!.hp = 4;
+    st = { ...st, turnIndex: st.order.indexOf('enemy-0') };
+    st = performEnemyTurn(st, hit);
+    expect(st.lastAttack?.targetName).toBe('h2');
+  });
+
+  it("performTaunt sets tauntTargetId; advanceTurn clears it on the taunter's turn", () => {
+    let st = startCombat([makeHero('tank', 10), makeHero('archer', 10)], [goblin], hit);
+    st = { ...st, turnIndex: st.order.indexOf('tank') };
+    st = performTaunt(st, 'tank');
+    expect(st.tauntTargetId).toBe('tank');
+    let guard = 0;
+    while (st.order[st.turnIndex] !== 'tank' && guard++ < 20) advanceTurn(st);
+    expect(st.tauntTargetId).toBeUndefined();
+  });
+
+  it('performMark marks an enemy and applyAttack adds the mark bonus', () => {
+    let st = startCombat([makeHero('h1', 10)], [goblin], hit);
+    st = performMark(st, 'h1', 'enemy-0');
+    expect(st.combatants.find((c) => c.id === 'enemy-0')!.marked).toBe(true);
+    st = { ...st, turnIndex: st.order.indexOf('h1') };
+    const ev = applyAttack(st, 'h1', 'Sword', 'enemy-0', hit); // crit: 1d8(8)+1d8(8)+3+MARK(2)
+    expect(ev.amount).toBe(8 + 8 + 3 + 2);
   });
 
   it('a save spell damages a target that fails its Dexterity save', () => {

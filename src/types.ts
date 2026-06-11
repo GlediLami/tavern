@@ -113,6 +113,7 @@ export interface Combatant {
   bloodiedDamage?: number;     // extra flat damage while at <= half HP
   critHeal?: number;           // self-heal on a crit
   damageReduction?: number;    // reduce each incoming hit by this
+  marked?: boolean;            // marked foe: the party deals bonus damage to it
 }
 
 // A resolved attack/heal, surfaced so the UI can show the actual dice.
@@ -137,6 +138,13 @@ export interface AttackEvent {
   amount: number;        // total damage dealt or HP healed
 }
 
+export interface EnemyIntent {
+  kind: 'attack' | 'buff' | 'debuff';
+  targetId?: string;
+  estDamage?: number;   // rounded average damage, for attack intents
+  label?: string;       // attack or ability name
+}
+
 export interface CombatState {
   combatants: Combatant[];
   order: string[];       // combatant ids in initiative order
@@ -145,6 +153,7 @@ export interface CombatState {
   log: string[];
   status: 'active' | 'victory' | 'defeat';
   lastAttack?: AttackEvent;
+  tauntTargetId?: string;  // hero the foes are currently taunted onto
 }
 
 export type Difficulty = 'normal' | 'hard';
