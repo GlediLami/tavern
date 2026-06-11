@@ -31,6 +31,14 @@ describe('items', () => {
     expect(next.combatants.find((c) => c.id === 'h2')!.hp).toBeGreaterThan(0);
   });
 
+  it("Alchemist's Fire sets a surviving foe Burning", () => {
+    const ogre: Enemy = { name: 'Ogre', maxHp: 30, ac: 12, attack: { name: 'Club', toHit: 4, damageDice: '1d8', damageBonus: 3 } };
+    let st = startCombat([hero('h1')], [ogre], hit);
+    st = { ...st, turnIndex: st.order.indexOf('h1') };
+    const next = applyItem(st, 'h1', 'alchemists-fire', ['enemy-0'], hit);
+    expect(next.combatants.find((c) => c.id === 'enemy-0')!.statuses?.burning).toBeGreaterThan(0);
+  });
+
   it("Alchemist's Fire damages a foe and can end the fight", () => {
     const weakling: Enemy = { name: 'Weakling', maxHp: 3, ac: 10, attack: { name: 'x', toHit: 0, damageDice: '1d4', damageBonus: 0 } };
     let st = startCombat([hero('h1')], [weakling], hit);

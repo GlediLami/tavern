@@ -212,6 +212,7 @@ export interface Power {
   alsoDisadvantage?: boolean;// aoe-damage also imposes disadvantage on all enemies
   healDice?: string;         // heal dice, e.g. "1d8"
   healBonus?: number;        // heal flat bonus
+  inflicts?: string;         // a status this power applies to its targets
 }
 
 export type ItemRarity = 'common' | 'uncommon' | 'rare';
@@ -228,6 +229,7 @@ export interface Item {
   healDice?: string;     // heal kind, e.g. "2d4"
   healBonus?: number;    // heal flat bonus
   damageDice?: string;   // damage kind, e.g. "2d6"
+  inflicts?: string;     // a status this item applies on use
 }
 
 export interface RelicEffect {

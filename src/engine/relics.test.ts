@@ -23,4 +23,10 @@ describe('relics', () => {
   it('getRelic throws on unknown', () => {
     expect(() => getRelic('nope')).toThrow();
   });
+
+  it('sumRelicEffects merges the status-synergy relics', () => {
+    const eff = sumRelicEffects(['emberbrand', 'executioners-eye']);
+    expect(eff.inflictOnHit).toBe('burning');
+    expect(eff.bonusVsAfflicted).toBe(3);
+  });
 });

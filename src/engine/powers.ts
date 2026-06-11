@@ -2,7 +2,8 @@ import type { CombatState, AttackEvent, Power } from '../types';
 import type { Rng } from './rng';
 import { defaultRng } from './rng';
 import { rollDice } from './dice';
-import { clone, checkStatus, advanceTurn, applyAttack, applyHeal, type HeroAttackLookup } from './combat';
+import { clone, endTurn, applyAttack, applyHeal, type HeroAttackLookup } from './combat';
+import { applyStatus } from './status';
 
 export const POWERS: Record<string, Power> = {
   'action-surge': { id: 'action-surge', name: 'Action Surge', description: 'Make two weapon attacks against one foe.', kind: 'multi-attack', targeting: 'enemy', uses: 1, attacks: 2 },
@@ -10,12 +11,12 @@ export const POWERS: Record<string, Power> = {
   'sneak-attack': { id: 'sneak-attack', name: 'Sneak Attack', description: 'A precise strike dealing +2d6 damage.', kind: 'bonus-attack', targeting: 'enemy', uses: 2, bonusDice: '2d6' },
   'flurry-of-blows': { id: 'flurry-of-blows', name: 'Flurry of Blows', description: 'Two rapid unarmed strikes against one foe.', kind: 'multi-attack', targeting: 'enemy', uses: 2, attacks: 2 },
   'divine-smite': { id: 'divine-smite', name: 'Divine Smite', description: 'A radiant strike dealing +2d8 damage.', kind: 'bonus-attack', targeting: 'enemy', uses: 2, bonusDice: '2d8' },
-  'volley': { id: 'volley', name: 'Volley', description: 'Loose an arrow at every enemy.', kind: 'aoe-attack', targeting: 'all-enemies', uses: 1 },
+  'volley': { id: 'volley', name: 'Volley', description: 'Loose an arrow at every enemy — they are left Vulnerable.', kind: 'aoe-attack', targeting: 'all-enemies', uses: 1, inflicts: 'vulnerable' },
   'cure-wounds': { id: 'cure-wounds', name: 'Cure Wounds', description: 'Heal an ally for 1d8+3.', kind: 'heal', targeting: 'ally', uses: 2, healDice: '1d8', healBonus: 3 },
   'entangle': { id: 'entangle', name: 'Entangle', description: 'Vines grip all enemies — they attack with disadvantage next.', kind: 'impose-disadvantage', targeting: 'all-enemies', uses: 1 },
-  'burning-hands': { id: 'burning-hands', name: 'Burning Hands', description: 'A fan of flame: every enemy takes 2d6 fire.', kind: 'aoe-damage', targeting: 'all-enemies', uses: 1, damageDice: '2d6' },
+  'burning-hands': { id: 'burning-hands', name: 'Burning Hands', description: 'A fan of flame: every enemy takes 2d6 fire and is set Burning.', kind: 'aoe-damage', targeting: 'all-enemies', uses: 1, damageDice: '2d6', inflicts: 'burning' },
   'chaos-bolt': { id: 'chaos-bolt', name: 'Chaos Bolt', description: 'Hurl raw chaos at one foe for 3d6.', kind: 'single-damage', targeting: 'enemy', uses: 2, damageDice: '3d6' },
-  'arms-of-hadar': { id: 'arms-of-hadar', name: 'Arms of Hadar', description: 'Dark tendrils: all enemies take 2d6 and attack with disadvantage.', kind: 'aoe-damage', targeting: 'all-enemies', uses: 1, damageDice: '2d6', alsoDisadvantage: true },
+  'arms-of-hadar': { id: 'arms-of-hadar', name: 'Arms of Hadar', description: 'Dark tendrils: all enemies take 2d6, attack with disadvantage, and are Weakened.', kind: 'aoe-damage', targeting: 'all-enemies', uses: 1, damageDice: '2d6', alsoDisadvantage: true, inflicts: 'weakened' },
   'bardic-inspiration': { id: 'bardic-inspiration', name: 'Bardic Inspiration', description: "Inspire an ally — their next attack has advantage.", kind: 'grant-advantage', targeting: 'ally', uses: 3 },
 };
 
@@ -125,7 +126,14 @@ export function applyPower(
     }
   }
 
-  checkStatus(next);
-  if (next.status === 'active') advanceTurn(next);
+  if (power.inflicts) {
+    const ids = power.targeting === 'all-enemies' ? livingEnemyIds(next) : targetIds;
+    for (const id of ids) {
+      const t = next.combatants.find((c) => c.id === id);
+      if (t && t.hp > 0) applyStatus(t, power.inflicts);
+    }
+  }
+
+  endTurn(next, casterId);
   return next;
 }

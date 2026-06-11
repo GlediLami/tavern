@@ -10,6 +10,8 @@ export const RELICS: Record<string, Relic> = {
   'oathkeepers-light': { id: 'oathkeepers-light', name: "Oathkeeper's Light", description: 'Heal 3 HP whenever you land a critical hit.', synergy: 'Anyone', effect: { critHeal: 3 } },
   'hunters-focus': { id: 'hunters-focus', name: "Hunter's Focus", description: 'Advantage on your first attack each fight.', synergy: 'Archers/Rogues', effect: { firstStrikeAdvantage: true } },
   'guardian-sigil': { id: 'guardian-sigil', name: 'Guardian Sigil', description: '+1 AC and reduce each incoming hit by 1.', synergy: 'Defenders', effect: { acBonus: 1, damageReduction: 1 } },
+  'emberbrand': { id: 'emberbrand', name: 'Emberbrand', description: 'Your attacks set the target Burning.', synergy: 'Strikers', effect: { inflictOnHit: 'burning' } },
+  'executioners-eye': { id: 'executioners-eye', name: "Executioner's Eye", description: '+3 damage to any foe suffering a status effect.', synergy: 'Strikers', effect: { bonusVsAfflicted: 3 } },
 };
 
 export function getRelic(id: string): Relic {

@@ -2,12 +2,13 @@ import type { CombatState, Item, Difficulty } from '../types';
 import type { Rng } from './rng';
 import { defaultRng } from './rng';
 import { rollDice } from './dice';
-import { clone, checkStatus, advanceTurn, applyHeal } from './combat';
+import { clone, endTurn, applyHeal } from './combat';
+import { applyStatus } from './status';
 
 export const ITEMS: Record<string, Item> = {
   'potion-healing': { id: 'potion-healing', name: 'Potion of Healing', description: 'Restore 2d4+2 HP to a hero.', rarity: 'common', kind: 'heal', targeting: 'ally', healDice: '2d4', healBonus: 2 },
   'greater-healing-draught': { id: 'greater-healing-draught', name: 'Greater Healing Draught', description: 'Restore 4d4+4 HP to a hero.', rarity: 'rare', kind: 'heal', targeting: 'ally', healDice: '4d4', healBonus: 4 },
-  'alchemists-fire': { id: 'alchemists-fire', name: "Alchemist's Fire", description: 'Hurl fire at one foe for 2d6 damage.', rarity: 'uncommon', kind: 'damage', targeting: 'enemy', damageDice: '2d6' },
+  'alchemists-fire': { id: 'alchemists-fire', name: "Alchemist's Fire", description: 'Hurl fire at one foe for 2d6 damage and set it Burning.', rarity: 'uncommon', kind: 'damage', targeting: 'enemy', damageDice: '2d6', inflicts: 'burning' },
   'elixir-heroism': { id: 'elixir-heroism', name: 'Elixir of Heroism', description: "An ally's next attack has advantage.", rarity: 'uncommon', kind: 'grant-advantage', targeting: 'ally' },
   'smoke-bomb': { id: 'smoke-bomb', name: 'Smoke Bomb', description: 'Every foe attacks with disadvantage next.', rarity: 'uncommon', kind: 'mass-disadvantage', targeting: 'all-enemies' },
 };
@@ -43,6 +44,7 @@ export function applyItem(
       const roll = rollDice(item.damageDice!, rng);
       const t = next.combatants.find((c) => c.id === targetIds[0])!;
       t.hp = Math.max(0, t.hp - roll.total);
+      if (item.inflicts && t.hp > 0) applyStatus(t, item.inflicts);
       next.log.push(`${user.name} uses ${item.name} — ${t.name} takes ${roll.total} damage.`);
       if (t.hp === 0) next.log.push(`${t.name} falls!`);
       next.lastAttack = {
@@ -71,8 +73,7 @@ export function applyItem(
     }
   }
 
-  checkStatus(next);
-  if (next.status === 'active') advanceTurn(next);
+  endTurn(next, userId);
   return next;
 }
 

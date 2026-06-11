@@ -22,6 +22,12 @@ const start = () => {
 };
 
 describe('powers', () => {
+  it('burning-hands sets every enemy Burning', () => {
+    const st = start();
+    const next = applyPower(st, 'h1', 'burning-hands', [], hit, lookup);
+    next.combatants.filter((c) => !c.isHero && c.hp > 0).forEach((e) => expect(e.statuses?.burning).toBeGreaterThan(0));
+  });
+
   it('registry covers the expected ids', () => {
     ['action-surge', 'reckless-strike', 'sneak-attack', 'flurry-of-blows', 'divine-smite', 'volley', 'cure-wounds', 'entangle', 'burning-hands', 'chaos-bolt', 'arms-of-hadar', 'bardic-inspiration']
       .forEach((id) => expect(POWERS[id]).toBeDefined());
