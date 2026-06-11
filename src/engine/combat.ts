@@ -4,6 +4,7 @@ import { defaultRng } from './rng';
 import { rollD20, rollDice, rollD20WithMode } from './dice';
 import { abilityMod } from './skills';
 import { sumRelicEffects } from './relics';
+import { tickStatuses, incomingBonus, outgoingPenalty, hasAnyStatus, applyStatus } from './status';
 
 export const DEFAULT_ENEMY_DEX_SAVE = 1;
 export const MARK_BONUS = 2;
@@ -50,6 +51,8 @@ export function startCombat(heroes: Hero[], enemies: Enemy[], rng: Rng = default
       bloodiedDamage: eff.bloodiedDamage,
       critHeal: eff.critHeal,
       damageReduction: eff.damageReduction,
+      inflictOnHit: eff.inflictOnHit,
+      bonusVsAfflicted: eff.bonusVsAfflicted,
       nextAttack: eff.firstStrikeAdvantage ? 'adv' : undefined,
     });
   }
@@ -62,6 +65,8 @@ export function startCombat(heroes: Hero[], enemies: Enemy[], rng: Rng = default
       ability: e.ability,
       abilityUses: e.ability?.uses,
       dexSave: e.dexSave,
+      phases: e.phases,
+      phasesDone: 0,
     });
   });
 
@@ -107,6 +112,30 @@ export function advanceTurn(state: CombatState): void {
 export function checkStatus(state: CombatState): void {
   if (livingEnemies(state).length === 0) state.status = 'victory';
   else if (livingHeroes(state).length === 0) state.status = 'defeat';
+}
+
+// Trigger any boss phases an enemy has newly crossed (enrage / heal), once each.
+export function checkPhases(state: CombatState): void {
+  for (const e of state.combatants) {
+    if (e.isHero || !e.phases || e.hp <= 0) continue;
+    let done = e.phasesDone ?? 0;
+    while (done < e.phases.length && e.hp <= e.maxHp * e.phases[done].atHpPct) {
+      const ph = e.phases[done];
+      if (ph.enrageDamage && e.attack) e.attack = { ...e.attack, damageBonus: e.attack.damageBonus + ph.enrageDamage };
+      if (ph.heal) e.hp = Math.min(e.maxHp, e.hp + ph.heal);
+      state.log.push(ph.message);
+      done++;
+    }
+    e.phasesDone = done;
+  }
+}
+
+// End of a combatant's turn: tick their statuses, trigger boss phases, then resolve & advance.
+export function endTurn(state: CombatState, actorId: string): void {
+  tickStatuses(state, actorId);
+  checkPhases(state);
+  checkStatus(state);
+  if (state.status === 'active') advanceTurn(state);
 }
 
 // Resolve ONE attack against a target, mutating `next` (hp + log). Returns the
@@ -164,12 +193,14 @@ export function applyAttack(
   let rolls: number[] = [];
   let total = 0;
   const bloodied = attacker.hp * 2 <= attacker.maxHp;
-  const flat = stats.damageBonus + (opts.bonusFlat ?? 0) + (attacker.relicDamage ?? 0) + (bloodied ? (attacker.bloodiedDamage ?? 0) : 0) + (target.marked ? MARK_BONUS : 0);
+  const afflicted = attacker.bonusVsAfflicted && hasAnyStatus(target) ? attacker.bonusVsAfflicted : 0;
+  const flat = stats.damageBonus + (opts.bonusFlat ?? 0) + (attacker.relicDamage ?? 0) + (bloodied ? (attacker.bloodiedDamage ?? 0) : 0) + (target.marked ? MARK_BONUS : 0) + incomingBonus(target) + afflicted;
   if (hit) {
     rolls = [...rollDice(stats.damageDice, rng).rolls];
     if (isCrit) rolls = [...rolls, ...rollDice(stats.damageDice, rng).rolls];
     if (opts.bonusDice) rolls = [...rolls, ...rollDice(opts.bonusDice, rng).rolls];
-    total = rolls.reduce((a, b) => a + b, 0) + flat;
+    total = Math.max(0, rolls.reduce((a, b) => a + b, 0) + flat - outgoingPenalty(attacker));
+    if (attacker.inflictOnHit) applyStatus(target, attacker.inflictOnHit);
     target.hp = Math.max(0, target.hp - total);
     next.log.push(`${attacker.name} hits ${target.name} with ${attackName} for ${total} damage${isCrit ? ' (CRITICAL!)' : ''}.`);
     if (target.hp === 0) next.log.push(`${target.name} falls!`);
@@ -218,8 +249,7 @@ export function performHeroAttack(
 ): CombatState {
   const next = clone(state);
   next.lastAttack = applyAttack(next, heroId, attackName, targetId, rng, heroAttackLookup);
-  checkStatus(next);
-  if (next.status === 'active') advanceTurn(next);
+  endTurn(next, heroId);
   return next;
 }
 
@@ -229,7 +259,7 @@ export function performTaunt(state: CombatState, taunterId: string): CombatState
   next.tauntTargetId = taunterId;
   next.log.push(`${taunter.name} roars a challenge — the foes turn toward them!`);
   next.lastAttack = undefined;
-  if (next.status === 'active') advanceTurn(next);
+  endTurn(next, taunterId);
   return next;
 }
 
@@ -239,7 +269,7 @@ export function performMark(state: CombatState, markerId: string, enemyId: strin
   const enemy = next.combatants.find((c) => c.id === enemyId);
   if (enemy) { enemy.marked = true; next.log.push(`${marker.name} marks ${enemy.name} — strike it down!`); }
   next.lastAttack = undefined;
-  if (next.status === 'active') advanceTurn(next);
+  endTurn(next, markerId);
   return next;
 }
 
@@ -255,7 +285,7 @@ export function performHeroHeal(
 ): CombatState {
   const next = clone(state);
   next.lastAttack = applyHeal(next, healerId, targetId, dice, bonus, actionName, rng);
-  if (next.status === 'active') advanceTurn(next);
+  endTurn(next, healerId);
   return next;
 }
 
@@ -337,8 +367,8 @@ export function performEnemyTurn(state: CombatState, rng: Rng = defaultRng): Com
       const dmg = rollDice(enemy.attack!.damageDice, rng, enemy.attack!.damageBonus);
       rolls = [...dmg.rolls];
       if (isCrit) rolls = [...rolls, ...rollDice(enemy.attack!.damageDice, rng).rolls];
-      total = rolls.reduce((a, b) => a + b, 0) + enemy.attack!.damageBonus;
-      total = Math.max(0, total - (target.damageReduction ?? 0));
+      total = rolls.reduce((a, b) => a + b, 0) + enemy.attack!.damageBonus + incomingBonus(target);
+      total = Math.max(0, total - (target.damageReduction ?? 0) - outgoingPenalty(enemy));
       target.hp = Math.max(0, target.hp - total);
       next.log.push(`${enemy.name} hits ${target.name} with ${enemy.attack!.name} for ${total} damage${isCrit ? ' (CRITICAL!)' : ''}.`);
       if (target.hp === 0) next.log.push(`${target.name} is down!`);
@@ -353,7 +383,6 @@ export function performEnemyTurn(state: CombatState, rng: Rng = defaultRng): Com
     };
   }
 
-  checkStatus(next);
-  if (next.status === 'active') advanceTurn(next);
+  endTurn(next, enemy.id);
   return next;
 }

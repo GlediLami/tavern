@@ -238,6 +238,8 @@ export interface RelicEffect {
   critHeal?: number;           // heal self this much on a crit
   damageReduction?: number;    // reduce each incoming hit by this much
   firstStrikeAdvantage?: boolean; // advantage on the hero's first attack each fight
+  inflictOnHit?: string;       // a status this hero's attacks inflict
+  bonusVsAfflicted?: number;   // bonus damage vs a target that has any status
 }
 
 export interface Relic {

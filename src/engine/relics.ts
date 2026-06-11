@@ -18,7 +18,7 @@ export function getRelic(id: string): Relic {
   return r;
 }
 
-const NUMERIC_KEYS = ['acBonus', 'damageBonus', 'attackBonus', 'bloodiedDamage', 'critHeal', 'damageReduction'] as const;
+const NUMERIC_KEYS = ['acBonus', 'damageBonus', 'attackBonus', 'bloodiedDamage', 'critHeal', 'damageReduction', 'bonusVsAfflicted'] as const;
 
 export function sumRelicEffects(ids: string[]): RelicEffect {
   const out: RelicEffect = {};
@@ -29,6 +29,7 @@ export function sumRelicEffects(ids: string[]): RelicEffect {
       if (e[k] !== undefined) out[k] = (out[k] ?? 0) + (e[k] as number);
     }
     if (e.firstStrikeAdvantage) out.firstStrikeAdvantage = true;
+    if (e.inflictOnHit) out.inflictOnHit = e.inflictOnHit;
   }
   return out;
 }

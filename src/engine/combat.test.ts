@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant, applyAttack, applyHeal, enemyIntent, avgDamage, performTaunt, performMark, advanceTurn } from './combat';
+import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant, applyAttack, applyHeal, enemyIntent, avgDamage, performTaunt, performMark, advanceTurn, checkPhases } from './combat';
 import type { HeroAttackLookup } from './combat';
 import type { Hero, Enemy } from '../types';
 
@@ -270,6 +270,42 @@ describe('combat', () => {
     st = { ...st, turnIndex: st.order.indexOf('h1') };
     const ev = applyAttack(st, 'h1', 'Sword', 'enemy-0', hit); // crit: 1d8(8)+1d8(8)+3+MARK(2)
     expect(ev.amount).toBe(8 + 8 + 3 + 2);
+  });
+
+  it('applyAttack adds vulnerable incoming and the afflicted-target relic bonus', () => {
+    let st = startCombat([makeHero('h1', 10)], [goblin], hit);
+    st.combatants.find((c) => c.id === 'enemy-0')!.statuses = { vulnerable: 2 };
+    st.combatants.find((c) => c.id === 'h1')!.bonusVsAfflicted = 3;
+    st = { ...st, turnIndex: st.order.indexOf('h1') };
+    const ev = applyAttack(st, 'h1', 'Sword', 'enemy-0', hit); // 8+8+3 +vuln2 +afflicted3
+    expect(ev.amount).toBe(8 + 8 + 3 + 2 + 3);
+  });
+
+  it('a weakened attacker deals less damage', () => {
+    let st = startCombat([makeHero('h1', 10)], [goblin], hit);
+    st.combatants.find((c) => c.id === 'h1')!.statuses = { weakened: 2 };
+    st = { ...st, turnIndex: st.order.indexOf('h1') };
+    const ev = applyAttack(st, 'h1', 'Sword', 'enemy-0', hit); // 8+8+3 -2
+    expect(ev.amount).toBe(8 + 8 + 3 - 2);
+  });
+
+  it("a perform tick burns the actor at end of turn", () => {
+    let st = startCombat([makeHero('h1', 10, 20), makeHero('h2', 10, 20)], [goblin], hit);
+    st.combatants.find((c) => c.id === 'h1')!.statuses = { burning: 2 };
+    st = { ...st, turnIndex: st.order.indexOf('h1') };
+    st = performHeroAttack(st, 'h1', 'Sword', 'enemy-0', hit);
+    expect(st.combatants.find((c) => c.id === 'h1')!.hp).toBe(20 - 3);
+  });
+
+  it('checkPhases enrages a boss once when it crosses a threshold', () => {
+    const boss: Enemy = { name: 'Boss', maxHp: 20, ac: 12, attack: { name: 'Smash', toHit: 5, damageDice: '1d8', damageBonus: 2 }, phases: [{ atHpPct: 0.5, enrageDamage: 3, message: 'Enrage!' }] };
+    const st = startCombat([makeHero('h1', 10)], [boss], hit);
+    st.combatants.find((c) => c.id === 'enemy-0')!.hp = 8; // below 50%
+    checkPhases(st);
+    expect(st.combatants.find((c) => c.id === 'enemy-0')!.attack!.damageBonus).toBe(2 + 3);
+    expect(st.combatants.find((c) => c.id === 'enemy-0')!.phasesDone).toBe(1);
+    checkPhases(st);
+    expect(st.combatants.find((c) => c.id === 'enemy-0')!.attack!.damageBonus).toBe(2 + 3);
   });
 
   it('a save spell damages a target that fails its Dexterity save', () => {
