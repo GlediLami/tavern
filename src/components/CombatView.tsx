@@ -6,6 +6,7 @@ import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant, clo
 import { applyPower, getPower } from '../engine/powers';
 import { applyItem, rollLoot, getItem } from '../engine/items';
 import { getRelic } from '../engine/relics';
+import { activeStatuses } from '../engine/status';
 import { isHandoffOn } from '../ui/handoff';
 import { scaleEnemies, restHp, effectiveMaxHp, levelPowerBonus } from '../engine/difficulty';
 import { defaultRng } from '../engine/rng';
@@ -253,6 +254,9 @@ export function CombatView() {
                     return <div className="tag" style={{ fontSize: '0.74rem', marginTop: 6, display: 'inline-block' }} title="What this foe will do on its turn">{txt}</div>;
                   })()}
                   {e.marked && <span className="tag" style={{ fontSize: '0.72rem', marginTop: 6, marginLeft: 6, display: 'inline-block', color: 'var(--accent-bright)' }}>🎯 Marked</span>}
+                  {activeStatuses(e).map((s) => (
+                    <span key={s.id} className="tag" style={{ fontSize: '0.72rem', marginTop: 6, marginLeft: 6, display: 'inline-block' }} title={s.id}>{s.icon}{s.turns}</span>
+                  ))}
                 </button>
               );
             })}
@@ -294,6 +298,9 @@ export function CombatView() {
                       ))}
                     </div>
                   )}
+                  {activeStatuses(h).map((s) => (
+                    <span key={s.id} className="tag" style={{ fontSize: '0.72rem', marginTop: 6, marginRight: 6, display: 'inline-block' }} title={s.id}>{s.icon}{s.turns}</span>
+                  ))}
                 </button>
               );
             })}
