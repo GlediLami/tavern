@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGame } from '../state/GameContext';
 import { getScene } from '../engine/story';
 import { getAdventure, getCharacter, toHero, makeHeroAttackLookup, heroDisplayName } from '../engine/party';
-import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant, clone } from '../engine/combat';
+import { startCombat, performHeroAttack, performEnemyTurn, currentCombatant, clone, enemyIntent, performTaunt, performMark, TACTIC_USES } from '../engine/combat';
 import { applyPower, getPower } from '../engine/powers';
 import { applyItem, rollLoot, getItem } from '../engine/items';
 import { getRelic } from '../engine/relics';
@@ -41,6 +41,12 @@ export function CombatView() {
   const [pendingItem, setPendingItem] = useState<Item | null>(null);
   const [itemMenuOpen, setItemMenuOpen] = useState(false);
   const [handoffDoneFor, setHandoffDoneFor] = useState<string | null>(null);
+  const [pendingMark, setPendingMark] = useState(false);
+  const [tacticUses, setTacticUses] = useState<Record<string, number>>(() => {
+    const u: Record<string, number> = {};
+    state.partyIds.forEach((id) => { u[id] = TACTIC_USES; });
+    return u;
+  });
   const [flash, setFlash] = useState<Flash | null>(null);
   const mounted = useRef(true);
   useEffect(() => () => { mounted.current = false; }, []);
@@ -63,7 +69,7 @@ export function CombatView() {
   const heroChar = actor.isHero ? getCharacter(actor.heroId!) : null;
   const power = heroChar?.powerId ? getPower(heroChar.powerId) : null;
   const usesLeft = power ? (powerUses[actor.id] ?? 0) : 0;
-  const selectingEnemy = pendingPower?.targeting === 'enemy' || pendingItem?.targeting === 'enemy';
+  const selectingEnemy = pendingPower?.targeting === 'enemy' || pendingItem?.targeting === 'enemy' || pendingMark;
   const selectingAlly = pendingPower?.targeting === 'ally' || pendingItem?.targeting === 'ally';
   const stash = Object.entries(state.inventory).filter(([, n]) => n > 0);
   const stashCount = stash.reduce((sum, [, n]) => sum + n, 0);
@@ -169,6 +175,25 @@ export function CombatView() {
     });
   }
 
+  function nameOf(id: string): string {
+    const c = combat.combatants.find((x) => x.id === id);
+    if (!c) return '';
+    return c.isHero ? heroDisplayName(c.heroId!, state.playerNames) : c.name;
+  }
+
+  function doTaunt() {
+    sfx.click();
+    setTacticUses((u) => ({ ...u, [actor.id]: (u[actor.id] ?? 0) - 1 }));
+    applyResult(performTaunt(combat, actor.id));
+  }
+
+  function markFoe(enemyId: string) {
+    sfx.click();
+    setPendingMark(false);
+    setTacticUses((u) => ({ ...u, [actor.id]: (u[actor.id] ?? 0) - 1 }));
+    applyResult(performMark(combat, actor.id, enemyId));
+  }
+
   function choosePower() {
     if (!power) return;
     sfx.click();
@@ -205,7 +230,7 @@ export function CombatView() {
                   key={e.id}
                   className={`panel combatant${isFlash ? (flash!.heal ? ' heal' : ' hit') : ''}${target === e.id ? ' active-turn' : ''}`}
                   disabled={!clickable}
-                  onClick={() => { sfx.click(); if (!selectingEnemy) { setTarget(e.id); } else if (pendingItem) { consumeItem(pendingItem, [e.id]); } else { resolvePower([e.id]); } }}
+                  onClick={() => { sfx.click(); if (!selectingEnemy) { setTarget(e.id); } else if (pendingMark) { markFoe(e.id); } else if (pendingItem) { consumeItem(pendingItem, [e.id]); } else { resolvePower([e.id]); } }}
                   style={{ position: 'relative', textAlign: 'left', cursor: clickable ? 'pointer' : 'default', opacity: e.hp <= 0 ? 0.4 : 1, padding: 14 }}
                 >
                   {isFlash && <span key={flash!.nonce} className={`dmg-float${flash!.heal ? ' heal' : ''}`}>{flash!.heal ? '+' : '-'}{flash!.amount}</span>}
@@ -219,6 +244,15 @@ export function CombatView() {
                     <span className="tag">AC {e.ac}</span>
                     {e.ability && <span className="tag" title={e.ability.description}>✦ {e.ability.name}</span>}
                   </div>
+                  {e.hp > 0 && (() => {
+                    const intent = enemyIntent(combat, e.id);
+                    if (!intent) return null;
+                    const txt = intent.kind === 'attack'
+                      ? `⚔ → ${nameOf(intent.targetId!)} ·~${intent.estDamage}`
+                      : `✦ ${intent.label} → ${nameOf(intent.targetId!)}`;
+                    return <div className="tag" style={{ fontSize: '0.74rem', marginTop: 6, display: 'inline-block' }} title="What this foe will do on its turn">{txt}</div>;
+                  })()}
+                  {e.marked && <span className="tag" style={{ fontSize: '0.72rem', marginTop: 6, marginLeft: 6, display: 'inline-block', color: 'var(--accent-bright)' }}>🎯 Marked</span>}
                 </button>
               );
             })}
@@ -301,6 +335,11 @@ export function CombatView() {
               </p>
               <button className="btn" onClick={() => { sfx.click(); setPendingItem(null); }}>← Cancel</button>
             </>
+          ) : pendingMark ? (
+            <>
+              <p className="muted" style={{ marginTop: 4 }}>Choose a foe to mark.</p>
+              <button className="btn" onClick={() => { sfx.click(); setPendingMark(false); }}>← Cancel</button>
+            </>
           ) : (
             <>
               <p className="muted" style={{ marginTop: 4 }}>
@@ -325,6 +364,15 @@ export function CombatView() {
                 {state.luck > 0 && !actor.nextAttack && (
                   <button className="btn" title="Spend a Luck token for advantage on this attack" onClick={spendLuckAdvantage}>
                     ✦ Luck: advantage ({state.luck})
+                  </button>
+                )}
+                {!actor.backLine ? (
+                  <button className="btn" disabled={(tacticUses[actor.id] ?? 0) <= 0} title="Roar a challenge — foes target you until your next turn" onClick={doTaunt}>
+                    🛡 Taunt ({tacticUses[actor.id] ?? 0})
+                  </button>
+                ) : (
+                  <button className="btn" disabled={(tacticUses[actor.id] ?? 0) <= 0 || livingEnemies.length === 0} title="Mark a foe — the party deals +2 damage to it" onClick={() => { sfx.click(); setItemMenuOpen(false); setPendingMark(true); }}>
+                    🎯 Mark ({tacticUses[actor.id] ?? 0})
                   </button>
                 )}
               </div>

@@ -55,6 +55,31 @@ describe('CombatView', () => {
     }
   });
 
+  it('shows an enemy intent badge', () => {
+    renderCombat();
+    expect(screen.getAllByText(/→ Gronk Skullsplitter/i).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('shows Taunt for a front-line hero', () => {
+    const spy = vi.spyOn(Math, 'random').mockReturnValue(0.99);
+    try {
+      renderCombat(); // Gronk (Greataxe = melee, front line)
+      expect(screen.getByRole('button', { name: /Taunt/i })).toBeInTheDocument();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('shows Mark for a back-line hero', () => {
+    const spy = vi.spyOn(Math, 'random').mockReturnValue(0.99);
+    try {
+      renderCombat({ partyIds: ['thornwick-greenstride'], hp: { 'thornwick-greenstride': 12 } });
+      expect(screen.getByRole('button', { name: /Mark/i })).toBeInTheDocument();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
   it('offers a Luck advantage button when luck is available', () => {
     const spy = vi.spyOn(Math, 'random').mockReturnValue(0.99); // Gronk's turn
     try {
