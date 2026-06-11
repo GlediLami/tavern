@@ -355,6 +355,12 @@ h1, h2, h3, .display { font-family: var(--font-display); font-weight: 400; lette
 .adv-badge.adv { color: var(--green); }
 .adv-badge.dis { color: var(--accent-bright); }
 
+/* crit flash overlay (animated imperatively) */
+.crit-flash {
+  position: fixed; inset: 0; z-index: 80; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle at center, rgba(217, 164, 65, 0.55), rgba(217, 164, 65, 0) 70%);
+}
+
 /* help overlay */
 .help-overlay {
   position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center;

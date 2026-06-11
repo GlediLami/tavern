@@ -8,6 +8,15 @@ export function hpColor(ratio: number): string {
   return 'linear-gradient(90deg, #7a2222, #c0392b)';
 }
 
+// Screen-shake distance (px) for a hit of `amount` damage; crits hit hardest.
+export function shakeIntensity(amount: number, crit: boolean): number {
+  if (amount <= 0) return 0;
+  if (crit) return 12;
+  if (amount >= 14) return 10;
+  if (amount >= 6) return 6;
+  return 3;
+}
+
 // True when the user has asked the OS to minimize motion. Safe in non-browser/test envs.
 export function prefersReducedMotion(): boolean {
   try {

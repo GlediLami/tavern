@@ -10,9 +10,9 @@ import { activeStatuses } from '../engine/status';
 import { isHandoffOn } from '../ui/handoff';
 import { scaleEnemies, restHp, effectiveMaxHp, levelPowerBonus } from '../engine/difficulty';
 import { defaultRng } from '../engine/rng';
-import { hpColor } from '../ui/visuals';
+import { hpColor, shakeIntensity, prefersReducedMotion } from '../ui/visuals';
 import { sfx } from '../ui/sfx';
-import type { CombatState, Power, Item } from '../types';
+import type { CombatState, Power, Item, AttackEvent } from '../types';
 import { CombatDice } from './CombatDice';
 
 interface Flash { id: string; amount: number; heal: boolean; nonce: number; }
@@ -50,7 +50,35 @@ export function CombatView() {
   });
   const [flash, setFlash] = useState<Flash | null>(null);
   const mounted = useRef(true);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const flashRef = useRef<HTMLDivElement>(null);
   useEffect(() => () => { mounted.current = false; }, []);
+
+  // Impact feedback: damage-scaled screen shake + a crit flash, gated by reduced-motion.
+  function playJuice(ev: AttackEvent) {
+    if (prefersReducedMotion()) { if (ev.crit) sfx.crit(); return; }
+    const px = shakeIntensity(ev.amount, ev.crit);
+    const el = rootRef.current;
+    if (el && typeof el.animate === 'function' && px > 0) {
+      el.animate(
+        [
+          { transform: 'translate(0,0)' },
+          { transform: `translate(${px}px, ${-px}px)` },
+          { transform: `translate(${-px}px, ${px}px)` },
+          { transform: `translate(${Math.round(px / 2)}px, 0)` },
+          { transform: 'translate(0,0)' },
+        ],
+        { duration: 280, easing: 'ease-out' },
+      );
+    }
+    if (ev.crit) {
+      sfx.crit();
+      const f = flashRef.current;
+      if (f && typeof f.animate === 'function') {
+        f.animate([{ opacity: 0 }, { opacity: 0.32 }, { opacity: 0 }], { duration: 320, easing: 'ease-out' });
+      }
+    }
+  }
 
   // Per-hero remaining uses of that hero's own power.
   const [powerUses, setPowerUses] = useState<Record<string, number>>(() => {
@@ -79,7 +107,7 @@ export function CombatView() {
   function applyResult(next: CombatState) {
     const ev = next.lastAttack;
     if (ev && ev.amount > 0) {
-      if (ev.kind === 'heal') sfx.click(); else sfx.hit();
+      if (ev.kind === 'heal') sfx.click(); else { sfx.hit(); playJuice(ev); }
       setFlash({ id: ev.targetId, amount: ev.amount, heal: ev.kind === 'heal', nonce: Date.now() });
       setTimeout(() => { if (mounted.current) setFlash(null); }, 850);
     }
@@ -214,7 +242,8 @@ export function CombatView() {
   }
 
   return (
-    <div className="app-shell screen">
+    <div className="app-shell screen" ref={rootRef}>
+      <div ref={flashRef} className="crit-flash" aria-hidden />
       <h2 className="display danger-title" style={{ fontSize: '1.7rem' }}>⚔ {scene.title}</h2>
       <div className="rule-accent danger" />
       <p style={{ lineHeight: 1.7, fontSize: '1.08rem' }}>{scene.narration}</p>
