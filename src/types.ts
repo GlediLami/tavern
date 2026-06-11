@@ -67,6 +67,7 @@ export interface Enemy {
   attack: EnemyAttack;
   ability?: EnemyAbility;
   dexSave?: number;     // bonus to Dexterity saving throws (default +1 in the engine)
+  phases?: BossPhase[]; // optional HP-threshold enrage triggers
 }
 
 export type Scene =
@@ -114,6 +115,30 @@ export interface Combatant {
   critHeal?: number;           // self-heal on a crit
   damageReduction?: number;    // reduce each incoming hit by this
   marked?: boolean;            // marked foe: the party deals bonus damage to it
+  statuses?: Record<string, number>; // active status effects: statusId -> turns remaining
+  inflictOnHit?: string;       // relic: a status this combatant's attacks inflict
+  bonusVsAfflicted?: number;   // relic: bonus damage vs a target that has any status
+  phases?: BossPhase[];        // enemy phase triggers
+  phasesDone?: number;         // how many phases have triggered
+}
+
+export type StatusKind = 'dot' | 'vulnerable' | 'weakened';
+
+export interface Status {
+  id: string;
+  name: string;
+  kind: StatusKind;
+  icon: string;
+  amount: number;   // dot damage, vulnerable bonus, or weaken penalty
+  duration: number; // turns
+  description: string;
+}
+
+export interface BossPhase {
+  atHpPct: number;       // trigger when hp/maxHp <= this
+  enrageDamage?: number; // permanent bonus to the enemy's attack damage
+  heal?: number;         // one-time heal on trigger
+  message: string;
 }
 
 // A resolved attack/heal, surfaced so the UI can show the actual dice.
